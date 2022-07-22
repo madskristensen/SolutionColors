@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <Extern href="stdidcmd.h"/>
+  <Extern href="vsshlids.h"/>
+  <Include href="KnownImageIds.vsct"/>
+  <Include href="VSGlobals.vsct"/>
+
+  <Commands package="SolutionColors">
+    <Menus>
+      <Menu guid="SolutionColors" id="FlyoutMenu" priority="100" type="Menu">
+        <Parent guid="SolutionColors" id="OuterGroup"/>
+        <Strings>
+          <ButtonText>Set Solution Color</ButtonText>
+        </Strings>
+      </Menu>
+    </Menus>
+    
+    <Groups>
+      <Group guid="SolutionColors" id="OuterGroup" priority="0x0600">
+        <Parent guid="VSMainMenu" id="SolutionNode"/>
+      </Group>
+      <Group guid="SolutionColors" id="InnerGroup" priority="0x0600">
+        <Parent guid="SolutionColors" id="FlyoutMenu"/>
+      </Group>
+    </Groups>
+
+    <!--This section defines the elements the user can interact with, like a menu command or a button
+        or combo box in a toolbar. -->
+    <Buttons>
+      <Button guid="SolutionColors" id="Blue" priority="0x0100" type="Button">
+        <Parent guid="SolutionColors" id="InnerGroup" />
+        <Icon guid="ImageCatalogGuid" id="FlagBlue" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Blue</ButtonText>
+          <LocCanonicalName>.SolutionColors.Blue</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="SolutionColors" id="Red" priority="0x0110" type="Button">
+        <Parent guid="SolutionColors" id="InnerGroup" />
+        <Icon guid="ImageCatalogGuid" id="FlagRed" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Red</ButtonText>
+          <LocCanonicalName>.SolutionColors.Red</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="SolutionColors" id="Green" priority="0x0120" type="Button">
+        <Parent guid="SolutionColors" id="InnerGroup" />
+        <Icon guid="ImageCatalogGuid" id="FlagGreen" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Green</ButtonText>
+          <LocCanonicalName>.SolutionColors.Green</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="SolutionColors" id="Turquoise" priority="0x0130" type="Button">
+        <Parent guid="SolutionColors" id="InnerGroup" />
+        <Icon guid="ImageCatalogGuid" id="FlagTurquoise" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Teal</ButtonText>
+          <LocCanonicalName>.SolutionColors.Teal</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="SolutionColors" id="Purple" priority="0x0140" type="Button">
+        <Parent guid="SolutionColors" id="InnerGroup" />
+        <Icon guid="ImageCatalogGuid" id="FlagPurple" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Purple</ButtonText>
+          <LocCanonicalName>.SolutionColors.Purple</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="SolutionColors" id="None" priority="0x0222" type="Button">
+        <Parent guid="SolutionColors" id="InnerGroup" />
+        <Strings>
+          <ButtonText>None</ButtonText>
+          <LocCanonicalName>.SolutionColors.None</LocCanonicalName>
+        </Strings>
+      </Button>
+    </Buttons>
+  </Commands>
+
+  <Symbols>
+    <GuidSymbol name="SolutionColors" value="{3a113b17-c53c-45f0-baab-571abef8b325}">
+      <IDSymbol name="OuterGroup" value="0x0001" />
+      <IDSymbol name="InnerGroup" value="0x0002" />
+      <IDSymbol name="FlyoutMenu" value="0x1000" />
+      <IDSymbol name="Blue" value="0x0100" />
+      <IDSymbol name="Red" value="0x0110" />
+      <IDSymbol name="Green" value="0x0120" />
+      <IDSymbol name="Turquoise" value="0x0130" />
+      <IDSymbol name="Purple" value="0x0140" />
+      <IDSymbol name="None" value="0x0222" />
+    </GuidSymbol>
+  </Symbols>
+</CommandTable>

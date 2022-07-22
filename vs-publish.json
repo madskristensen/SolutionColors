@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json.schemastore.org/vsix-publish",
+  "categories": [ "web" ],
+  "identity": {
+    "internalName": "SolutionColors",
+    "tags": [ "color", "solution", "peacock" ]
+  },
+  "assetFiles": [
+    {
+      "pathOnDisk": "art/screenshot.png",
+      "targetPath": "art/screenshot.png"
+    }
+  ],
+  "overview": "README.md",
+  "publisher": "MadsKristensen",
+  "repo": "https://github.com/MadsKristensen/SolutionColors"
+}
