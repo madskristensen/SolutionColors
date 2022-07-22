@@ -7,7 +7,7 @@ namespace SolutionColors
     [Command(PackageIds.Blue)] internal sealed class Blue : ColorBaseCommand<Blue> { }
     [Command(PackageIds.Red)] internal sealed class Red : ColorBaseCommand<Red> { }
     [Command(PackageIds.Green)] internal sealed class Green : ColorBaseCommand<Green> { }
-    [Command(PackageIds.Turquoise)] internal sealed class Turquoise : ColorBaseCommand<Turquoise> { }
+    [Command(PackageIds.Teal)] internal sealed class Teal : ColorBaseCommand<Teal> { }
     [Command(PackageIds.Purple)] internal sealed class Purple : ColorBaseCommand<Purple> { }
     [Command(PackageIds.None)] internal sealed class None : ColorBaseCommand<None> { }
 

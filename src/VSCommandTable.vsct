@@ -55,7 +55,7 @@
           <LocCanonicalName>.SolutionColors.Green</LocCanonicalName>
         </Strings>
       </Button>
-      <Button guid="SolutionColors" id="Turquoise" priority="0x0130" type="Button">
+      <Button guid="SolutionColors" id="Teal" priority="0x0130" type="Button">
         <Parent guid="SolutionColors" id="InnerGroup" />
         <Icon guid="ImageCatalogGuid" id="FlagTurquoise" />
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -91,7 +91,7 @@
       <IDSymbol name="Blue" value="0x0100" />
       <IDSymbol name="Red" value="0x0110" />
       <IDSymbol name="Green" value="0x0120" />
-      <IDSymbol name="Turquoise" value="0x0130" />
+      <IDSymbol name="Teal" value="0x0130" />
       <IDSymbol name="Purple" value="0x0140" />
       <IDSymbol name="None" value="0x0222" />
     </GuidSymbol>

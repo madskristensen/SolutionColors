@@ -7,8 +7,16 @@
   },
   "assetFiles": [
     {
-      "pathOnDisk": "art/screenshot.png",
-      "targetPath": "art/screenshot.png"
+      "pathOnDisk": "art/colors.png",
+      "targetPath": "art/colors.png"
+    },
+    {
+      "pathOnDisk": "art/options.png",
+      "targetPath": "art/options.png"
+    },
+    {
+      "pathOnDisk": "art/context-menu.png",
+      "targetPath": "art/context-menu.png"
     }
   ],
   "overview": "README.md",

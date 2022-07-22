@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Community.VisualStudio.Toolkit;
 using EnvDTE;
 using EnvDTE80;
 
@@ -25,7 +24,7 @@ namespace SolutionColors
 
         public static async Task SetColorAsync(string colorName)
         {
-            if (!_colorMap.TryGetValue(colorName, out var trueColor))
+            if (!_colorMap.TryGetValue(colorName, out string trueColor))
             {
                 return;
             }
@@ -33,7 +32,7 @@ namespace SolutionColors
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             DTE2 dte = await VS.GetServiceAsync<DTE, DTE2>();
 
-            var existingColor = await GetColorAsync();
+            string existingColor = await GetColorAsync();
 
             if (colorName != existingColor)
             {
@@ -90,9 +89,9 @@ namespace SolutionColors
                 return null;
             }
 
-            var childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+            int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
 
-            for (var i = 0; i < childrenCount; i++)
+            for (int i = 0; i < childrenCount; i++)
             {
                 DependencyObject child = VisualTreeHelper.GetChild(parent, i);
 
@@ -102,7 +101,7 @@ namespace SolutionColors
                 }
             }
 
-            for (var i = 0; i < childrenCount; i++)
+            for (int i = 0; i < childrenCount; i++)
             {
                 DependencyObject child = VisualTreeHelper.GetChild(parent, i);
 

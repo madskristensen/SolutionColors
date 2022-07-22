@@ -11,7 +11,17 @@ or get the [CI build][vsixgallery].
 
 ---
 
-Allows you associate a color with a solution that is displayed as a line above the status bar. Inspired by the Peacock extension for VS Code.
+Allows you associate a color with a solution that is displayed as a line above the status bar. Inspired by the [Peacock extension](https://marketplace.visualstudio.com/items?itemName=johnpapa.vscode-peacock) for VS Code by John Papa.
+
+![Colors](art/colors.png)
+
+You can pick a color from the context menu of the solution node in Solution Explorer:
+
+![Options](art/context-menu.png)
+
+Set the width of the line in the options dialog.
+
+![Options](art/options.png)
 
 ## How can I help?
 

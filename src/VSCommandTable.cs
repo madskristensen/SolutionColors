@@ -26,7 +26,7 @@ namespace SolutionColors
         public const int Blue = 0x0100;
         public const int Red = 0x0110;
         public const int Green = 0x0120;
-        public const int Turquoise = 0x0130;
+        public const int Teal = 0x0130;
         public const int Purple = 0x0140;
         public const int None = 0x0222;
     }
