@@ -17,7 +17,7 @@ Allows you associate a color with a solution that is displayed as a line above t
 
 You can pick a color from the context menu of the solution node in Solution Explorer:
 
-![Options](art/context-menu.png)
+![Context Menu](art/context-menu.png)
 
 Set the width of the line in the options dialog.
 

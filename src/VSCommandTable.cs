@@ -14,6 +14,9 @@ namespace SolutionColors
     {
         public const string SolutionColorsString = "3a113b17-c53c-45f0-baab-571abef8b325";
         public static Guid SolutionColors = new Guid(SolutionColorsString);
+
+        public const string TabColorsString = "a1fa08e5-519b-4810-bdb0-89f586af37e9";
+        public static Guid TabColors = new Guid(TabColorsString);
     }
     /// <summary>
     /// Helper class that encapsulates all CommandIDs uses across VS Package.
@@ -22,12 +25,40 @@ namespace SolutionColors
     {
         public const int OuterGroup = 0x0001;
         public const int InnerGroup = 0x0002;
+        public const int NoneGroup = 0x0003;
         public const int FlyoutMenu = 0x1000;
-        public const int Blue = 0x0100;
-        public const int Red = 0x0110;
-        public const int Green = 0x0120;
-        public const int Teal = 0x0130;
-        public const int Purple = 0x0140;
-        public const int None = 0x0222;
+        public const int Lavender = 0x0100;
+        public const int Gold = 0x0101;
+        public const int Cyan = 0x0102;
+        public const int Burgundy = 0x0103;
+        public const int Green = 0x0104;
+        public const int Brown = 0x0105;
+        public const int RoyalBlue = 0x0106;
+        public const int Pumpkin = 0x0107;
+        public const int Gray = 0x0108;
+        public const int Volt = 0x0109;
+        public const int Teal = 0x0110;
+        public const int Magenta = 0x0111;
+        public const int Mint = 0x0112;
+        public const int DarkBrown = 0x0113;
+        public const int Blue = 0x0114;
+        public const int Pink = 0x0115;
+        public const int None = 0x0200;
+        public const int cLavender = 0x0001;
+        public const int cGold = 0x0002;
+        public const int cCyan = 0x0003;
+        public const int cBurgundy = 0x0004;
+        public const int cGreen = 0x0005;
+        public const int cBrown = 0x0006;
+        public const int cRoyalBlue = 0x0007;
+        public const int cPumpkin = 0x0008;
+        public const int cGray = 0x0009;
+        public const int cVolt = 0x000A;
+        public const int cTeal = 0x000B;
+        public const int cMagenta = 0x000C;
+        public const int cMint = 0x000D;
+        public const int cDarkBrown = 0x000E;
+        public const int cBlue = 0x000F;
+        public const int cPink = 0x0010;
     }
 }

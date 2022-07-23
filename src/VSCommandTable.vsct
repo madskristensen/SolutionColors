@@ -8,8 +8,8 @@
 
   <Commands package="SolutionColors">
     <Menus>
-      <Menu guid="SolutionColors" id="FlyoutMenu" priority="100" type="Menu">
-        <Parent guid="SolutionColors" id="OuterGroup"/>
+      <Menu guid="SolutionColors" id="FlyoutMenu" priority="10" type="Menu">
+        <Parent guid="VSMainMenu" id="SolutionNode.PropertiesGroup"/>
         <Strings>
           <ButtonText>Set Solution Color</ButtonText>
         </Strings>
@@ -20,7 +20,10 @@
       <Group guid="SolutionColors" id="OuterGroup" priority="0x0600">
         <Parent guid="VSMainMenu" id="SolutionNode"/>
       </Group>
-      <Group guid="SolutionColors" id="InnerGroup" priority="0x0600">
+      <Group guid="SolutionColors" id="None" priority="0x0100">
+        <Parent guid="SolutionColors" id="FlyoutMenu"/>
+      </Group>
+      <Group guid="SolutionColors" id="InnerGroup" priority="0x0200">
         <Parent guid="SolutionColors" id="FlyoutMenu"/>
       </Group>
     </Groups>
@@ -28,53 +31,153 @@
     <!--This section defines the elements the user can interact with, like a menu command or a button
         or combo box in a toolbar. -->
     <Buttons>
-      <Button guid="SolutionColors" id="Blue" priority="0x0100" type="Button">
+      <Button guid="SolutionColors" id="Lavender" priority="0x0100" type="Button">
         <Parent guid="SolutionColors" id="InnerGroup" />
-        <Icon guid="ImageCatalogGuid" id="FlagBlue" />
+        <Icon guid="TabColors" id="cLavender" />
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
-          <ButtonText>Blue</ButtonText>
-          <LocCanonicalName>.SolutionColors.Blue</LocCanonicalName>
+          <ButtonText>Lavender</ButtonText>
+          <LocCanonicalName>.SolutionColors.Lavender</LocCanonicalName>
         </Strings>
       </Button>
-      <Button guid="SolutionColors" id="Red" priority="0x0110" type="Button">
+      <Button guid="SolutionColors" id="Gold" priority="0x0100" type="Button">
         <Parent guid="SolutionColors" id="InnerGroup" />
-        <Icon guid="ImageCatalogGuid" id="FlagRed" />
+        <Icon guid="TabColors" id="cGold" />
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
-          <ButtonText>Red</ButtonText>
-          <LocCanonicalName>.SolutionColors.Red</LocCanonicalName>
+          <ButtonText>Gold</ButtonText>
+          <LocCanonicalName>.SolutionColors.Gold</LocCanonicalName>
         </Strings>
       </Button>
-      <Button guid="SolutionColors" id="Green" priority="0x0120" type="Button">
+      <Button guid="SolutionColors" id="Cyan" priority="0x0100" type="Button">
         <Parent guid="SolutionColors" id="InnerGroup" />
-        <Icon guid="ImageCatalogGuid" id="FlagGreen" />
+        <Icon guid="TabColors" id="cCyan" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Cyan</ButtonText>
+          <LocCanonicalName>.SolutionColors.Cyan</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="SolutionColors" id="Burgundy" priority="0x0100" type="Button">
+        <Parent guid="SolutionColors" id="InnerGroup" />
+        <Icon guid="TabColors" id="cBurgundy" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Burgundy</ButtonText>
+          <LocCanonicalName>.SolutionColors.Burgundy</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="SolutionColors" id="Green" priority="0x0100" type="Button">
+        <Parent guid="SolutionColors" id="InnerGroup" />
+        <Icon guid="TabColors" id="cGreen" />
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>Green</ButtonText>
           <LocCanonicalName>.SolutionColors.Green</LocCanonicalName>
         </Strings>
       </Button>
-      <Button guid="SolutionColors" id="Teal" priority="0x0130" type="Button">
+      <Button guid="SolutionColors" id="Brown" priority="0x0100" type="Button">
         <Parent guid="SolutionColors" id="InnerGroup" />
-        <Icon guid="ImageCatalogGuid" id="FlagTurquoise" />
+        <Icon guid="TabColors" id="cBrown" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Brown</ButtonText>
+          <LocCanonicalName>.SolutionColors.Brown</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="SolutionColors" id="RoyalBlue" priority="0x0100" type="Button">
+        <Parent guid="SolutionColors" id="InnerGroup" />
+        <Icon guid="TabColors" id="cRoyalBlue" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Royal Blue</ButtonText>
+          <LocCanonicalName>.SolutionColors.RoyalBlue</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="SolutionColors" id="Pumpkin" priority="0x0100" type="Button">
+        <Parent guid="SolutionColors" id="InnerGroup" />
+        <Icon guid="TabColors" id="cPumpkin" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Pumpkin</ButtonText>
+          <LocCanonicalName>.SolutionColors.Pumpkin</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="SolutionColors" id="Gray" priority="0x0100" type="Button">
+        <Parent guid="SolutionColors" id="InnerGroup" />
+        <Icon guid="TabColors" id="cGray" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Gray</ButtonText>
+          <LocCanonicalName>.SolutionColors.Gray</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="SolutionColors" id="Volt" priority="0x0100" type="Button">
+        <Parent guid="SolutionColors" id="InnerGroup" />
+        <Icon guid="TabColors" id="cVolt" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Volt</ButtonText>
+          <LocCanonicalName>.SolutionColors.Volt</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="SolutionColors" id="Teal" priority="0x0100" type="Button">
+        <Parent guid="SolutionColors" id="InnerGroup" />
+        <Icon guid="TabColors" id="cTeal" />
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>Teal</ButtonText>
           <LocCanonicalName>.SolutionColors.Teal</LocCanonicalName>
         </Strings>
       </Button>
-      <Button guid="SolutionColors" id="Purple" priority="0x0140" type="Button">
+      <Button guid="SolutionColors" id="Magenta" priority="0x0100" type="Button">
         <Parent guid="SolutionColors" id="InnerGroup" />
-        <Icon guid="ImageCatalogGuid" id="FlagPurple" />
+        <Icon guid="TabColors" id="cMagenta" />
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
-          <ButtonText>Purple</ButtonText>
-          <LocCanonicalName>.SolutionColors.Purple</LocCanonicalName>
+          <ButtonText>Magenta</ButtonText>
+          <LocCanonicalName>.SolutionColors.Magenta</LocCanonicalName>
         </Strings>
       </Button>
-      <Button guid="SolutionColors" id="None" priority="0x0222" type="Button">
+      <Button guid="SolutionColors" id="Mint" priority="0x0100" type="Button">
         <Parent guid="SolutionColors" id="InnerGroup" />
+        <Icon guid="TabColors" id="cMint" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Mint</ButtonText>
+          <LocCanonicalName>.SolutionColors.Mint</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="SolutionColors" id="DarkBrown" priority="0x0100" type="Button">
+        <Parent guid="SolutionColors" id="InnerGroup" />
+        <Icon guid="TabColors" id="cDarkBrown" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Dark Brown</ButtonText>
+          <LocCanonicalName>.SolutionColors.DarkBrown</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="SolutionColors" id="Blue" priority="0x0100" type="Button">
+        <Parent guid="SolutionColors" id="InnerGroup" />
+        <Icon guid="TabColors" id="cBlue" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Blue</ButtonText>
+          <LocCanonicalName>.SolutionColors.Blue</LocCanonicalName>
+        </Strings>
+      </Button>
+      <Button guid="SolutionColors" id="Pink" priority="0x0100" type="Button">
+        <Parent guid="SolutionColors" id="InnerGroup" />
+        <Icon guid="TabColors" id="cPink" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Pink</ButtonText>
+          <LocCanonicalName>.SolutionColors.Pink</LocCanonicalName>
+        </Strings>
+      </Button>
+      
+      <Button guid="SolutionColors" id="None" priority="0x0100" type="Button">
+        <Parent guid="SolutionColors" id="None" />
         <Strings>
           <ButtonText>None</ButtonText>
           <LocCanonicalName>.SolutionColors.None</LocCanonicalName>
@@ -87,13 +190,44 @@
     <GuidSymbol name="SolutionColors" value="{3a113b17-c53c-45f0-baab-571abef8b325}">
       <IDSymbol name="OuterGroup" value="0x0001" />
       <IDSymbol name="InnerGroup" value="0x0002" />
+      <IDSymbol name="NoneGroup" value="0x0003" />
       <IDSymbol name="FlyoutMenu" value="0x1000" />
-      <IDSymbol name="Blue" value="0x0100" />
-      <IDSymbol name="Red" value="0x0110" />
-      <IDSymbol name="Green" value="0x0120" />
-      <IDSymbol name="Teal" value="0x0130" />
-      <IDSymbol name="Purple" value="0x0140" />
-      <IDSymbol name="None" value="0x0222" />
+      <IDSymbol name="Lavender" value="0x0100" />
+      <IDSymbol name="Gold" value="0x0101" />
+      <IDSymbol name="Cyan" value="0x0102" />
+      <IDSymbol name="Burgundy" value="0x0103" />
+      <IDSymbol name="Green" value="0x0104" />
+      <IDSymbol name="Brown" value="0x0105" />
+      <IDSymbol name="RoyalBlue" value="0x0106" />
+      <IDSymbol name="Pumpkin" value="0x0107" />
+      <IDSymbol name="Gray" value="0x0108" />
+      <IDSymbol name="Volt" value="0x0109" />
+      <IDSymbol name="Teal" value="0x0110" />
+      <IDSymbol name="Magenta" value="0x0111" />
+      <IDSymbol name="Mint" value="0x0112" />
+      <IDSymbol name="DarkBrown" value="0x0113" />
+      <IDSymbol name="Blue" value="0x0114" />
+      <IDSymbol name="Pink" value="0x0115" />
+      <IDSymbol name="None" value="0x0200" />
+    </GuidSymbol>
+
+    <GuidSymbol name="TabColors" value="{A1FA08E5-519B-4810-BDB0-89F586AF37E9}">
+      <IDSymbol name="cLavender" value="1" />
+      <IDSymbol name="cGold" value="2" />
+      <IDSymbol name="cCyan" value="3" />
+      <IDSymbol name="cBurgundy" value="4" />
+      <IDSymbol name="cGreen" value="5" />
+      <IDSymbol name="cBrown" value="6" />
+      <IDSymbol name="cRoyalBlue" value="7" />
+      <IDSymbol name="cPumpkin" value="8" />
+      <IDSymbol name="cGray" value="9" />
+      <IDSymbol name="cVolt" value="10" />
+      <IDSymbol name="cTeal" value="11" />
+      <IDSymbol name="cMagenta" value="12" />
+      <IDSymbol name="cMint" value="13" />
+      <IDSymbol name="cDarkBrown" value="14" />
+      <IDSymbol name="cBlue" value="15" />
+      <IDSymbol name="cPink" value="16" />
     </GuidSymbol>
   </Symbols>
 </CommandTable>

@@ -15,18 +15,18 @@ namespace SolutionColors
 
         private static readonly Dictionary<string, string> _colorMap = new()
         {
-            { "Blue", "CornflowerBlue" },
-            { "Red", "OrangeRed" },
-            { "Green", "OliveDrab" },
-            { "Teal", "Teal" },
-            { "Purple", "Purple" },
+            { "Burgundy", "Tomato" },
+            { "Pumpkin", "OrangeRed" },
+            { "Volt", "YellowGreen" },
+            { "Mint", "MediumAquamarine" },
+            { "DarkBrown", "SaddleBrown" },
         };
 
         public static async Task SetColorAsync(string colorName)
         {
             if (!_colorMap.TryGetValue(colorName, out string trueColor))
             {
-                return;
+                trueColor = colorName;
             }
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
