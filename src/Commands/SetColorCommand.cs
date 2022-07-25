@@ -23,16 +23,11 @@ namespace SolutionColors
 
     internal abstract class ColorBaseCommand<T> : BaseCommand<T> where T : class, new()
     {
-        private readonly string _color;
-
-        public ColorBaseCommand()
-        {
-            _color = GetType().Name;
-        }
-
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
         {
-            if (_color == "None")
+            string color = GetType().Name;
+            
+            if (color == "None")
             {
                 await ColorHelper.RemoveBorderAsync();
 
@@ -44,7 +39,7 @@ namespace SolutionColors
             }
             else
             {
-                await ColorHelper.SetColorAsync(_color);
+                await ColorHelper.SetColorAsync(color);
             }
         }
     }

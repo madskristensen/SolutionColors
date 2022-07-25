@@ -21,7 +21,7 @@ namespace SolutionColors
         {
             await this.RegisterCommandsAsync();
 
-            var isSolutionLoaded = await VS.Solutions.IsOpenAsync();
+            bool isSolutionLoaded = await VS.Solutions.IsOpenAsync();
 
             if (isSolutionLoaded)
             {
@@ -50,7 +50,7 @@ namespace SolutionColors
                     return;
                 }
 
-                var color = await ColorHelper.GetColorAsync();
+                string color = await ColorHelper.GetColorAsync();
 
                 if (!string.IsNullOrEmpty(color))
                 {

@@ -11,7 +11,7 @@ or get the [CI build][vsixgallery].
 
 ---
 
-Allows you associate a color with a solution that is displayed as a line above the status bar. Inspired by the [Peacock extension](https://marketplace.visualstudio.com/items?itemName=johnpapa.vscode-peacock) for VS Code by John Papa.
+Allows you to associate a color with a solution that is displayed as a line above the status bar. Inspired by the [Peacock extension](https://marketplace.visualstudio.com/items?itemName=johnpapa.vscode-peacock) for VS Code and [this Visual Studio feature request](https://developercommunity.visualstudio.com/t/Per-SolutionFolder-Color-Theme/608136?space=8&ftype=idea).
 
 ![Colors](art/colors.png)
 
