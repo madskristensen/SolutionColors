@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using EnvDTE;
-using EnvDTE80;
 
 namespace SolutionColors
 {
@@ -24,51 +23,71 @@ namespace SolutionColors
 
         public static async Task SetColorAsync(string colorName)
         {
-            if (!_colorMap.TryGetValue(colorName, out string trueColor))
+            string fileName = await GetFileNameAsync();
+
+            if (colorName == null && File.Exists(fileName))
             {
-                trueColor = colorName;
+                File.Delete(fileName);
+                SetBorderColor(null);
             }
-
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            DTE2 dte = await VS.GetServiceAsync<DTE, DTE2>();
-
-            string existingColor = await GetColorAsync();
-
-            if (colorName != existingColor)
+            else
             {
-                dte.Solution.Globals["color"] = colorName;
-                dte.Solution.Globals.VariablePersists["color"] = true;
-                dte.Solution.SaveAs(dte.Solution.FullName);
-            }
+                string existingColor = await GetColorAsync();
 
-            PropertyInfo property = typeof(Brushes).GetProperty(trueColor, BindingFlags.Static | BindingFlags.Public);
+                if (colorName != existingColor)
+                {
+                    File.WriteAllText(fileName, colorName);                    
+                }
 
-            if (property?.GetValue(null, null) is Brush color)
-            {
-                SetColor(color);
+                if (!_colorMap.TryGetValue(colorName, out string trueColor))
+                {
+                    trueColor = colorName;
+                }
+
+                PropertyInfo property = typeof(Brushes).GetProperty(trueColor, BindingFlags.Static | BindingFlags.Public);
+
+                if (property?.GetValue(null, null) is Brush color)
+                {
+                    SetBorderColor(color);
+                }
             }
         }
 
         public static async Task<string> GetColorAsync()
         {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            DTE2 dte = await VS.GetServiceAsync<DTE, DTE2>();
+            string fileName = await GetFileNameAsync();
 
-            if (dte.Solution.Globals.VariableExists["color"])
+            if (File.Exists(fileName))
             {
-                return dte.Solution.Globals["color"] as string;
+                return File.ReadAllText(fileName).Trim();
             }
 
             return null;
         }
 
-        internal static async Task RemoveBorderAsync()
+        public static async Task RemoveBorderAsync()
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            SetColor(null);
+            SetBorderColor(null);
         }
 
-        private static void SetColor(Brush color)
+        private static async Task<string> GetFileNameAsync()
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            Solution solution = await VS.Solutions.GetCurrentSolutionAsync();
+            string solutionDir = Path.GetDirectoryName(solution.FullPath);
+            string vsDir = Path.Combine(solutionDir, ".vs");
+
+            if (!Directory.Exists(vsDir))
+            {
+                DirectoryInfo di = Directory.CreateDirectory(vsDir);
+                di.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+            }
+
+            return Path.Combine(vsDir, "color.txt");
+        }
+
+        private static void SetBorderColor(Brush color)
         {
             if (color == null)
             {

@@ -26,21 +26,13 @@ namespace SolutionColors
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
         {
             string color = GetType().Name;
-            
+
             if (color == "None")
             {
-                await ColorHelper.RemoveBorderAsync();
-
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                DTE2 dte = await VS.GetServiceAsync<DTE, DTE2>();
-
-                dte.Solution.Globals.VariablePersists["color"] = false;
-                dte.Solution.SaveAs(dte.Solution.FullName);
+                color = null;
             }
-            else
-            {
-                await ColorHelper.SetColorAsync(color);
-            }
+
+            await ColorHelper.SetColorAsync(color);
         }
     }
 }
