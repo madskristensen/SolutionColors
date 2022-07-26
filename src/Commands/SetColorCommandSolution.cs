@@ -1,7 +1,4 @@
-﻿using EnvDTE;
-using EnvDTE80;
-
-namespace SolutionColors
+﻿namespace SolutionColors
 {
     [Command(PackageIds.Lavender)] internal sealed class Lavender : ColorBaseCommand<Lavender> { }
     [Command(PackageIds.Gold)] internal sealed class Gold : ColorBaseCommand<Gold> { }
@@ -23,6 +20,7 @@ namespace SolutionColors
 
     internal abstract class ColorBaseCommand<T> : BaseCommand<T> where T : class, new()
     {
+
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
         {
             string color = GetType().Name;

@@ -10,6 +10,7 @@
     <Menus>
       <Menu guid="SolutionColors" id="FlyoutMenu" priority="10" type="Menu">
         <Parent guid="VSMainMenu" id="SolutionNode.PropertiesGroup"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Set Solution Color</ButtonText>
         </Strings>
@@ -25,6 +26,9 @@
       </Group>
       <Group guid="SolutionColors" id="InnerGroup" priority="0x0200">
         <Parent guid="SolutionColors" id="FlyoutMenu"/>
+      </Group>
+      <Group guid="SolutionColors" id="AnyCodeGroup" priority="0x0700">
+        <Parent guid="guidWorkspaceExplorerToolWindowPackageCmdSet" id="idmWSE_ContextMenu"/>
       </Group>
     </Groups>
 
@@ -186,11 +190,18 @@
     </Buttons>
   </Commands>
 
+  <CommandPlacements>
+    <CommandPlacement guid="SolutionColors" id="FlyoutMenu" priority="800">
+      <Parent guid="SolutionColors" id="AnyCodeGroup" />
+    </CommandPlacement>
+  </CommandPlacements>
+
   <Symbols>
     <GuidSymbol name="SolutionColors" value="{3a113b17-c53c-45f0-baab-571abef8b325}">
       <IDSymbol name="OuterGroup" value="0x0001" />
       <IDSymbol name="InnerGroup" value="0x0002" />
       <IDSymbol name="NoneGroup" value="0x0003" />
+      <IDSymbol name="AnyCodeGroup" value="0x0004" />
       <IDSymbol name="FlyoutMenu" value="0x1000" />
       <IDSymbol name="Lavender" value="0x0100" />
       <IDSymbol name="Gold" value="0x0101" />
@@ -209,6 +220,10 @@
       <IDSymbol name="Blue" value="0x0114" />
       <IDSymbol name="Pink" value="0x0115" />
       <IDSymbol name="None" value="0x0200" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidWorkspaceExplorerToolWindowPackageCmdSet" value="{cfb400f1-5c60-4f3c-856e-180d28def0b7}">
+      <IDSymbol name="idmWSE_ContextMenu" value="0x0002"/>
     </GuidSymbol>
 
     <GuidSymbol name="TabColors" value="{A1FA08E5-519B-4810-BDB0-89F586AF37E9}">

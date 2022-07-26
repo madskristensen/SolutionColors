@@ -14,6 +14,7 @@ namespace SolutionColors
     [ProvideOptionPage(typeof(OptionsProvider.GeneralOptions), "Environment", "Fonts and Colors\\Solution Colors", 0, 0, true, SupportsProfiles = true, ProvidesLocalizedCategoryName = false)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasSingleProject_string, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasMultipleProjects_string, PackageAutoLoadFlags.BackgroundLoad)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.FolderOpened_string, PackageAutoLoadFlags.BackgroundLoad)]
     [Guid(PackageGuids.SolutionColorsString)]
     public sealed class SolutionColorsPackage : ToolkitPackage
     {
@@ -32,12 +33,18 @@ namespace SolutionColors
 
             VS.Events.SolutionEvents.OnAfterOpenSolution += HandleOpenSolution;
             VS.Events.SolutionEvents.OnAfterCloseSolution += HandleCloseSolution;
+            VS.Events.SolutionEvents.OnAfterOpenFolder += HandleOpenFolder;
+            VS.Events.SolutionEvents.OnAfterCloseFolder += HandleCloseFolder;
         }
 
-        private void HandleCloseSolution()
-        {
+        private void HandleOpenFolder(string obj) =>
+            HandleOpenSolution();
+
+        private void HandleCloseFolder(string obj) =>
+            HandleCloseSolution();
+
+        private void HandleCloseSolution() =>
             ColorHelper.RemoveBorderAsync().FireAndForget();
-        }
 
         private void HandleOpenSolution(Solution sol = null)
         {

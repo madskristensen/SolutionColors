@@ -36,7 +36,7 @@ namespace SolutionColors
 
                 if (colorName != existingColor)
                 {
-                    File.WriteAllText(fileName, colorName);                    
+                    File.WriteAllText(fileName, colorName);
                 }
 
                 if (!_colorMap.TryGetValue(colorName, out string trueColor))
@@ -75,8 +75,19 @@ namespace SolutionColors
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             Solution solution = await VS.Solutions.GetCurrentSolutionAsync();
-            string solutionDir = Path.GetDirectoryName(solution.FullPath);
-            string vsDir = Path.Combine(solutionDir, ".vs");
+            string rootDir;
+
+            if (solution?.Name?.EndsWith(".wsp") == true)
+            {
+                // .wsp is Open Folder and not regular .sln solutions
+                rootDir = solution.FullPath;
+            }
+            else
+            {
+                rootDir = Path.GetDirectoryName(solution.FullPath);
+            }
+
+            string vsDir = Path.Combine(rootDir, ".vs");
 
             if (!Directory.Exists(vsDir))
             {

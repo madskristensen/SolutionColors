@@ -15,6 +15,9 @@ namespace SolutionColors
         public const string SolutionColorsString = "3a113b17-c53c-45f0-baab-571abef8b325";
         public static Guid SolutionColors = new Guid(SolutionColorsString);
 
+        public const string guidWorkspaceExplorerToolWindowPackageCmdSetString = "cfb400f1-5c60-4f3c-856e-180d28def0b7";
+        public static Guid guidWorkspaceExplorerToolWindowPackageCmdSet = new Guid(guidWorkspaceExplorerToolWindowPackageCmdSetString);
+
         public const string TabColorsString = "a1fa08e5-519b-4810-bdb0-89f586af37e9";
         public static Guid TabColors = new Guid(TabColorsString);
     }
@@ -26,6 +29,7 @@ namespace SolutionColors
         public const int OuterGroup = 0x0001;
         public const int InnerGroup = 0x0002;
         public const int NoneGroup = 0x0003;
+        public const int AnyCodeGroup = 0x0004;
         public const int FlyoutMenu = 0x1000;
         public const int Lavender = 0x0100;
         public const int Gold = 0x0101;
@@ -44,6 +48,7 @@ namespace SolutionColors
         public const int Blue = 0x0114;
         public const int Pink = 0x0115;
         public const int None = 0x0200;
+        public const int idmWSE_ContextMenu = 0x0002;
         public const int cLavender = 0x0001;
         public const int cGold = 0x0002;
         public const int cCyan = 0x0003;
