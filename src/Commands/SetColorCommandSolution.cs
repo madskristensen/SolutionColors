@@ -1,4 +1,7 @@
-﻿namespace SolutionColors
+﻿using System.Linq;
+using Microsoft.VisualStudio.Workspace.VSIntegration.UI;
+
+namespace SolutionColors
 {
     [Command(PackageIds.Lavender)] internal sealed class Lavender : ColorBaseCommand<Lavender> { }
     [Command(PackageIds.Gold)] internal sealed class Gold : ColorBaseCommand<Gold> { }
@@ -20,6 +23,10 @@
 
     internal abstract class ColorBaseCommand<T> : BaseCommand<T> where T : class, new()
     {
+        protected override void BeforeQueryStatus(EventArgs e)
+        {
+            Command.Visible = Command.Enabled =  SetColorCommandFolder.IsRoot;
+        }
 
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
         {
