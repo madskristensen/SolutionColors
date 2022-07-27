@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.Workspace.VSIntegration.UI;
-
-namespace SolutionColors
+﻿namespace SolutionColors
 {
     [Command(PackageIds.Lavender)] internal sealed class Lavender : ColorBaseCommand<Lavender> { }
     [Command(PackageIds.Gold)] internal sealed class Gold : ColorBaseCommand<Gold> { }
@@ -25,7 +22,12 @@ namespace SolutionColors
     {
         protected override void BeforeQueryStatus(EventArgs e)
         {
-            Command.Visible = Command.Enabled =  SetColorCommandFolder.IsRoot;
+            Solution solution = VS.Solutions.GetCurrentSolution();
+            
+            if (solution?.Name?.EndsWith(".wsp") == true)
+            {
+                Command.Visible = Command.Enabled = SetColorCommandFolder.IsRoot;
+            }
         }
 
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
