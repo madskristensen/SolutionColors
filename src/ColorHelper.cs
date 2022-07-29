@@ -67,6 +67,11 @@ namespace SolutionColors
 
         public static async Task RemoveBorderAsync()
         {
+            if (VsShellUtilities.ShellIsShuttingDown)
+            {
+                return;
+            }
+            
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             SetBorderColor(null);
         }
@@ -100,13 +105,14 @@ namespace SolutionColors
 
         private static void SetBorderColor(Brush color)
         {
+            _border ??= FindChild(Application.Current.MainWindow, "BottomDockBorder") as Border;
+
             if (color == null)
             {
                 _border.BorderThickness = new Thickness(0);
             }
             else
             {
-                _border ??= FindChild(Application.Current.MainWindow, "BottomDockBorder") as Border;
                 _border.BorderBrush = color;
                 _border.BorderThickness = new Thickness(0, General.Instance.Width, 0, 0);
             }

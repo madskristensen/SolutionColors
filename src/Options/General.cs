@@ -9,13 +9,15 @@ namespace SolutionColors
         public class GeneralOptions : BaseOptionPage<General> { }
     }
 
-    public class General : BaseOptionModel<General>
+    public class General : BaseOptionModel<General>, IRatingConfig
     {
         [Category("Border")]
         [DisplayName("Width")]
         [Description("The size of the border in pixels. Default: 3")]
         [DefaultValue(3)]
         public int Width { get; set; } = 3;
+        
+        public int RatingRequests { get; set; }
 
         //[Category("Border")]
         //[DisplayName("Location (requires restart)")]

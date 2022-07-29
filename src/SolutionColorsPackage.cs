@@ -18,18 +18,21 @@ namespace SolutionColors
     [Guid(PackageGuids.SolutionColorsString)]
     public sealed class SolutionColorsPackage : ToolkitPackage
     {
+        private RatingPrompt _ratingPrompt;
+
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             await this.RegisterCommandsAsync();
+            
+            _ratingPrompt = new RatingPrompt("MadsKristensen.SolutionColors", Vsix.Name, General.Instance, 10);
 
-            bool isSolutionLoaded = await VS.Solutions.IsOpenAsync();
-
-            if (isSolutionLoaded)
+            if (await VS.Solutions.IsOpenAsync())
             {
                 HandleOpenSolution();
             }
 
             await JoinableTaskFactory.SwitchToMainThreadAsync();
+
 
             VS.Events.SolutionEvents.OnAfterOpenSolution += HandleOpenSolution;
             VS.Events.SolutionEvents.OnAfterCloseSolution += HandleCloseSolution;
@@ -52,16 +55,14 @@ namespace SolutionColors
             {
                 await JoinableTaskFactory.SwitchToMainThreadAsync();
 
-                if (VsShellUtilities.ShellIsShuttingDown)
-                {
-                    return;
-                }
-
                 string color = await ColorHelper.GetColorAsync();
 
                 if (!string.IsNullOrEmpty(color))
-                {
+                {                    
                     await ColorHelper.SetColorAsync(color);
+
+                    await Task.Delay(2000);
+                    _ratingPrompt.RegisterSuccessfulUsage();
                 }
             }).FireAndForget();
         }
