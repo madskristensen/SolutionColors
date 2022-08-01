@@ -16,7 +16,8 @@ namespace SolutionColors
         [Description("The size of the border in pixels. Default: 3")]
         [DefaultValue(3)]
         public int Width { get; set; } = 3;
-        
+
+        [Browsable(false)]
         public int RatingRequests { get; set; }
 
         //[Category("Border")]
