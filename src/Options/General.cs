@@ -17,21 +17,21 @@ namespace SolutionColors
         [DefaultValue(3)]
         public int Width { get; set; } = 3;
 
+        [Category("Border")]
+        [DisplayName("Location (requires restart)")]
+        [Description("The location of the border in the main document window. Default: Bottom")]
+        [TypeConverter(typeof(EnumConverter))]
+        [DefaultValue(BorderLocation.Bottom)]
+        public BorderLocation Location { get; set; } = BorderLocation.Bottom;
+
         [Browsable(false)]
         public int RatingRequests { get; set; }
+    }
 
-        //[Category("Border")]
-        //[DisplayName("Location (requires restart)")]
-        //[Description("The location of the border in the main document window. Default: Left")]
-        //[TypeConverter(typeof(EnumConverter))]
-        //[DefaultValue(BorderLocation.Left)]
-        //public BorderLocation Location { get; set; } = BorderLocation.Left;
-
-        //public enum BorderLocation
-        //{
-        //    Left,
-        //    Right,
-        //    Bottom
-        //}
+    public enum BorderLocation
+    {
+        Bottom,
+        Left,
+        Right,
     }
 }

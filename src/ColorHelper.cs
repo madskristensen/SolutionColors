@@ -28,7 +28,7 @@ namespace SolutionColors
             if (colorName == null && File.Exists(fileName))
             {
                 File.Delete(fileName);
-                SetBorderColor(null);
+                await SetBorderColorAsync(null);
             }
             else
             {
@@ -48,7 +48,7 @@ namespace SolutionColors
 
                 if (property?.GetValue(null, null) is Brush color)
                 {
-                    SetBorderColor(color);
+                    await SetBorderColorAsync(color);
                 }
             }
         }
@@ -71,9 +71,9 @@ namespace SolutionColors
             {
                 return;
             }
-            
+
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            SetBorderColor(null);
+            await SetBorderColorAsync(null);
         }
 
         private static async Task<string> GetFileNameAsync()
@@ -103,9 +103,12 @@ namespace SolutionColors
             return Path.Combine(vsDir, "color.txt");
         }
 
-        private static void SetBorderColor(Brush color)
+        private static async Task SetBorderColorAsync(Brush color)
         {
-            _border ??= FindChild(Application.Current.MainWindow, "BottomDockBorder") as Border;
+            General options = await General.GetLiveInstanceAsync();
+            BorderLocation location = options.Location;
+            string controlName = GetControlName(location);
+            _border ??= FindChild(Application.Current.MainWindow, controlName) as Border;
 
             if (color == null)
             {
@@ -114,9 +117,24 @@ namespace SolutionColors
             else
             {
                 _border.BorderBrush = color;
-                _border.BorderThickness = new Thickness(0, General.Instance.Width, 0, 0);
+
+                if (location == BorderLocation.Bottom)
+                {
+                    _border.BorderThickness = new Thickness(0, General.Instance.Width, 0, 0);
+                }
+                else
+                {
+                    _border.BorderThickness = new Thickness(General.Instance.Width, 0, 0, 0);
+                }
             }
         }
+
+        private static string GetControlName(BorderLocation location) => location switch
+        {
+            BorderLocation.Left => "LeftDockBorder",
+            BorderLocation.Right => "RightDockBorder",
+            _ => "BottomDockBorder",
+        };
 
         private static DependencyObject FindChild(DependencyObject parent, string childName)
         {
