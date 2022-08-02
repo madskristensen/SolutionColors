@@ -96,6 +96,9 @@
     <PackageReference Include="Community.VisualStudio.Toolkit.17" Version="17.0.451" ExcludeAssets="Runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Threading">
+      <Version>17.0.64</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Workspace.VSIntegration" ExcludeAssets="Runtime">
       <Version>17.1.11-preview-0002</Version>
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
