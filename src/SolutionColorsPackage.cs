@@ -38,6 +38,16 @@ namespace SolutionColors
             VS.Events.SolutionEvents.OnAfterCloseSolution += HandleCloseSolution;
             VS.Events.SolutionEvents.OnAfterOpenFolder += HandleOpenFolder;
             VS.Events.SolutionEvents.OnAfterCloseFolder += HandleCloseFolder;
+            General.Saved += SettingsSaved;
+        }
+
+        private void SettingsSaved(General obj)
+        {
+            JoinableTaskFactory.RunAsync(async () =>
+            {
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+                await ColorHelper.ResetAsync();
+            }).FireAndForget();
         }
 
         private void HandleOpenFolder(string obj) =>
@@ -55,7 +65,7 @@ namespace SolutionColors
             {
                 await JoinableTaskFactory.SwitchToMainThreadAsync();
 
-                string color = await ColorHelper.GetColorAsync();
+                string color = await ColorHelper.GetColorAsync();    
 
                 if (!string.IsNullOrEmpty(color))
                 {                    

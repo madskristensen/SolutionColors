@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,47 +11,31 @@ namespace SolutionColors
     {
         private static Border _border;
 
-        private static readonly Dictionary<string, string> _colorMap = new()
-        {
-            { "Burgundy", "Tomato" },
-            { "Pumpkin", "OrangeRed" },
-            { "Volt", "YellowGreen" },
-            { "Mint", "MediumAquamarine" },
-            { "DarkBrown", "SaddleBrown" },
-        };
-
         public static async Task SetColorAsync(string colorName)
         {
-            string fileName = await GetFileNameAsync();
-
-            if (colorName == null && File.Exists(fileName))
+            if (colorName == null)
             {
-                File.Delete(fileName);
+                await ClearSolutionAsync();
                 await SetBorderColorAsync(null);
             }
             else
             {
-                string existingColor = await GetColorAsync();
-
-                if (colorName != existingColor)
-                {
-                    File.WriteAllText(fileName, colorName);
-                }
-
-                if (!_colorMap.TryGetValue(colorName, out string trueColor))
-                {
-                    trueColor = colorName;
-                }
+                string trueColor = ColorCache.GetColorCode(colorName);
 
                 PropertyInfo property = typeof(Brushes).GetProperty(trueColor, BindingFlags.Static | BindingFlags.Public);
 
                 if (property?.GetValue(null, null) is Brush color)
                 {
                     await SetBorderColorAsync(color);
-                }                
+                }
             }
-            
+
             Telemetry.TrackOperation("ColorApplied", colorName);
+        }
+
+        public static async Task<bool> SolutionHasCustomColorAsync()
+        {
+            return File.Exists(await GetFileNameAsync());
         }
 
         public static async Task<string> GetColorAsync()
@@ -62,6 +45,13 @@ namespace SolutionColors
             if (File.Exists(fileName))
             {
                 return File.ReadAllText(fileName).Trim();
+            }
+
+            Solution sol = await VS.Solutions.GetCurrentSolutionAsync();
+
+            if (sol != null && General.Instance.AutoMode)
+            {
+                return ColorCache.GetColor(sol.FullPath);
             }
 
             return null;
@@ -75,10 +65,32 @@ namespace SolutionColors
             }
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            await SetBorderColorAsync(null);
+            
+            if (_border != null)
+            {
+                _border.BorderThickness = new Thickness(0);
+            }
         }
 
-        private static async Task<string> GetFileNameAsync()
+        public static async Task ClearSolutionAsync()
+        {
+            string fileName = await GetFileNameAsync();
+
+            if (File.Exists(fileName))
+            {
+                File.Delete(fileName);
+            }
+        }
+
+        public static async Task ResetAsync()
+        {
+            await RemoveBorderAsync();
+
+            string color = await GetColorAsync();
+            await SetColorAsync(color);
+        }
+
+        public static async Task<string> GetFileNameAsync()
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             Solution solution = await VS.Solutions.GetCurrentSolutionAsync();
@@ -107,10 +119,11 @@ namespace SolutionColors
 
         private static async Task SetBorderColorAsync(Brush color)
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             General options = await General.GetLiveInstanceAsync();
             BorderLocation location = options.Location;
             string controlName = GetControlName(location);
-            _border ??= FindChild(Application.Current.MainWindow, controlName) as Border;
+            _border = FindChild(Application.Current.MainWindow, controlName) as Border;
 
             if (color == null)
             {

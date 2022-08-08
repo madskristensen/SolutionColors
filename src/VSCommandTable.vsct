@@ -202,6 +202,7 @@
       <Button guid="SolutionColors" id="None" priority="0x0100" type="Button">
         <Parent guid="SolutionColors" id="None" />
         <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
         <Strings>
           <ButtonText>None</ButtonText>
           <LocCanonicalName>.SolutionColors.None</LocCanonicalName>

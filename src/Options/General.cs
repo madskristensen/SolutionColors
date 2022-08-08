@@ -12,6 +12,12 @@ namespace SolutionColors
     public class General : BaseOptionModel<General>, IRatingConfig
     {
         [Category("Border")]
+        [DisplayName("Auto-mode")]
+        [Description("Automatically assign and apply a color to solutions as they open. You can still manually assign colors when needed. Default: false")]
+        [DefaultValue(false)]
+        public bool AutoMode { get; set; }
+        
+        [Category("Border")]
         [DisplayName("Width")]
         [Description("The size of the border in pixels. Default: 3")]
         [DefaultValue(3)]

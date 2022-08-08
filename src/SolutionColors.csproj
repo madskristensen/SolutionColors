@@ -45,6 +45,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ColorCache.cs" />
     <Compile Include="ColorHelper.cs" />
     <Compile Include="Commands\SetColorCommandFolder.cs" />
     <Compile Include="Commands\OptionsCommand.cs" />

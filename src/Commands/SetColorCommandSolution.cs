@@ -1,4 +1,6 @@
-﻿namespace SolutionColors
+﻿using System.IO;
+
+namespace SolutionColors
 {
     [Command(PackageIds.Lavender)] internal sealed class Lavender : ColorBaseCommand<Lavender> { }
     [Command(PackageIds.Gold)] internal sealed class Gold : ColorBaseCommand<Gold> { }
@@ -20,26 +22,77 @@
 
     internal abstract class ColorBaseCommand<T> : BaseCommand<T> where T : class, new()
     {
+        private readonly string _color;
+
+        public ColorBaseCommand()
+        {
+            _color = GetType().Name;
+
+            ColorCache.AddColor(_color);
+        }
+
         protected override void BeforeQueryStatus(EventArgs e)
         {
             Solution solution = VS.Solutions.GetCurrentSolution();
-            
+
             if (solution?.Name?.EndsWith(".wsp") == true)
             {
                 Command.Visible = Command.Enabled = SetColorCommandFolder.IsRoot;
             }
+
+            Package.JoinableTaskFactory.Run(async () =>
+            {
+                if (await ColorHelper.SolutionHasCustomColorAsync())
+                {
+                    Command.Text = "None";
+                }
+                else
+                {
+                    Command.Text = General.Instance.AutoMode ? "Disable Auto-Mode" : "Enable Auto-Mode";
+                }
+            });            
         }
 
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
         {
-            string color = GetType().Name;
-
-            if (color == "None")
+            if (_color == "None")
             {
-                color = null;
+                General options = await General.GetLiveInstanceAsync();
+
+                if (await ColorHelper.SolutionHasCustomColorAsync())
+                {
+                    if (options.AutoMode)
+                    {
+                        bool disableAutoMode = await VS.MessageBox.ShowConfirmAsync("Auto-Mode is currently enabled. Do you wish to disable it too?");
+
+                        if (disableAutoMode)
+                        {
+                            options.AutoMode = false;
+                            await options.SaveAsync();
+                        }
+
+                        await ColorHelper.SetColorAsync(null);
+                    }
+                    else
+                    {
+                        await ColorHelper.ClearSolutionAsync();
+                    }
+                }
+                else
+                {
+                    options.AutoMode = !options.AutoMode;
+                    await options.SaveAsync();
+                    await ColorHelper.ResetAsync();
+                }
+            }
+            else
+            {
+                string fileName = await ColorHelper.GetFileNameAsync();
+                File.WriteAllText(fileName, _color);
+
+                await ColorHelper.SetColorAsync(_color);
             }
 
-            await ColorHelper.SetColorAsync(color);
             Telemetry.TrackUserTask("ChangedColor");
         }
     }
