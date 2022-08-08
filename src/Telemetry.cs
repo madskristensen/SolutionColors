@@ -8,20 +8,17 @@ namespace SolutionColors
 
         public static void TrackUserTask(string name, TelemetryResult result = TelemetryResult.Success)
         {
-            string actualName = name.Replace(" ", "_");
-            TelemetryService.DefaultSession.PostUserTask(_namespace + actualName, result);
+            TelemetryService.DefaultSession.PostUserTask(CleanName(name), result);
         }
         
         public static void TrackOperation(string name, string details = "", TelemetryResult result = TelemetryResult.Success)
         {
-            string actualName = name.Replace(" ", "_");
-            TelemetryService.DefaultSession.PostOperation(_namespace + actualName, result, details);
+            TelemetryService.DefaultSession.PostOperation(CleanName(name), result, details);
         }
 
         public static void TrackProperty(string name, string value)
         {
-            string actualName = name.Replace(" ", "_");
-            TelemetryService.DefaultSession.PostProperty(_namespace + actualName, value);
+            TelemetryService.DefaultSession.PostProperty(CleanName(name), value);
         }
 
         public static void TrackException(string name, Exception exception)
@@ -31,8 +28,12 @@ namespace SolutionColors
                 return;
             }
 
-            string actualName = name.Replace(" ", "_");
-            TelemetryService.DefaultSession.PostFault(_namespace + actualName, exception.Message, exception);
+            TelemetryService.DefaultSession.PostFault(CleanName(name), exception.Message, exception);
+        }
+
+        private static string CleanName(string name)
+        {
+            return (_namespace + name).Replace(" ", "_");
         }
     }
 }
