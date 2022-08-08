@@ -40,6 +40,7 @@
             }
 
             await ColorHelper.SetColorAsync(color);
+            Telemetry.TrackUserTask("ChangedColor");
         }
     }
 }

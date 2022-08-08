@@ -49,8 +49,10 @@ namespace SolutionColors
                 if (property?.GetValue(null, null) is Brush color)
                 {
                     await SetBorderColorAsync(color);
-                }
+                }                
             }
+            
+            Telemetry.TrackOperation("ColorApplied", colorName);
         }
 
         public static async Task<string> GetColorAsync()
