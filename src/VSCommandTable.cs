@@ -30,6 +30,7 @@ namespace SolutionColors
         public const int InnerGroup = 0x0002;
         public const int NoneGroup = 0x0003;
         public const int AnyCodeGroup = 0x0004;
+        public const int OptionsGroup = 0x0005;
         public const int FlyoutMenu = 0x1000;
         public const int Lavender = 0x0100;
         public const int Gold = 0x0101;
@@ -48,6 +49,7 @@ namespace SolutionColors
         public const int Blue = 0x0114;
         public const int Pink = 0x0115;
         public const int None = 0x0200;
+        public const int Options = 0x0300;
         public const int idmWSE_ContextMenu = 0x0002;
         public const int cLavender = 0x0001;
         public const int cGold = 0x0002;

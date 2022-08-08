@@ -16,7 +16,7 @@
         </Strings>
       </Menu>
     </Menus>
-    
+
     <Groups>
       <Group guid="SolutionColors" id="OuterGroup" priority="0x0600">
         <Parent guid="VSMainMenu" id="SolutionNode"/>
@@ -25,6 +25,9 @@
         <Parent guid="SolutionColors" id="FlyoutMenu"/>
       </Group>
       <Group guid="SolutionColors" id="InnerGroup" priority="0x0200">
+        <Parent guid="SolutionColors" id="FlyoutMenu"/>
+      </Group>
+      <Group guid="SolutionColors" id="OptionsGroup" priority="0x0300">
         <Parent guid="SolutionColors" id="FlyoutMenu"/>
       </Group>
       <Group guid="SolutionColors" id="AnyCodeGroup" priority="0x0700">
@@ -195,13 +198,24 @@
           <LocCanonicalName>.SolutionColors.Pink</LocCanonicalName>
         </Strings>
       </Button>
-      
+
       <Button guid="SolutionColors" id="None" priority="0x0100" type="Button">
         <Parent guid="SolutionColors" id="None" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>None</ButtonText>
           <LocCanonicalName>.SolutionColors.None</LocCanonicalName>
+        </Strings>
+      </Button>
+
+      <Button guid="SolutionColors" id="Options" priority="0x0100" type="Button">
+        <Parent guid="SolutionColors" id="OptionsGroup" />
+        <Icon guid="ImageCatalogGuid" id="Settings"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Options...</ButtonText>
+          <LocCanonicalName>.SolutionColors.Options</LocCanonicalName>
         </Strings>
       </Button>
     </Buttons>
@@ -219,6 +233,7 @@
       <IDSymbol name="InnerGroup" value="0x0002" />
       <IDSymbol name="NoneGroup" value="0x0003" />
       <IDSymbol name="AnyCodeGroup" value="0x0004" />
+      <IDSymbol name="OptionsGroup" value="0x0005" />
       <IDSymbol name="FlyoutMenu" value="0x1000" />
       <IDSymbol name="Lavender" value="0x0100" />
       <IDSymbol name="Gold" value="0x0101" />
@@ -237,6 +252,7 @@
       <IDSymbol name="Blue" value="0x0114" />
       <IDSymbol name="Pink" value="0x0115" />
       <IDSymbol name="None" value="0x0200" />
+      <IDSymbol name="Options" value="0x0300" />
     </GuidSymbol>
 
     <GuidSymbol name="guidWorkspaceExplorerToolWindowPackageCmdSet" value="{cfb400f1-5c60-4f3c-856e-180d28def0b7}">
