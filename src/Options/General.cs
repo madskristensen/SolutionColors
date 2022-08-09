@@ -18,10 +18,16 @@ namespace SolutionColors
         public bool ShowBorder { get; set; } = true;
 
         [Category("Features")]
-        [DisplayName("Show taskbar icon")]
-        [Description("Determines if the color icon should be shown in the taskbar. Turn it off if you only want colorization inside VS. Default: true")]
-        [DefaultValue(true)]
-        public bool ShowTaskBarIcon { get; set; } = true;
+        [DisplayName("Show on taskbar thumbnails")]
+        [Description("Determines if the color icon should be shown in the taskbar thumbnails. Default: true")]
+        [DefaultValue(false)]
+        public bool ShowTaskBarThumbnails { get; set; }
+
+        [Category("Features")]
+        [DisplayName("Show on taskbar icons")]
+        [Description("Determines if the color icon should be shown in the taskbar icon itself. Only works when taskbar items are ungrouped. Default: false")]
+        [DefaultValue(false)]
+        public bool ShowTaskBarOverlay { get; set; }
 
 
         [Category("Border")]

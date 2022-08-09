@@ -149,15 +149,21 @@ namespace SolutionColors
                     }
                 }
 
-                if (options.ShowTaskBarIcon)
-                {
-                    int index = ColorCache.GetIndex(colorName);
+                int index = ColorCache.GetIndex(colorName);
 
-                    if (index > -1)
+                if (index > -1)
+                {
+                    ImageMoniker moniker = new() { Guid = new Guid("A1FA08E5-519B-4810-BDB0-89F586AF37E9"), Id = index + 1 };
+                    ResetTaskbar();
+
+                    if (options.ShowTaskBarThumbnails)
                     {
-                        ResetTaskbar();
-                        ImageMoniker moniker = new() { Guid = new Guid("A1FA08E5-519B-4810-BDB0-89F586AF37E9"), Id = index + 1 };
                         Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = await moniker.ToBitmapSourceAsync(16), Description = colorName, IsBackgroundVisible = false, IsInteractive = false });
+                    }
+
+                    if (options.ShowTaskBarOverlay)
+                    {
+                        Application.Current.MainWindow.TaskbarItemInfo.Overlay = await moniker.ToBitmapSourceAsync(16);
                     }
                 }
             }
@@ -168,6 +174,7 @@ namespace SolutionColors
             Application.Current.MainWindow.TaskbarItemInfo ??= new();
             Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos ??= new ThumbButtonInfoCollection();
             Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Clear();
+            Application.Current.MainWindow.TaskbarItemInfo.Overlay = null;
         }
 
         private static string GetControlName(BorderLocation location) => location switch
