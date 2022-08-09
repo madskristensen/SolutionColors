@@ -19,7 +19,12 @@ You can pick a color from the context menu of the solution node in Solution Expl
 
 ![Context Menu](art/context-menu.png)
 
-Set the width of the line in the options dialog.
+## Auto-Mode
+Instead of manually assigning a color to every solution, the extension can do it automatically. With this option enabled, all solutions will be assigned a color when opened. The color is calculated based on the hash of the full path of the solution, so each solution will always have the same color.
+
+## Settings
+
+Set the width of the line in the options dialog and determine the locaion
 
 ![Options](art/options.png)
 

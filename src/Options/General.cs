@@ -24,7 +24,7 @@ namespace SolutionColors
         public int Width { get; set; } = 3;
 
         [Category("Border")]
-        [DisplayName("Location (requires restart)")]
+        [DisplayName("Location")]
         [Description("The location of the border in the main document window. Default: Bottom")]
         [TypeConverter(typeof(EnumConverter))]
         [DefaultValue(BorderLocation.Bottom)]
