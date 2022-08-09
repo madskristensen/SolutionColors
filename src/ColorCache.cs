@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 
 namespace SolutionColors
@@ -15,6 +16,11 @@ namespace SolutionColors
         };
 
         private static Dictionary<string, string> ColorMap { get; } = new();
+
+        public static int GetIndex(string name)
+        {            
+            return ColorMap.Keys.ToList().IndexOf(name);
+        }
 
         public static string GetColorCode(string name)
         {

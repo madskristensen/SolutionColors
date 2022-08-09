@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Shell;
+using Microsoft.VisualStudio.Imaging.Interop;
 
 namespace SolutionColors
 {
@@ -26,7 +28,7 @@ namespace SolutionColors
 
                 if (property?.GetValue(null, null) is Brush color)
                 {
-                    await SetBorderColorAsync(color);
+                    await SetBorderColorAsync(color, colorName);
                 }
             }
 
@@ -65,11 +67,13 @@ namespace SolutionColors
             }
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            
+
             if (_border != null)
             {
                 _border.BorderThickness = new Thickness(0);
             }
+
+            ResetTaskbar();
         }
 
         public static async Task ClearSolutionAsync()
@@ -117,31 +121,53 @@ namespace SolutionColors
             return Path.Combine(vsDir, "color.txt");
         }
 
-        private static async Task SetBorderColorAsync(Brush color)
+        private static async Task SetBorderColorAsync(Brush color, string colorName = null)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             General options = await General.GetLiveInstanceAsync();
+
             BorderLocation location = options.Location;
             string controlName = GetControlName(location);
             _border = FindChild(Application.Current.MainWindow, controlName) as Border;
 
             if (color == null)
             {
-                _border.BorderThickness = new Thickness(0);
+                await RemoveBorderAsync();
             }
             else
             {
-                _border.BorderBrush = color;
-
-                if (location == BorderLocation.Bottom)
+                if (options.ShowBorder)
                 {
-                    _border.BorderThickness = new Thickness(0, General.Instance.Width, 0, 0);
+                    _border.BorderBrush = color;
+                    if (location == BorderLocation.Bottom)
+                    {
+                        _border.BorderThickness = new Thickness(0, General.Instance.Width, 0, 0);
+                    }
+                    else
+                    {
+                        _border.BorderThickness = new Thickness(General.Instance.Width, 0, 0, 0);
+                    }
                 }
-                else
+
+                if (options.ShowTaskBarIcon)
                 {
-                    _border.BorderThickness = new Thickness(General.Instance.Width, 0, 0, 0);
+                    int index = ColorCache.GetIndex(colorName);
+
+                    if (index > -1)
+                    {
+                        ResetTaskbar();
+                        ImageMoniker moniker = new() { Guid = new Guid("A1FA08E5-519B-4810-BDB0-89F586AF37E9"), Id = index + 1 };
+                        Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = await moniker.ToBitmapSourceAsync(16), Description = colorName, IsBackgroundVisible = false, IsInteractive = false });
+                    }
                 }
             }
+        }
+
+        private static void ResetTaskbar()
+        {
+            Application.Current.MainWindow.TaskbarItemInfo ??= new();
+            Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos ??= new ThumbButtonInfoCollection();
+            Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Clear();
         }
 
         private static string GetControlName(BorderLocation location) => location switch

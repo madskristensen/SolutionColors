@@ -22,6 +22,11 @@ You can pick a color from the context menu of the solution node in Solution Expl
 ## Auto-Mode
 Instead of manually assigning a color to every solution, the extension can do it automatically. With this option enabled, all solutions will be assigned a color when opened. The color is calculated based on the hash of the full path of the solution, so each solution will always have the same color.
 
+## Windows Taskbar
+The colors are also added to the Windows Taskbar to make it easy to tell the instances apart.
+
+![Taskbar](art/taskbar.png)
+
 ## Settings
 
 Set the width of the line in the options dialog and determine the locaion

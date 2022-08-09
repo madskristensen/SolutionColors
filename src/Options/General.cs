@@ -11,6 +11,19 @@ namespace SolutionColors
 
     public class General : BaseOptionModel<General>, IRatingConfig
     {
+        [Category("Features")]
+        [DisplayName("Show border")]
+        [Description("Determines if the border should be shown. Turn it off if you only want the task bar colorization. Default: true")]
+        [DefaultValue(true)]
+        public bool ShowBorder { get; set; } = true;
+
+        [Category("Features")]
+        [DisplayName("Show taskbar icon")]
+        [Description("Determines if the color icon should be shown in the taskbar. Turn it off if you only want colorization inside VS. Default: true")]
+        [DefaultValue(true)]
+        public bool ShowTaskBarIcon { get; set; } = true;
+
+
         [Category("Border")]
         [DisplayName("Auto-mode")]
         [Description("Automatically assign and apply a color to solutions as they open. You can still manually assign colors when needed. Default: false")]
@@ -29,6 +42,8 @@ namespace SolutionColors
         [TypeConverter(typeof(EnumConverter))]
         [DefaultValue(BorderLocation.Bottom)]
         public BorderLocation Location { get; set; } = BorderLocation.Bottom;
+
+
 
         [Browsable(false)]
         public int RatingRequests { get; set; }
