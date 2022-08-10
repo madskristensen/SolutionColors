@@ -76,7 +76,7 @@ namespace SolutionColors
                     else
                     {
                         await ColorHelper.ClearSolutionAsync();
-                        await ColorHelper.RemoveBorderAsync();
+                        await ColorHelper.RemoveUIAsync();
                     }
                 }
                 else

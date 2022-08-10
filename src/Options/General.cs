@@ -35,7 +35,13 @@ namespace SolutionColors
         [DefaultValue(false)]
         public bool ShowTaskBarOverlay { get; set; }
 
-        
+        [Category("General")]
+        [DisplayName("Show on title bar")]
+        [Description("Determines if solution/folder name on the title bar should be colorized. Default: true")]
+        [DefaultValue(true)]
+        public bool ShowTitleBar { get; set; } = true;
+
+
         [Category("Border")]
         [DisplayName("Width")]
         [Description("The size of the border in pixels. Default: 3")]

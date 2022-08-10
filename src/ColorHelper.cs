@@ -7,13 +7,19 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shell;
 using Microsoft.VisualStudio.Imaging.Interop;
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Threading;
+using Brushes = System.Windows.Media.Brushes;
 
 namespace SolutionColors
 {
     public class ColorHelper
     {
         private static Border _border;
+        private static Border _solutionLabel;
+        private static Brush _originalLabelColor;
+        private static SolidColorBrush _originalLabelForeground;
+        private static PropertyInfo _solutionLabelForegroundProperty;
 
         public static async Task SetColorAsync(string colorName)
         {
@@ -28,7 +34,7 @@ namespace SolutionColors
 
                 PropertyInfo property = typeof(Brushes).GetProperty(trueColor, BindingFlags.Static | BindingFlags.Public);
 
-                if (property?.GetValue(null, null) is Brush color)
+                if (property?.GetValue(null, null) is SolidColorBrush color)
                 {
                     await SetBorderColorAsync(color, colorName);
                 }
@@ -61,7 +67,7 @@ namespace SolutionColors
             return null;
         }
 
-        public static async Task RemoveBorderAsync()
+        public static async Task RemoveUIAsync()
         {
             if (VsShellUtilities.ShellIsShuttingDown)
             {
@@ -73,6 +79,12 @@ namespace SolutionColors
             if (_border != null)
             {
                 _border.BorderThickness = new Thickness(0);
+            }
+
+            if (_solutionLabel != null)
+            {
+                _solutionLabel.Background = _originalLabelColor;
+                _solutionLabelForegroundProperty.SetValue(_solutionLabel.Child, _originalLabelForeground);
             }
 
             ResetTaskbar();
@@ -90,7 +102,7 @@ namespace SolutionColors
 
         public static async Task ResetAsync()
         {
-            await RemoveBorderAsync();
+            await RemoveUIAsync();
 
             string color = await GetColorAsync();
             await SetColorAsync(color);
@@ -112,7 +124,7 @@ namespace SolutionColors
                 rootDir = Path.GetDirectoryName(solution.FullPath);
             }
 
-            string vsDir = Path.Combine(rootDir, ".vs");
+            string vsDir = Path.Combine(rootDir, ".vs", Path.GetFileNameWithoutExtension(solution.Name));
 
             if (!Directory.Exists(vsDir))
             {
@@ -123,7 +135,7 @@ namespace SolutionColors
             return Path.Combine(vsDir, "color.txt");
         }
 
-        private static async Task SetBorderColorAsync(Brush color, string colorName = null)
+        private static async Task SetBorderColorAsync(SolidColorBrush color, string colorName = null)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             General options = await General.GetLiveInstanceAsync();
@@ -134,13 +146,14 @@ namespace SolutionColors
 
             if (color == null)
             {
-                await RemoveBorderAsync();
+                await RemoveUIAsync();
             }
             else
             {
                 if (options.ShowBorder)
                 {
                     _border.BorderBrush = color;
+
                     if (location == BorderLocation.Bottom)
                     {
                         _border.BorderThickness = new Thickness(0, General.Instance.Width, 0, 0);
@@ -148,6 +161,32 @@ namespace SolutionColors
                     else
                     {
                         _border.BorderThickness = new Thickness(General.Instance.Width, 0, 0, 0);
+                    }
+                }
+
+                if (options.ShowTitleBar)
+                {
+                    if (_solutionLabel == null)
+                    {
+                        _solutionLabel = FindChild(Application.Current.MainWindow, "TextBorder") as Border;
+                        _originalLabelColor = _solutionLabel.Background;
+                    }
+                    
+                    if (_solutionLabel != null)
+                    {
+                        _solutionLabelForegroundProperty = _solutionLabel.Child.GetType().GetProperty("Foreground", BindingFlags.Public | BindingFlags.Instance);
+
+                        if (_originalLabelForeground == null)
+                        {
+                            _originalLabelForeground = _solutionLabelForegroundProperty.GetValue(_solutionLabel.Child) as SolidColorBrush;
+                        }
+
+                        if (_solutionLabelForegroundProperty != null)
+                        {
+                            _solutionLabel.Background = color;
+                            ContrastComparisonResult contrast = ColorUtilities.CompareContrastWithBlackAndWhite(color.Color);
+                            _solutionLabelForegroundProperty.SetValue(_solutionLabel.Child, contrast == ContrastComparisonResult.ContrastHigherWithWhite ? Brushes.White : Brushes.Black);
+                        }
                     }
                 }
 

@@ -57,7 +57,7 @@ namespace SolutionColors
             HandleCloseSolution();
 
         private void HandleCloseSolution() =>
-            ColorHelper.RemoveBorderAsync().FireAndForget();
+            ColorHelper.RemoveUIAsync().FireAndForget();
 
         private void HandleOpenSolution(Solution sol = null)
         {
