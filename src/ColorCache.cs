@@ -49,7 +49,7 @@ namespace SolutionColors
             int hash = Math.Abs(solutionPath.GetHashCode());
             int mod = hash % ColorMap.Count;
 
-            return ColorMap.Keys.ElementAt(mod - 1);
+            return ColorMap.Keys.ElementAt(mod);
         }
     }
 }

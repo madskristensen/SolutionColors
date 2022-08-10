@@ -4,8 +4,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shell;
 using Microsoft.VisualStudio.Imaging.Interop;
+using Microsoft.VisualStudio.Threading;
 
 namespace SolutionColors
 {
@@ -156,14 +158,16 @@ namespace SolutionColors
                     ImageMoniker moniker = new() { Guid = new Guid("A1FA08E5-519B-4810-BDB0-89F586AF37E9"), Id = index + 1 };
                     ResetTaskbar();
 
+                    AsyncLazy<BitmapSource> bitmap = new(() => moniker.ToBitmapSourceAsync(16), ThreadHelper.JoinableTaskFactory);
+
                     if (options.ShowTaskBarThumbnails)
                     {
-                        Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = await moniker.ToBitmapSourceAsync(16), Description = colorName, IsBackgroundVisible = false, IsInteractive = false });
+                        Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = await bitmap.GetValueAsync(), IsBackgroundVisible = false, IsInteractive = false });
                     }
 
                     if (options.ShowTaskBarOverlay)
                     {
-                        Application.Current.MainWindow.TaskbarItemInfo.Overlay = await moniker.ToBitmapSourceAsync(16);
+                        Application.Current.MainWindow.TaskbarItemInfo.Overlay = await bitmap.GetValueAsync();
                     }
                 }
             }

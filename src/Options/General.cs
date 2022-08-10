@@ -11,30 +11,30 @@ namespace SolutionColors
 
     public class General : BaseOptionModel<General>, IRatingConfig
     {
-        [Category("Features")]
+        [Category("General")]
+        [DisplayName("Auto-mode")]
+        [Description("Automatically assign and apply a color to solutions as they open. You can still manually assign colors when needed. Default: false")]
+        [DefaultValue(false)]
+        public bool AutoMode { get; set; }
+        
+        [Category("General")]
         [DisplayName("Show border")]
         [Description("Determines if the border should be shown. Turn it off if you only want the task bar colorization. Default: true")]
         [DefaultValue(true)]
         public bool ShowBorder { get; set; } = true;
 
-        [Category("Features")]
+        [Category("General")]
         [DisplayName("Show on taskbar thumbnails")]
         [Description("Determines if the color icon should be shown in the taskbar thumbnails. Default: true")]
-        [DefaultValue(false)]
-        public bool ShowTaskBarThumbnails { get; set; }
+        [DefaultValue(true)]
+        public bool ShowTaskBarThumbnails { get; set; } = true;
 
-        [Category("Features")]
+        [Category("General")]
         [DisplayName("Show on taskbar icons")]
         [Description("Determines if the color icon should be shown in the taskbar icon itself. Only works when taskbar items are ungrouped. Default: false")]
         [DefaultValue(false)]
         public bool ShowTaskBarOverlay { get; set; }
 
-
-        [Category("Border")]
-        [DisplayName("Auto-mode")]
-        [Description("Automatically assign and apply a color to solutions as they open. You can still manually assign colors when needed. Default: false")]
-        [DefaultValue(false)]
-        public bool AutoMode { get; set; }
         
         [Category("Border")]
         [DisplayName("Width")]
