@@ -141,7 +141,7 @@ namespace SolutionColors
             else
             {
                 General options = await General.GetLiveInstanceAsync();
-                
+
                 if (options.ShowBorder)
                 {
                     ShowInBorder(brush, options);
@@ -188,15 +188,18 @@ namespace SolutionColors
             string controlName = GetControlName(location);
             _border = Application.Current.MainWindow.FindChild<Border>(controlName);
 
-            _border.BorderBrush = color;
+            if (_border != null)
+            {
+                _border.BorderBrush = color;
 
-            if (location == BorderLocation.Bottom)
-            {
-                _border.BorderThickness = new Thickness(0, General.Instance.Width, 0, 0);
-            }
-            else
-            {
-                _border.BorderThickness = new Thickness(General.Instance.Width, 0, 0, 0);
+                if (location == BorderLocation.Bottom)
+                {
+                    _border.BorderThickness = new Thickness(0, General.Instance.Width, 0, 0);
+                }
+                else
+                {
+                    _border.BorderThickness = new Thickness(General.Instance.Width, 0, 0, 0);
+                }
             }
         }
 
