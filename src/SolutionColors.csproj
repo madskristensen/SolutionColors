@@ -49,6 +49,8 @@
     <Compile Include="ColorHelper.cs" />
     <Compile Include="Commands\SetColorCommandFolder.cs" />
     <Compile Include="Commands\OptionsCommand.cs" />
+    <Compile Include="ExtensionMethods\BrushExtensions.cs" />
+    <Compile Include="ExtensionMethods\WpfExtensions.cs" />
     <Compile Include="Options\General.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\SetColorCommandSolution.cs" />

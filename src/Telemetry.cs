@@ -21,20 +21,20 @@ namespace SolutionColors
             TelemetryService.DefaultSession.PostUserTask(CleanName(name), result);
         }
 
-        public static void TrackOperation(string name, string details = "", TelemetryResult result = TelemetryResult.Success)
-        {
-            TelemetryService.DefaultSession.PostOperation(CleanName(name), result, details);
-        }
+        //public static void TrackOperation(string name, string details = "", TelemetryResult result = TelemetryResult.Success)
+        //{
+        //    TelemetryService.DefaultSession.PostOperation(CleanName(name), result, details);
+        //}
 
-        public static void TrackException(string name, Exception exception)
-        {
-            if (string.IsNullOrWhiteSpace(name) || exception == null)
-            {
-                return;
-            }
+        //public static void TrackException(string name, Exception exception)
+        //{
+        //    if (string.IsNullOrWhiteSpace(name) || exception == null)
+        //    {
+        //        return;
+        //    }
 
-            TelemetryService.DefaultSession.PostFault(CleanName(name), exception.Message, exception);
-        }
+        //    TelemetryService.DefaultSession.PostFault(CleanName(name), exception.Message, exception);
+        //}
 
         private static string CleanName(string name)
         {

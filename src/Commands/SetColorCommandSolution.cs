@@ -41,6 +41,7 @@ namespace SolutionColors
                 Command.Visible = Command.Enabled = SetColorCommandFolder.IsRoot;
             }
 
+#pragma warning disable VSTHRD102 // Implement internal logic asynchronously
             Package.JoinableTaskFactory.Run(async () =>
             {
                 if (await ColorHelper.SolutionHasCustomColorAsync())
@@ -51,7 +52,8 @@ namespace SolutionColors
                 {
                     Command.Text = General.Instance.AutoMode ? "Disable Auto-Mode" : "Enable Auto-Mode";
                 }
-            });            
+            });
+#pragma warning restore VSTHRD102 // Implement internal logic asynchronously
         }
 
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
@@ -96,7 +98,7 @@ namespace SolutionColors
             }
 
             TelemetryEvent tel = Telemetry.CreateEvent("ChangedColor");
-            tel.Properties.Add("Color", _color);
+            tel.Properties["Color"] = _color;
             Telemetry.TrackEvent(tel);
         }
     }

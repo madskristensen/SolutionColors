@@ -4,13 +4,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Shell;
-using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Telemetry;
-using Microsoft.VisualStudio.Threading;
-using Brushes = System.Windows.Media.Brushes;
 
 namespace SolutionColors
 {
@@ -134,62 +130,55 @@ namespace SolutionColors
             return Path.Combine(vsDir, "color.txt");
         }
 
-        private static async Task SetBorderColorAsync(SolidColorBrush color, string colorName = null)
+        private static async Task SetBorderColorAsync(SolidColorBrush brush, string colorName = null)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            General options = await General.GetLiveInstanceAsync();
 
-            if (color == null)
+            if (brush == null)
             {
                 await RemoveUIAsync();
             }
             else
             {
+                General options = await General.GetLiveInstanceAsync();
+                
                 if (options.ShowBorder)
                 {
-                    ShowInBorder(color, options);
+                    ShowInBorder(brush, options);
                 }
 
                 if (options.ShowTitleBar)
                 {
-                    ShowInTitleBar(color);
+                    ShowInTitleBar(brush);
                 }
 
                 if (options.ShowTaskBarThumbnails || options.ShowTaskBarOverlay)
                 {
-                    await ShowInTaskBarAsync(colorName, options);
+                    ShowInTaskBar(brush, options);
                 }
 
                 TelemetryEvent tel = Telemetry.CreateEvent("ColorApplied");
-                tel.Properties.Add("Color", colorName);
-                tel.Properties.Add(nameof(options.ShowBorder), options.ShowBorder);
-                tel.Properties.Add(nameof(options.ShowTaskBarOverlay), options.ShowTaskBarOverlay);
-                tel.Properties.Add(nameof(options.ShowTaskBarThumbnails), options.ShowTaskBarThumbnails);
-                tel.Properties.Add(nameof(options.ShowTitleBar), options.ShowTitleBar);
+                tel.Properties["Color"] = colorName;
+                tel.Properties[nameof(options.ShowBorder)] = options.ShowBorder;
+                tel.Properties[nameof(options.ShowTaskBarOverlay)] = options.ShowTaskBarOverlay;
+                tel.Properties[nameof(options.ShowTaskBarThumbnails)] = options.ShowTaskBarThumbnails;
+                tel.Properties[nameof(options.ShowTitleBar)] = options.ShowTitleBar;
                 Telemetry.TrackEvent(tel);
             }
         }
 
-        private static async Task ShowInTaskBarAsync(string colorName, General options)
+        private static void ShowInTaskBar(Brush brush, General options)
         {
-            int index = ColorCache.GetIndex(colorName);
+            ResetTaskbar();
 
-            if (index > -1)
+            if (options.ShowTaskBarThumbnails)
             {
-                ImageMoniker moniker = new() { Guid = new Guid("A1FA08E5-519B-4810-BDB0-89F586AF37E9"), Id = index + 1 };
-                ResetTaskbar();
+                Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = brush.GetImageSource(16), IsBackgroundVisible = false, IsInteractive = false });
+            }
 
-                AsyncLazy<BitmapSource> bitmap = new(() => moniker.ToBitmapSourceAsync(16), ThreadHelper.JoinableTaskFactory);
-
-                if (options.ShowTaskBarThumbnails)
-                {
-                    Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = await bitmap.GetValueAsync(), IsBackgroundVisible = false, IsInteractive = false });
-                }
-
-                if (options.ShowTaskBarOverlay)
-                {
-                    Application.Current.MainWindow.TaskbarItemInfo.Overlay = await bitmap.GetValueAsync();
-                }
+            if (options.ShowTaskBarOverlay)
+            {
+                Application.Current.MainWindow.TaskbarItemInfo.Overlay = brush.GetImageSource(12);
             }
         }
 
@@ -197,7 +186,7 @@ namespace SolutionColors
         {
             BorderLocation location = options.Location;
             string controlName = GetControlName(location);
-            _border = FindChild(Application.Current.MainWindow, controlName) as Border;
+            _border = Application.Current.MainWindow.FindChild<Border>(controlName);
 
             _border.BorderBrush = color;
 
@@ -215,8 +204,8 @@ namespace SolutionColors
         {
             if (_solutionLabel == null)
             {
-                _solutionLabel = FindChild(Application.Current.MainWindow, "TextBorder") as Border;
-                _originalLabelColor = _solutionLabel.Background;
+                _solutionLabel = Application.Current.MainWindow.FindChild<Border>("TextBorder");
+                _originalLabelColor = _solutionLabel?.Background;
             }
 
             if (_solutionLabel != null)
@@ -247,39 +236,5 @@ namespace SolutionColors
             BorderLocation.Right => "RightDockBorder",
             _ => "BottomDockBorder",
         };
-
-        private static DependencyObject FindChild(DependencyObject parent, string childName)
-        {
-            if (parent == null)
-            {
-                return null;
-            }
-
-            int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
-
-            for (int i = 0; i < childrenCount; i++)
-            {
-                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
-
-                if (child is FrameworkElement frameworkElement && frameworkElement.Name == childName)
-                {
-                    return frameworkElement;
-                }
-            }
-
-            for (int i = 0; i < childrenCount; i++)
-            {
-                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
-
-                child = FindChild(child, childName);
-
-                if (child != null)
-                {
-                    return child;
-                }
-            }
-
-            return null;
-        }
     }
 }
