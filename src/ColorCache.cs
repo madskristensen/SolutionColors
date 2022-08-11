@@ -13,6 +13,7 @@ namespace SolutionColors
             { "Volt", "YellowGreen" },
             { "Mint", "MediumAquamarine" },
             { "DarkBrown", "SaddleBrown" },
+            { "Lavender", "MediumPurple" },
         };
 
         private static Dictionary<string, string> ColorMap { get; } = new();
