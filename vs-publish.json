@@ -21,6 +21,10 @@
     {
       "pathOnDisk": "art/taskbar.png",
       "targetPath": "art/taskbar.png"
+    },
+    {
+      "pathOnDisk": "art/solution-label.png",
+      "targetPath": "art/solution-label.png"
     }
   ],
   "overview": "README.md",
