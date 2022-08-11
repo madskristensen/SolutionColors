@@ -8,6 +8,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shell;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Telemetry;
 using Microsoft.VisualStudio.Threading;
 using Brushes = System.Windows.Media.Brushes;
 
@@ -39,8 +40,6 @@ namespace SolutionColors
                     await SetBorderColorAsync(color, colorName);
                 }
             }
-
-            Telemetry.TrackOperation("ColorApplied", colorName);
         }
 
         public static async Task<bool> SolutionHasCustomColorAsync()
@@ -140,10 +139,6 @@ namespace SolutionColors
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             General options = await General.GetLiveInstanceAsync();
 
-            BorderLocation location = options.Location;
-            string controlName = GetControlName(location);
-            _border = FindChild(Application.Current.MainWindow, controlName) as Border;
-
             if (color == null)
             {
                 await RemoveUIAsync();
@@ -152,62 +147,88 @@ namespace SolutionColors
             {
                 if (options.ShowBorder)
                 {
-                    _border.BorderBrush = color;
-
-                    if (location == BorderLocation.Bottom)
-                    {
-                        _border.BorderThickness = new Thickness(0, General.Instance.Width, 0, 0);
-                    }
-                    else
-                    {
-                        _border.BorderThickness = new Thickness(General.Instance.Width, 0, 0, 0);
-                    }
+                    ShowInBorder(color, options);
                 }
 
                 if (options.ShowTitleBar)
                 {
-                    if (_solutionLabel == null)
-                    {
-                        _solutionLabel = FindChild(Application.Current.MainWindow, "TextBorder") as Border;
-                        _originalLabelColor = _solutionLabel.Background;
-                    }
-                    
-                    if (_solutionLabel != null)
-                    {
-                        _solutionLabelForegroundProperty = _solutionLabel.Child.GetType().GetProperty("Foreground", BindingFlags.Public | BindingFlags.Instance);
-
-                        if (_originalLabelForeground == null)
-                        {
-                            _originalLabelForeground = _solutionLabelForegroundProperty.GetValue(_solutionLabel.Child) as SolidColorBrush;
-                        }
-
-                        if (_solutionLabelForegroundProperty != null)
-                        {
-                            _solutionLabel.Background = color;
-                            ContrastComparisonResult contrast = ColorUtilities.CompareContrastWithBlackAndWhite(color.Color);
-                            _solutionLabelForegroundProperty.SetValue(_solutionLabel.Child, contrast == ContrastComparisonResult.ContrastHigherWithWhite ? Brushes.White : Brushes.Black);
-                        }
-                    }
+                    ShowInTitleBar(color);
                 }
 
-                int index = ColorCache.GetIndex(colorName);
-
-                if (index > -1)
+                if (options.ShowTaskBarThumbnails || options.ShowTaskBarOverlay)
                 {
-                    ImageMoniker moniker = new() { Guid = new Guid("A1FA08E5-519B-4810-BDB0-89F586AF37E9"), Id = index + 1 };
-                    ResetTaskbar();
+                    await ShowInTaskBarAsync(colorName, options);
+                }
 
-                    AsyncLazy<BitmapSource> bitmap = new(() => moniker.ToBitmapSourceAsync(16), ThreadHelper.JoinableTaskFactory);
+                TelemetryEvent tel = Telemetry.CreateEvent("ColorApplied");
+                tel.Properties.Add("Color", colorName);
+                tel.Properties.Add(nameof(options.ShowBorder), options.ShowBorder);
+                tel.Properties.Add(nameof(options.ShowTaskBarOverlay), options.ShowTaskBarOverlay);
+                tel.Properties.Add(nameof(options.ShowTaskBarThumbnails), options.ShowTaskBarThumbnails);
+                tel.Properties.Add(nameof(options.ShowTitleBar), options.ShowTitleBar);
+                Telemetry.TrackEvent(tel);
+            }
+        }
 
-                    if (options.ShowTaskBarThumbnails)
-                    {
-                        Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = await bitmap.GetValueAsync(), IsBackgroundVisible = false, IsInteractive = false });
-                    }
+        private static async Task ShowInTaskBarAsync(string colorName, General options)
+        {
+            int index = ColorCache.GetIndex(colorName);
 
-                    if (options.ShowTaskBarOverlay)
-                    {
-                        Application.Current.MainWindow.TaskbarItemInfo.Overlay = await bitmap.GetValueAsync();
-                    }
+            if (index > -1)
+            {
+                ImageMoniker moniker = new() { Guid = new Guid("A1FA08E5-519B-4810-BDB0-89F586AF37E9"), Id = index + 1 };
+                ResetTaskbar();
+
+                AsyncLazy<BitmapSource> bitmap = new(() => moniker.ToBitmapSourceAsync(16), ThreadHelper.JoinableTaskFactory);
+
+                if (options.ShowTaskBarThumbnails)
+                {
+                    Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = await bitmap.GetValueAsync(), IsBackgroundVisible = false, IsInteractive = false });
+                }
+
+                if (options.ShowTaskBarOverlay)
+                {
+                    Application.Current.MainWindow.TaskbarItemInfo.Overlay = await bitmap.GetValueAsync();
+                }
+            }
+        }
+
+        private static void ShowInBorder(SolidColorBrush color, General options)
+        {
+            BorderLocation location = options.Location;
+            string controlName = GetControlName(location);
+            _border = FindChild(Application.Current.MainWindow, controlName) as Border;
+
+            _border.BorderBrush = color;
+
+            if (location == BorderLocation.Bottom)
+            {
+                _border.BorderThickness = new Thickness(0, General.Instance.Width, 0, 0);
+            }
+            else
+            {
+                _border.BorderThickness = new Thickness(General.Instance.Width, 0, 0, 0);
+            }
+        }
+
+        private static void ShowInTitleBar(SolidColorBrush color)
+        {
+            if (_solutionLabel == null)
+            {
+                _solutionLabel = FindChild(Application.Current.MainWindow, "TextBorder") as Border;
+                _originalLabelColor = _solutionLabel.Background;
+            }
+
+            if (_solutionLabel != null)
+            {
+                _solutionLabelForegroundProperty ??= _solutionLabel.Child.GetType().GetProperty("Foreground", BindingFlags.Public | BindingFlags.Instance);
+                _originalLabelForeground ??= _solutionLabelForegroundProperty?.GetValue(_solutionLabel.Child) as SolidColorBrush;
+
+                if (_solutionLabelForegroundProperty != null)
+                {
+                    _solutionLabel.Background = color;
+                    ContrastComparisonResult contrast = ColorUtilities.CompareContrastWithBlackAndWhite(color.Color);
+                    _solutionLabelForegroundProperty.SetValue(_solutionLabel.Child, contrast == ContrastComparisonResult.ContrastHigherWithWhite ? Brushes.White : Brushes.Black);
                 }
             }
         }

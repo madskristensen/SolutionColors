@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="SolutionColors.dfa813d0-736b-491d-921a-4a3503d41543" Version="1.0.999" Language="en-US" Publisher="Mads Kristensen" />
+        <Identity Id="SolutionColors.dfa813d0-736b-491d-921a-4a3503d41543" Version="1.1.999" Language="en-US" Publisher="Mads Kristensen" />
         <DisplayName>Solution Colors</DisplayName>
-        <Description xml:space="preserve">Allows you associate a color with a solution that is displayed as a line above the status bar. Inspired by the Peacock extension for VS Code.</Description>
+        <Description xml:space="preserve">Allows you to associate a color with a solution and display it in various locations within Visual Studio. Inspired by the Peacock extension for VS Code.</Description>
         <MoreInfo>https://github.com/madskristensen/SolutionColors</MoreInfo>
         <License>Resources\LICENSE</License>
         <Icon>Resources\Icon.png</Icon>

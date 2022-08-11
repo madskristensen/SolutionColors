@@ -9,9 +9,9 @@ namespace SolutionColors
     {
         public const string Id = "SolutionColors.dfa813d0-736b-491d-921a-4a3503d41543";
         public const string Name = "Solution Colors";
-        public const string Description = @"Allows you associate a color with a solution that is displayed as a line above the status bar. Inspired by the Peacock extension for VS Code.";
+        public const string Description = @"Allows you to associate a color with a solution and display it in various locations within Visual Studio. Inspired by the Peacock extension for VS Code.";
         public const string Language = "en-US";
-        public const string Version = "1.0.999";
+        public const string Version = "1.1.999";
         public const string Author = "Mads Kristensen";
         public const string Tags = "colors, solution, peacock";
     }

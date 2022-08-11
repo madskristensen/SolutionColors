@@ -1,9 +1,4 @@
-﻿#if !DEBUG
-#define telemetry
-#endif
-
-using System.Diagnostics;
-using Microsoft.VisualStudio.Telemetry;
+﻿using Microsoft.VisualStudio.Telemetry;
 
 namespace SolutionColors
 {
@@ -11,25 +6,26 @@ namespace SolutionColors
     {
         private const string _namespace = "VS/Extension/" + Vsix.Name + "/";
 
-        [Conditional("telemetry")]
+        public static TelemetryEvent CreateEvent(string name)
+        {
+            return new TelemetryEvent(CleanName(name));
+        }
+
+        public static void TrackEvent(TelemetryEvent telemetryEvent)
+        {
+            TelemetryService.DefaultSession.PostEvent(telemetryEvent);
+        }
+
         public static void TrackUserTask(string name, TelemetryResult result = TelemetryResult.Success)
         {
             TelemetryService.DefaultSession.PostUserTask(CleanName(name), result);
         }
 
-        [Conditional("telemetry")]
         public static void TrackOperation(string name, string details = "", TelemetryResult result = TelemetryResult.Success)
         {
             TelemetryService.DefaultSession.PostOperation(CleanName(name), result, details);
         }
 
-        [Conditional("telemetry")]
-        public static void TrackProperty(string name, string value)
-        {
-            TelemetryService.DefaultSession.PostProperty(CleanName(name), value);
-        }
-
-        [Conditional("telemetry")]
         public static void TrackException(string name, Exception exception)
         {
             if (string.IsNullOrWhiteSpace(name) || exception == null)

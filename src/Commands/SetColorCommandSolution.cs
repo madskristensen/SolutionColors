@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Microsoft.VisualStudio.Telemetry;
 
 namespace SolutionColors
 {
@@ -94,7 +95,9 @@ namespace SolutionColors
                 await ColorHelper.SetColorAsync(_color);
             }
 
-            Telemetry.TrackUserTask("ChangedColor");
+            TelemetryEvent tel = Telemetry.CreateEvent("ChangedColor");
+            tel.Properties.Add("Color", _color);
+            Telemetry.TrackEvent(tel);
         }
     }
 }
