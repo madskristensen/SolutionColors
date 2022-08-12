@@ -6,12 +6,15 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shell;
 using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Telemetry;
 
 namespace SolutionColors
 {
     public class ColorHelper
     {
+        public const string ColorFileName = "color.txt";
+
         private static Border _border;
         private static Border _solutionLabel;
         private static Brush _originalLabelColor;
@@ -53,10 +56,10 @@ namespace SolutionColors
             }
 
             Solution sol = await VS.Solutions.GetCurrentSolutionAsync();
-
             if (sol != null && General.Instance.AutoMode)
             {
-                return ColorCache.GetColor(sol.FullPath);
+                string path = await SolutionStuff.GetSolutionPathAsync();
+                return ColorCache.GetColor(path);
             }
 
             return null;
@@ -106,6 +109,7 @@ namespace SolutionColors
         public static async Task<string> GetFileNameAsync()
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             Solution solution = await VS.Solutions.GetCurrentSolutionAsync();
             string rootDir;
 
@@ -119,7 +123,11 @@ namespace SolutionColors
                 rootDir = Path.GetDirectoryName(solution.FullPath);
             }
 
-            string vsDir = Path.Combine(rootDir, ".vs", Path.GetFileNameWithoutExtension(solution.Name));
+            string vsDir = Path.Combine(
+                rootDir,
+                ".vs",
+                Path.GetFileNameWithoutExtension( await SolutionStuff.GetSolutionNameAsync() )
+                );
 
             if (!Directory.Exists(vsDir))
             {
@@ -127,7 +135,7 @@ namespace SolutionColors
                 di.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
             }
 
-            return Path.Combine(vsDir, "color.txt");
+            return Path.Combine(vsDir, ColorFileName);
         }
 
         private static async Task SetBorderColorAsync(SolidColorBrush brush, string colorName = null)
