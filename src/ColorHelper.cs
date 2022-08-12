@@ -192,7 +192,7 @@ namespace SolutionColors
             {
                 _border.BorderBrush = color;
 
-                if (location == BorderLocation.Bottom)
+                if (location == BorderLocation.Bottom || location == BorderLocation.Top)
                 {
                     _border.BorderThickness = new Thickness(0, General.Instance.Width, 0, 0);
                 }
@@ -237,6 +237,7 @@ namespace SolutionColors
         {
             BorderLocation.Left => "LeftDockBorder",
             BorderLocation.Right => "RightDockBorder",
+            BorderLocation.Top => "MainWindowTitleBar",
             _ => "BottomDockBorder",
         };
     }

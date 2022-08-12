@@ -66,5 +66,6 @@ namespace SolutionColors
         Bottom,
         Left,
         Right,
+        Top,
     }
 }
