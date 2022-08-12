@@ -25,6 +25,10 @@
     {
       "pathOnDisk": "art/solution-label.png",
       "targetPath": "art/solution-label.png"
+    },
+    {
+      "pathOnDisk": "art/top.png",
+      "targetPath": "art/top.png"
     }
   ],
   "overview": "README.md",

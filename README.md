@@ -11,7 +11,9 @@ or get the [CI build][vsixgallery].
 
 ---
 
-Allows you to associate a color with a solution and display it in various locations within Visual Studio. Inspired by the [Peacock extension](https://marketplace.visualstudio.com/items?itemName=johnpapa.vscode-peacock) for VS Code and [this Visual Studio feature request](https://developercommunity.visualstudio.com/t/Per-SolutionFolder-Color-Theme/608136?space=8&ftype=idea).
+Allows you to associate a color with a solution or folder and display it in various locations within Visual Studio. Inspired by the [Peacock extension](https://marketplace.visualstudio.com/items?itemName=johnpapa.vscode-peacock) for VS Code and [this Visual Studio feature request](https://developercommunity.visualstudio.com/t/Per-SolutionFolder-Color-Theme/608136?space=8&ftype=idea).
+
+![Top of VS](art/top.png)
 
 ## Color locations
 There are three locations where you can chose to display the color.
@@ -21,7 +23,7 @@ There are three locations where you can chose to display the color.
 * [Windows Taskbar](#taskbar)
 
 ### <a id="border">Border</a>
-Puts a border on either the bottom, left, or right side of the main document window.
+Puts a border on either the bottom, left, right, or top sides of the main document window.
 
 ![Colors](art/colors.png)
 

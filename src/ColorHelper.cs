@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shell;
 using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Telemetry;
 
 namespace SolutionColors
@@ -58,7 +57,7 @@ namespace SolutionColors
             Solution sol = await VS.Solutions.GetCurrentSolutionAsync();
             if (sol != null && General.Instance.AutoMode)
             {
-                string path = await SolutionStuff.GetSolutionPathAsync();
+                string path = await sol.GetSolutionPathAsync();
                 return ColorCache.GetColor(path);
             }
 
@@ -126,8 +125,7 @@ namespace SolutionColors
             string vsDir = Path.Combine(
                 rootDir,
                 ".vs",
-                Path.GetFileNameWithoutExtension( await SolutionStuff.GetSolutionNameAsync() )
-                );
+                Path.GetFileNameWithoutExtension(await solution.GetSolutionNameAsync()));
 
             if (!Directory.Exists(vsDir))
             {
