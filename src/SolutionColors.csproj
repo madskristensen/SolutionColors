@@ -55,6 +55,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\SetColorCommandSolution.cs" />
     <Compile Include="SolutionColorsPackage.cs" />
+    <Compile Include="SolutionStuff.cs" />
     <Compile Include="source.extension.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

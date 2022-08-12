@@ -45,9 +45,9 @@ namespace SolutionColors
             }
         }
 
-        public static string GetColor(string solutionPath)
+        public static string GetColor(string filePath)
         {
-            int hash = Math.Abs(solutionPath.GetHashCode());
+            int hash = Math.Abs(filePath.GetHashCode());
             int mod = hash % ColorMap.Count;
 
             return ColorMap.Keys.ElementAt(mod);
