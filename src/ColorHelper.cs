@@ -174,6 +174,9 @@ namespace SolutionColors
                 tel.Properties[nameof(options.ShowTaskBarOverlay)] = options.ShowTaskBarOverlay;
                 tel.Properties[nameof(options.ShowTaskBarThumbnails)] = options.ShowTaskBarThumbnails;
                 tel.Properties[nameof(options.ShowTitleBar)] = options.ShowTitleBar;
+                tel.Properties[nameof(options.AutoMode)] = options.AutoMode;
+                tel.Properties["borderlocation"] = options.Location.ToString();
+                tel.Properties["borderwidth"] = options.Width;
                 Telemetry.TrackEvent(tel);
             }
         }
