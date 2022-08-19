@@ -22,17 +22,17 @@ There are three locations where you can chose to display the color.
 * [Solution label](#label)
 * [Windows Taskbar](#taskbar)
 
-### <a id="border">Border</a>
+### <span id="border">Border</span>
 Puts a border on either the bottom, left, right, or top sides of the main document window.
 
 ![Colors](art/colors.png)
 
-### <a id="label">Solution label</a>
+### <span id="label">Solution label</span>
 Colorize the solution name in the title bar at the top of Visual Studio. 
 
 ![Solution Label](art/solution-label.png)
 
-### <a id="taskbar">Windows Taskbar</a>
+### <span id="taskbar">Windows Taskbar</span>
 The colors are also added to the Windows Taskbar to make it easy to tell the instances apart.
 
 ![Taskbar](art/taskbar.png)
