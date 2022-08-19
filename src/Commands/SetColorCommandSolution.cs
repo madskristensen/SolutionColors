@@ -74,7 +74,7 @@ namespace SolutionColors
                             await options.SaveAsync();
                         }
 
-                        await ColorHelper.SetColorAsync(null);
+                        await ColorHelper.SetColorAsync((string)null);
                     }
                     else
                     {

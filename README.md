@@ -42,6 +42,11 @@ You can pick a color from the context menu of the solution node in Solution Expl
 
 ![Context Menu](art/context-menu.png)
 
+## Custom colors
+You are not limited by the predefined colors. By selecting **Custom...** you can choose any custom color from the color dialog.
+
+![custom colors](art/custom-colors.png)
+
 ## Auto-Mode
 Instead of manually assigning a color to every solution, the extension can do it automatically. With this option enabled, all solutions will be assigned a color when opened. The color is calculated based on the hash of the full path of the solution, so each solution will always have the same color.
 

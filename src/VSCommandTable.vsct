@@ -209,6 +209,17 @@
         </Strings>
       </Button>
 
+      <Button guid="SolutionColors" id="Custom" priority="0x0200" type="Button">
+        <Parent guid="SolutionColors" id="InnerGroup" />
+        <Icon guid="ImageCatalogGuid" id="ColorPalette" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Custom...</ButtonText>
+          <LocCanonicalName>.SolutionColors.Custom</LocCanonicalName>
+        </Strings>
+      </Button>
+
       <Button guid="SolutionColors" id="Options" priority="0x0100" type="Button">
         <Parent guid="SolutionColors" id="OptionsGroup" />
         <Icon guid="ImageCatalogGuid" id="Settings"/>
@@ -252,6 +263,7 @@
       <IDSymbol name="DarkBrown" value="0x0113" />
       <IDSymbol name="Blue" value="0x0114" />
       <IDSymbol name="Pink" value="0x0115" />
+      <IDSymbol name="Custom" value="0x0190" />
       <IDSymbol name="None" value="0x0200" />
       <IDSymbol name="Options" value="0x0300" />
     </GuidSymbol>

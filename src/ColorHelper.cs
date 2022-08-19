@@ -25,7 +25,7 @@ namespace SolutionColors
             if (colorName == null)
             {
                 await ClearSolutionAsync();
-                await SetBorderColorAsync(null);
+                await SetUiColorAsync(null);
             }
             else
             {
@@ -35,9 +35,19 @@ namespace SolutionColors
 
                 if (property?.GetValue(null, null) is SolidColorBrush color)
                 {
-                    await SetBorderColorAsync(color, colorName);
+                    await SetUiColorAsync(color, colorName);
+                }
+                else if (ColorConverter.ConvertFromString(trueColor) is Color hexColor)
+                {
+                    SolidColorBrush brush = new(hexColor);
+                    await SetUiColorAsync(brush);
                 }
             }
+        }
+
+        public static async Task SetColorAsync(SolidColorBrush brush)
+        {
+            await SetUiColorAsync(brush);
         }
 
         public static async Task<bool> SolutionHasCustomColorAsync()
@@ -136,7 +146,7 @@ namespace SolutionColors
             return Path.Combine(vsDir, ColorFileName);
         }
 
-        private static async Task SetBorderColorAsync(SolidColorBrush brush, string colorName = null)
+        private static async Task SetUiColorAsync(SolidColorBrush brush, string colorName = null)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 

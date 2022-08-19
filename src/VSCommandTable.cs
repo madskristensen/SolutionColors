@@ -48,6 +48,7 @@ namespace SolutionColors
         public const int DarkBrown = 0x0113;
         public const int Blue = 0x0114;
         public const int Pink = 0x0115;
+        public const int Custom = 0x0190;
         public const int None = 0x0200;
         public const int Options = 0x0300;
         public const int idmWSE_ContextMenu = 0x0002;

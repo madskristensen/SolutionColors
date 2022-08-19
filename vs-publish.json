@@ -29,6 +29,10 @@
     {
       "pathOnDisk": "art/top.png",
       "targetPath": "art/top.png"
+    },
+    {
+      "pathOnDisk": "art/custom-colors.png",
+      "targetPath": "art/custom-colors.png"
     }
   ],
   "overview": "README.md",

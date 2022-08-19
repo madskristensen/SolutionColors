@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Media;
 
 namespace SolutionColors
 {
@@ -27,6 +28,13 @@ namespace SolutionColors
             if (ColorMap.ContainsKey(name))
             {
                 return ColorMap[name];
+            }
+
+            object fromHex = ColorConverter.ConvertFromString(name);
+
+            if (fromHex is Color)
+            {
+                return name;
             }
 
             return null;
