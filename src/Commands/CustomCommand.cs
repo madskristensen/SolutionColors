@@ -15,9 +15,7 @@ namespace SolutionColors
             if (result == DialogResult.OK)
             {
                 Color converted = Color.FromArgb(dialog.Color.A, dialog.Color.R, dialog.Color.G, dialog.Color.B);
-                SolidColorBrush brush = new(converted);
-
-                await ColorHelper.SetColorAsync(brush);
+                await ColorHelper.SetColorAsync(converted.ToString());
 
                 string fileName = await ColorHelper.GetFileNameAsync();
                 File.WriteAllText(fileName, converted.ToString());

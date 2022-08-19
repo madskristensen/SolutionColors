@@ -40,14 +40,9 @@ namespace SolutionColors
                 else if (ColorConverter.ConvertFromString(trueColor) is Color hexColor)
                 {
                     SolidColorBrush brush = new(hexColor);
-                    await SetUiColorAsync(brush);
+                    await SetUiColorAsync(brush, "custom");
                 }
             }
-        }
-
-        public static async Task SetColorAsync(SolidColorBrush brush)
-        {
-            await SetUiColorAsync(brush);
         }
 
         public static async Task<bool> SolutionHasCustomColorAsync()
