@@ -50,10 +50,10 @@ namespace SolutionColors
 
         [Category("Border")]
         [DisplayName("Location")]
-        [Description("The location of the border in the main document window. Default: Bottom")]
+        [Description("The location of the border in the main document window. Default: Top")]
         [TypeConverter(typeof(EnumConverter))]
-        [DefaultValue(BorderLocation.Bottom)]
-        public BorderLocation Location { get; set; } = BorderLocation.Bottom;
+        [DefaultValue(BorderLocation.Top)]
+        public BorderLocation Location { get; set; } = BorderLocation.Top;
 
 
 

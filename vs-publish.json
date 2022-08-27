@@ -19,8 +19,20 @@
       "targetPath": "art/context-menu.png"
     },
     {
+      "pathOnDisk": "art/context-menu-none.png",
+      "targetPath": "art/context-menu-none.png"
+    },
+    {
+      "pathOnDisk": "art/context-menu-disable.png",
+      "targetPath": "art/context-menu-disable.png"
+    },
+    {
       "pathOnDisk": "art/taskbar.png",
       "targetPath": "art/taskbar.png"
+    },
+    {
+      "pathOnDisk": "art/taskbar-icons.png",
+      "targetPath": "art/taskbar-icons.png"
     },
     {
       "pathOnDisk": "art/solution-label.png",
