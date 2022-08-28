@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.InteropServices;
+using SolutionColors.Options;
 
 namespace SolutionColors
 {
@@ -18,12 +19,6 @@ namespace SolutionColors
         public bool AutoMode { get; set; }
         
         [Category("General")]
-        [DisplayName("Show border")]
-        [Description("Determines if the border should be shown. Turn it off if you only want the task bar colorization. Default: true")]
-        [DefaultValue(true)]
-        public bool ShowBorder { get; set; } = true;
-
-        [Category("General")]
         [DisplayName("Show on taskbar thumbnails")]
         [Description("Determines if the color icon should be shown in the taskbar thumbnails. Default: true")]
         [DefaultValue(true)]
@@ -41,31 +36,28 @@ namespace SolutionColors
         [DefaultValue(true)]
         public bool ShowTitleBar { get; set; } = true;
 
+        [Category("General")]
+        [DisplayName("Save settings file in root folder")]
+        [Description("Determines if the settings file should be saved in the root folder or in the .vs folder. Default: false")]
+        [DefaultValue(false)]
+        public bool SaveInRoot { get; set; } = false;
 
-        [Category("Border")]
-        [DisplayName("Width")]
-        [Description("The size of the border in pixels. Default: 3")]
-        [DefaultValue(3)]
-        public int Width { get; set; } = 3;
-
-        [Category("Border")]
-        [DisplayName("Location")]
-        [Description("The location of the border in the main document window. Default: Top")]
-        [TypeConverter(typeof(EnumConverter))]
-        [DefaultValue(BorderLocation.Top)]
-        public BorderLocation Location { get; set; } = BorderLocation.Top;
-
-
+        [Category("General")]
+        [DisplayName("Border settings")]
+        [Description("Sets border locations and width in pixels. Default: bottom 3")]
+        [TypeConverter(typeof(BorderTypeConverter))]
+        public BorderSettings Borders { get; set; } = new BorderSettings();
 
         [Browsable(false)]
         public int RatingRequests { get; set; }
     }
 
+    [Flags]
     public enum BorderLocation
     {
-        Bottom,
-        Left,
-        Right,
-        Top,
+        Bottom = 1,
+        Left = 2,
+        Right = 4,
+        Top = 8
     }
 }
