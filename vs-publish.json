@@ -47,8 +47,8 @@
       "targetPath": "art/custom-colors.png"
     },
     {
-      "pathOnDisk": "art/border+settings.png",
-      "targetPath": "art/border+settings.png"
+      "pathOnDisk": "art/border-settings.png",
+      "targetPath": "art/border-settings.png"
     }
   ],
   "overview": "README.md",
