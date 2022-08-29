@@ -14,7 +14,6 @@ namespace SolutionColors
     {
         public const string ColorFileName = "color.txt";
 
-        private static Border _border;
         private static Border _solutionLabel;
         private static Brush _originalLabelColor;
         private static SolidColorBrush _originalLabelForeground;
@@ -78,9 +77,16 @@ namespace SolutionColors
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            if (_border != null)
+            General options = await General.GetLiveInstanceAsync();
+
+            foreach (Enum value in Enum.GetValues(options.Borders.BorderDetails.Locations.GetType()))
             {
-                _border.BorderThickness = new Thickness(0);
+                string controlName = GetControlName((BorderLocation)value);
+                Border _border = Application.Current.MainWindow.FindChild<Border>(controlName);
+                if (_border != null)
+                {
+                    _border.BorderThickness = new Thickness(0);
+                }
             }
 
             if (_solutionLabel != null)
@@ -127,15 +133,25 @@ namespace SolutionColors
                 rootDir = Path.GetDirectoryName(solution.FullPath);
             }
 
-            string vsDir = Path.Combine(
-                rootDir,
-                ".vs",
-                Path.GetFileNameWithoutExtension(await solution.GetSolutionNameAsync()));
+            General options = await General.GetLiveInstanceAsync();
 
-            if (!Directory.Exists(vsDir))
+            string vsDir = String.Empty;
+            if (options.SaveInRoot)
             {
-                DirectoryInfo di = Directory.CreateDirectory(vsDir);
-                di.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+                vsDir = rootDir;
+            }
+            else
+            {
+                vsDir = Path.Combine(
+                    rootDir,
+                    ".vs",
+                    Path.GetFileNameWithoutExtension(await solution.GetSolutionNameAsync()));
+
+                if (!Directory.Exists(vsDir))
+                {
+                    DirectoryInfo di = Directory.CreateDirectory(vsDir);
+                    di.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+                }
             }
 
             return Path.Combine(vsDir, ColorFileName);
@@ -153,10 +169,7 @@ namespace SolutionColors
             {
                 General options = await General.GetLiveInstanceAsync();
 
-                if (options.ShowBorder)
-                {
-                    ShowInBorder(brush, options);
-                }
+                ShowInBorders(brush, options);
 
                 if (options.ShowTitleBar)
                 {
@@ -170,13 +183,11 @@ namespace SolutionColors
 
                 TelemetryEvent tel = Telemetry.CreateEvent("ColorApplied");
                 tel.Properties["Color"] = colorName;
-                tel.Properties[nameof(options.ShowBorder)] = options.ShowBorder;
                 tel.Properties[nameof(options.ShowTaskBarOverlay)] = options.ShowTaskBarOverlay;
                 tel.Properties[nameof(options.ShowTaskBarThumbnails)] = options.ShowTaskBarThumbnails;
                 tel.Properties[nameof(options.ShowTitleBar)] = options.ShowTitleBar;
                 tel.Properties[nameof(options.AutoMode)] = options.AutoMode;
-                tel.Properties["borderlocation"] = options.Location.ToString();
-                tel.Properties["borderwidth"] = options.Width;
+                tel.Properties[nameof(options.Borders)] = options.Borders;
                 Telemetry.TrackEvent(tel);
             }
         }
@@ -196,23 +207,36 @@ namespace SolutionColors
             }
         }
 
-        private static void ShowInBorder(SolidColorBrush color, General options)
+        private static void ShowInBorders(SolidColorBrush color, General options)
         {
-            BorderLocation location = options.Location;
-            string controlName = GetControlName(location);
-            _border = Application.Current.MainWindow.FindChild<Border>(controlName);
-
-            if (_border != null)
+            foreach (Enum value in Enum.GetValues(options.Borders.BorderDetails.Locations.GetType()))
             {
-                _border.BorderBrush = color;
 
-                if (location == BorderLocation.Bottom || location == BorderLocation.Top)
+                if (options.Borders.BorderDetails.Locations.HasFlag(value))
                 {
-                    _border.BorderThickness = new Thickness(0, General.Instance.Width, 0, 0);
-                }
-                else
-                {
-                    _border.BorderThickness = new Thickness(General.Instance.Width, 0, 0, 0);
+                    string controlName = GetControlName((BorderLocation)value);
+                    Border _border = Application.Current.MainWindow.FindChild<Border>(controlName);
+
+                    if (_border != null)
+                    {
+                        _border.BorderBrush = color;
+
+                        switch ((BorderLocation)value)
+                        {
+                            case BorderLocation.Bottom:
+                                _border.BorderThickness = new Thickness(0, General.Instance.Borders.BorderDetails.WidthBottom, 0, 0);
+                                break;
+                            case BorderLocation.Left:
+                                _border.BorderThickness = new Thickness(General.Instance.Borders.BorderDetails.WidthLeft, 0, 0, 0);
+                                break;
+                            case BorderLocation.Right:
+                                _border.BorderThickness = new Thickness(General.Instance.Borders.BorderDetails.WidthRight, 0, 0, 0);
+                                break;
+                            case BorderLocation.Top:
+                                _border.BorderThickness = new Thickness(0, General.Instance.Borders.BorderDetails.WidthTop, 0, 0);
+                                break;
+                        }
+                    }
                 }
             }
         }
