@@ -61,9 +61,13 @@ And if you don’t group the Taskbar items, each item will show the color as wel
 
 ![Taskbar Icons](art/taskbar-icons.png)
 
-This gives you 4 different locations to display the color and you can use all of them, or just the ones you find most helpful. You can control all that from the Tools -> Options page.
+This gives you 4 different locations to display the color and you can use all of them, or just the ones you find most helpful. You can control all that from the **Tools -> Options** page.
 
 ![Options](art/options.png)
+
+To customize the colored borders, open the Border settings dialog and chose which borders and what thickness to display.
+
+![Border settings](art/border-settings.png)
 
 ## How can I help?
 

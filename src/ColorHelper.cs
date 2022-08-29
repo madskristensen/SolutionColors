@@ -135,7 +135,8 @@ namespace SolutionColors
 
             General options = await General.GetLiveInstanceAsync();
 
-            string vsDir = String.Empty;
+            string vsDir;
+            
             if (options.SaveInRoot)
             {
                 vsDir = rootDir;
