@@ -15,8 +15,10 @@ namespace SolutionColors
             if (result == DialogResult.OK)
             {
                 Color converted = Color.FromArgb(dialog.Color.A, dialog.Color.R, dialog.Color.G, dialog.Color.B);
+                
                 await ColorHelper.SetColorAsync(converted.ToString());
-
+                await ColorHelper.ColorizeAsync();
+                
                 string fileName = await ColorHelper.GetFileNameAsync();
                 File.WriteAllText(fileName, converted.ToString());
             }

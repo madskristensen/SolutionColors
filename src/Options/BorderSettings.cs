@@ -12,13 +12,13 @@ namespace SolutionColors.Options
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class BorderSettings
     {
-        private BorderDetails borderDetails = new BorderDetails();
+        private BorderDetails _borderDetails = new BorderDetails();
 
         [Browsable(false)]
         public BorderDetails BorderDetails
         {
-            get { return borderDetails; }
-            set { borderDetails = value; }
+            get { return _borderDetails; }
+            set { _borderDetails = value; }
         }
     }
 
