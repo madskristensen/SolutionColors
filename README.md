@@ -30,19 +30,19 @@ You are not limited to only choosing between the predefined colors. By selecting
 
 Visual Studio stores the color in the *.vs* folder next to the solution file or in the root of the workspace folder. That ensures that the same solution will always receive the same color.
 
-After selecting a color manually, the **Enable Auto-Mode** button changes to **None**. That allows you to remove the color if you no longer want it.
+After selecting a color manually, the **Automatic** button changes to **None**. That allows you to remove the color if you no longer want it.
 
 ![Context Menu None](art/context-menu-none.png)
 
-## Auto-Mode
+## Automatic
 
 Instead of manually assigning a color to every solution, Visual Studio can do it automatically. With this option enabled, all solutions will be assigned a color when opened. The color is calculated based on the hash of the full path of the solution, so each solution will always be assigned the same color. 
 
-When Auto-Mode is enabled, the button in the submenu changes to **Disable Auto-Mode**.
+When Automatic colorization is enabled, the button in the submenu shows a checkmark.
 
 ![Context Menu Disable](art/context-menu-disable.png) 
 
-When Auto-Mode is active, you can still choose your own custom color for your solution. A manually selected color always takes precedence over Auto-Mode. 
+When automatic colorization is enabled, you can still choose your own custom color for your solution. A manually selected color always takes precedence over automatic. 
 
 ## Colorized elements
 The solution name in the title bar is visible at all times and located at the top, which makes it a prime location for colorization. 
@@ -61,9 +61,13 @@ And if you don’t group the Taskbar items, each item will show the color as wel
 
 ![Taskbar Icons](art/taskbar-icons.png)
 
-This gives you 4 different locations to display the color and you can use all of them, or just the ones you find most helpful. You can control all that from the Tools -> Options page.
+This gives you 4 different locations to display the color and you can use all of them, or just the ones you find most helpful. You can control all that from the **Tools -> Options** page.
 
 ![Options](art/options.png)
+
+To customize the colored borders, open the Border settings dialog and chose which borders and what thickness to display.
+
+![Border settings](art/border-settings.png)
 
 ## How can I help?
 

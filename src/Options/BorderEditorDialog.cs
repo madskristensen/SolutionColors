@@ -1,28 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Windows.Media;
+﻿using System.Windows.Forms;
 using SolutionColors.Options;
 
 namespace SolutionColors
 {
     public partial class BorderEditorDialog : Form
     {
-        private BorderSettings borderSettings;
+        private BorderSettings _borderSettings;
+
         public BorderSettings Borders
         {
-            get { return borderSettings; }
-            set { borderSettings = value; }
+            get { return _borderSettings; }
+            set { _borderSettings = value; }
         }
 
         public BorderEditorDialog()
         {
+            ShowInTaskbar = false;
             InitializeComponent();
         }
 
@@ -58,7 +51,7 @@ namespace SolutionColors
             ToggleLocation(BorderLocation.Bottom);
             SetButton((Button)sender, Borders.BorderDetails.Locations.HasFlag(BorderLocation.Bottom));
         }
-                
+
         private void btnLeft_Click(object sender, EventArgs e)
         {
             ToggleLocation(BorderLocation.Left);
@@ -81,9 +74,13 @@ namespace SolutionColors
         private void ToggleLocation(BorderLocation location)
         {
             if (Borders.BorderDetails.Locations.HasFlag(location))
+            {
                 Borders.BorderDetails.Locations &= ~location;
+            }
             else
+            {
                 Borders.BorderDetails.Locations = Borders.BorderDetails.Locations | location;
+            }
         }
 
         private void numBottom_ValueChanged(object sender, EventArgs e)

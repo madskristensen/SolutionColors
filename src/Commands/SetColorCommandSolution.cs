@@ -47,10 +47,12 @@ namespace SolutionColors
                 if (await ColorHelper.SolutionHasCustomColorAsync())
                 {
                     Command.Text = "None";
+                    Command.Checked = false;
                 }
                 else
                 {
-                    Command.Text = General.Instance.AutoMode ? "Disable Auto-Mode" : "Enable Auto-Mode";
+                    Command.Text = "Automatic";
+                    Command.Checked = General.Instance.AutoMode;
                 }
             });
 #pragma warning restore VSTHRD102 // Implement internal logic asynchronously
@@ -66,7 +68,7 @@ namespace SolutionColors
                 {
                     if (options.AutoMode)
                     {
-                        bool disableAutoMode = await VS.MessageBox.ShowConfirmAsync("Auto-Mode is currently enabled. Do you wish to disable it too?");
+                        bool disableAutoMode = await VS.MessageBox.ShowConfirmAsync("Automatic colorization is currently enabled. Do you wish to disable it too?");
 
                         if (disableAutoMode)
                         {

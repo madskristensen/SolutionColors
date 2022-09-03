@@ -15,7 +15,7 @@ namespace SolutionColors
     public class General : BaseOptionModel<General>, IRatingConfig
     {
         [Category("General")]
-        [DisplayName("Auto-mode")]
+        [DisplayName("Automatic")]
         [Description("Automatically assign and apply a color to solutions as they open. You can still manually assign colors when needed. Default: false")]
         [DefaultValue(false)]
         public bool AutoMode { get; set; }
