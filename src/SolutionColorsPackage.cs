@@ -65,12 +65,15 @@ namespace SolutionColors
             {
                 await JoinableTaskFactory.SwitchToMainThreadAsync();
 
-                string color = await ColorHelper.GetColorAsync();    
+                await ColorHelper.ResetInstanceAsync();
 
-                if (!string.IsNullOrEmpty(color))
-                {                    
-                    await ColorHelper.SetColorAsync(color);
+                string colorMaster = await ColorHelper.GetColorAsync("master");
 
+                General options = await General.GetLiveInstanceAsync();
+
+                if (!string.IsNullOrEmpty(colorMaster) || options.AutoMode == true)
+                {
+                    await ColorHelper.ColorizeAsync();
                     await Task.Delay(2000);
                     _ratingPrompt.RegisterSuccessfulUsage();
                 }

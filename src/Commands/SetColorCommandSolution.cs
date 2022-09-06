@@ -77,11 +77,12 @@ namespace SolutionColors
                         }
 
                         await ColorHelper.SetColorAsync((string)null);
+                        await ColorHelper.ColorizeAsync();
                     }
                     else
                     {
-                        await ColorHelper.ClearSolutionAsync();
-                        await ColorHelper.RemoveUIAsync();
+                        await ColorHelper.SetColorAsync((string)null);
+                        await ColorHelper.ColorizeAsync();
                     }
                 }
                 else
@@ -93,10 +94,8 @@ namespace SolutionColors
             }
             else
             {
-                string fileName = await ColorHelper.GetFileNameAsync();
-                File.WriteAllText(fileName, _color);
-
                 await ColorHelper.SetColorAsync(_color);
+                await ColorHelper.ColorizeAsync();
             }
 
             TelemetryEvent tel = Telemetry.CreateEvent("ChangedColor");
