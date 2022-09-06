@@ -144,9 +144,7 @@ namespace SolutionColors
             }
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-            //General options = await General.GetLiveInstanceAsync();
-            
+           
             foreach (Enum value in Enum.GetValues(typeof(BorderLocation)))
             {
                 string controlName = GetControlName((BorderLocation)value);
@@ -156,16 +154,6 @@ namespace SolutionColors
                     _border.BorderThickness = new Thickness(0);
                 }
             }
-
-            //foreach (Enum value in Enum.GetValues(options.Borders.BorderDetails.Locations.GetType()))
-            //{
-            //    string controlName = GetControlName((BorderLocation)value);
-            //    Border _border = Application.Current.MainWindow.FindChild<Border>(controlName);
-            //    if (_border != null)
-            //    {
-            //        _border.BorderThickness = new Thickness(0);
-            //    }
-            //}
 
             if (_solutionLabel != null)
             {
@@ -328,7 +316,13 @@ namespace SolutionColors
             tel.Properties[nameof(options.ShowTaskBarThumbnails)] = options.ShowTaskBarThumbnails;
             tel.Properties[nameof(options.ShowTitleBar)] = options.ShowTitleBar;
             tel.Properties[nameof(options.AutoMode)] = options.AutoMode;
+            tel.Properties[nameof(options.SaveInRoot)] = options.SaveInRoot;
             tel.Properties[nameof(options.Borders)] = options.Borders;
+            tel.Properties[nameof(options.Coloration)] = options.Coloration;
+            tel.Properties[nameof(options.BaseColor)] = options.BaseColor;
+            tel.Properties[nameof(options.UseGradientTaskbar)] = options.UseGradientTaskbar;
+            tel.Properties[nameof(options.UseGradientTitlebar)] = options.UseGradientTitlebar;
+            tel.Properties[nameof(options.GradientBorders)] = options.GradientBorders;
             Telemetry.TrackEvent(tel);
         }
 

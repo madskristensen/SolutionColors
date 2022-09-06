@@ -18,9 +18,6 @@ namespace SolutionColors
                 
                 await ColorHelper.SetColorAsync(converted.ToString());
                 await ColorHelper.ColorizeAsync();
-                
-                string fileName = await ColorHelper.GetFileNameAsync();
-                File.WriteAllText(fileName, converted.ToString());
             }
         }
     }
