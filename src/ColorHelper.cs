@@ -43,7 +43,7 @@ namespace SolutionColors
             }
 
             string fileName = await GetFileNameAsync();
-            string _branch = String.Empty;
+            string _branch = string.Empty;
 
             if (options.Coloration == Coloration.Unitary)   //use only master color
             {
@@ -76,7 +76,7 @@ namespace SolutionColors
         {
             return File.Exists(await GetFileNameAsync());
         }
-                
+
         public static async Task<string> GetColorAsync(string branch)
         {
             if (_colorEntries == null)
@@ -93,7 +93,7 @@ namespace SolutionColors
             {
                 if (branch == "master")
                 {
-                    return String.Empty;
+                    return string.Empty;
                 }
                 else
                 {
@@ -106,17 +106,14 @@ namespace SolutionColors
         {
             await SetUiColorAsync();
         }
-        
+
         public static async Task LoadColorsAsync(string branch)
         {
-            if (_colorEntries == null)
-            {
-                _colorEntries = new();
-            }
+            _colorEntries ??= new();
 
             string fileName = await GetFileNameAsync();
 
-            if (File.Exists(fileName))
+            if (!string.IsNullOrEmpty(fileName) && File.Exists(fileName))
             {
                 //Compatibility to older version
                 string fileContent = File.ReadAllText(fileName);
@@ -144,7 +141,7 @@ namespace SolutionColors
             }
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-           
+
             foreach (Enum value in Enum.GetValues(typeof(BorderLocation)))
             {
                 string controlName = GetControlName((BorderLocation)value);
@@ -185,6 +182,12 @@ namespace SolutionColors
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             Solution solution = await VS.Solutions.GetCurrentSolutionAsync();
+
+            if (solution?.FullPath == null)
+            {
+                return null;
+            }
+
             string rootDir;
 
             if (solution?.Name?.EndsWith(".wsp") == true)
@@ -200,7 +203,7 @@ namespace SolutionColors
             General options = await General.GetLiveInstanceAsync();
 
             string vsDir;
-            
+
             if (options.SaveInRoot)
             {
                 vsDir = rootDir;
@@ -225,7 +228,7 @@ namespace SolutionColors
         private static async Task SetUiColorAsync()
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                        
+
             string currentBranch = await GitHelper.GetBranchNameAsync();
 
             General options = await General.GetLiveInstanceAsync();
@@ -240,7 +243,7 @@ namespace SolutionColors
             if (options.AutoMode == true)
             {
                 Solution sol = await VS.Solutions.GetCurrentSolutionAsync();
-                if (sol != null)
+                if (sol?.FullPath != null)
                 {
                     string path = await sol.GetSolutionPathAsync();
                     colorMaster = (Color)ColorConverter.ConvertFromString(ColorCache.GetColor(path));
@@ -265,7 +268,7 @@ namespace SolutionColors
                 if (options.AutoMode == true)
                 {
                     Solution sol = await VS.Solutions.GetCurrentSolutionAsync();
-                    if (sol != null)
+                    if (sol?.FullPath != null)
                     {
                         string path = await sol.GetSolutionPathAsync();
                         colorBranch = (Color)ColorConverter.ConvertFromString(ColorCache.GetColor(path + currentBranch));
@@ -297,7 +300,7 @@ namespace SolutionColors
                 }
             }
 
-            
+
 
             ShowInBorders(colorMaster, colorBranch, options);
 
@@ -425,10 +428,12 @@ namespace SolutionColors
                 if (options.GradientBorders == Gradient.RadialGradient)
                 {
                     //brush = new RadialGradientBrush(colorBranch, colorMaster);
-                    GradientStopCollection gradientStopCollection = new GradientStopCollection();
-                    gradientStopCollection.Add(new GradientStop() { Color = colorBranch, Offset = 0 });
-                    gradientStopCollection.Add(new GradientStop() { Color = colorBranch, Offset = 0.75 });
-                    gradientStopCollection.Add(new GradientStop() { Color = colorMaster, Offset = 1 });
+                    GradientStopCollection gradientStopCollection = new()
+                    {
+                        new GradientStop() { Color = colorBranch, Offset = 0 },
+                        new GradientStop() { Color = colorBranch, Offset = 0.75 },
+                        new GradientStop() { Color = colorMaster, Offset = 1 }
+                    };
                     brush = new RadialGradientBrush(gradientStopCollection);
                 }
                 else if (options.GradientBorders == Gradient.LinearGradient)
@@ -453,7 +458,7 @@ namespace SolutionColors
             }
             return brush;
         }
-                
+
         private static void ShowInTitleBar(Color colorMaster, Color colorBranch, General options)
         {
             Brush brush = GetBrushForTitlebar(colorMaster, colorBranch, options);

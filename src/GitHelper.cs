@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using System.Threading.Tasks;
-using System.Windows.Documents;
 
 namespace SolutionColors
 {
@@ -15,6 +10,12 @@ namespace SolutionColors
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             Solution solution = await VS.Solutions.GetCurrentSolutionAsync();
+
+            if (solution?.FullPath == null)
+            {
+                return "master";
+            }
+
             string rootDir;
 
             if (solution?.Name?.EndsWith(".wsp") == true)
