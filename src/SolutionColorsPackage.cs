@@ -14,30 +14,50 @@ namespace SolutionColors
     [ProvideOptionPage(typeof(OptionsProvider.GeneralOptions), "Environment", "Fonts and Colors\\Solution Colors", 0, 0, true, SupportsProfiles = true, ProvidesLocalizedCategoryName = false)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasSingleProject_string, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasMultipleProjects_string, PackageAutoLoadFlags.BackgroundLoad)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.FolderOpened_string, PackageAutoLoadFlags.BackgroundLoad)]
     [Guid(PackageGuids.SolutionColorsString)]
     public sealed class SolutionColorsPackage : ToolkitPackage
     {
+        private RatingPrompt _ratingPrompt;
+
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             await this.RegisterCommandsAsync();
+            
+            _ratingPrompt = new RatingPrompt("MadsKristensen.SolutionColors", Vsix.Name, General.Instance, 10);
 
-            var isSolutionLoaded = await VS.Solutions.IsOpenAsync();
-
-            if (isSolutionLoaded)
+            if (await VS.Solutions.IsOpenAsync())
             {
                 HandleOpenSolution();
             }
 
             await JoinableTaskFactory.SwitchToMainThreadAsync();
 
+
             VS.Events.SolutionEvents.OnAfterOpenSolution += HandleOpenSolution;
             VS.Events.SolutionEvents.OnAfterCloseSolution += HandleCloseSolution;
+            VS.Events.SolutionEvents.OnAfterOpenFolder += HandleOpenFolder;
+            VS.Events.SolutionEvents.OnAfterCloseFolder += HandleCloseFolder;
+            General.Saved += SettingsSaved;
         }
 
-        private void HandleCloseSolution()
+        private void SettingsSaved(General obj)
         {
-            ColorHelper.RemoveBorderAsync().FireAndForget();
+            JoinableTaskFactory.RunAsync(async () =>
+            {
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+                await ColorHelper.ResetAsync();
+            }).FireAndForget();
         }
+
+        private void HandleOpenFolder(string obj) =>
+            HandleOpenSolution();
+
+        private void HandleCloseFolder(string obj) =>
+            HandleCloseSolution();
+
+        private void HandleCloseSolution() =>
+            ColorHelper.RemoveUIAsync().FireAndForget();
 
         private void HandleOpenSolution(Solution sol = null)
         {
@@ -45,16 +65,17 @@ namespace SolutionColors
             {
                 await JoinableTaskFactory.SwitchToMainThreadAsync();
 
-                if (VsShellUtilities.ShellIsShuttingDown)
-                {
-                    return;
-                }
+                await ColorHelper.ResetInstanceAsync();
 
-                var color = await ColorHelper.GetColorAsync();
+                string colorMaster = await ColorHelper.GetColorAsync("master");
 
-                if (!string.IsNullOrEmpty(color))
+                General options = await General.GetLiveInstanceAsync();
+
+                if (!string.IsNullOrEmpty(colorMaster) || options.AutoMode == true)
                 {
-                    await ColorHelper.SetColorAsync(color);
+                    await ColorHelper.ColorizeAsync();
+                    await Task.Delay(2000);
+                    _ratingPrompt.RegisterSuccessfulUsage();
                 }
             }).FireAndForget();
         }

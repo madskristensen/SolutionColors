@@ -17,6 +17,38 @@
     {
       "pathOnDisk": "art/context-menu.png",
       "targetPath": "art/context-menu.png"
+    },
+    {
+      "pathOnDisk": "art/context-menu-none.png",
+      "targetPath": "art/context-menu-none.png"
+    },
+    {
+      "pathOnDisk": "art/context-menu-disable.png",
+      "targetPath": "art/context-menu-disable.png"
+    },
+    {
+      "pathOnDisk": "art/taskbar.png",
+      "targetPath": "art/taskbar.png"
+    },
+    {
+      "pathOnDisk": "art/taskbar-icons.png",
+      "targetPath": "art/taskbar-icons.png"
+    },
+    {
+      "pathOnDisk": "art/solution-label.png",
+      "targetPath": "art/solution-label.png"
+    },
+    {
+      "pathOnDisk": "art/top.png",
+      "targetPath": "art/top.png"
+    },
+    {
+      "pathOnDisk": "art/custom-colors.png",
+      "targetPath": "art/custom-colors.png"
+    },
+    {
+      "pathOnDisk": "art/border-settings.png",
+      "targetPath": "art/border-settings.png"
     }
   ],
   "overview": "README.md",

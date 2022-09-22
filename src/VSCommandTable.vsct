@@ -10,12 +10,13 @@
     <Menus>
       <Menu guid="SolutionColors" id="FlyoutMenu" priority="10" type="Menu">
         <Parent guid="VSMainMenu" id="SolutionNode.PropertiesGroup"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Set Solution Color</ButtonText>
         </Strings>
       </Menu>
     </Menus>
-    
+
     <Groups>
       <Group guid="SolutionColors" id="OuterGroup" priority="0x0600">
         <Parent guid="VSMainMenu" id="SolutionNode"/>
@@ -26,6 +27,12 @@
       <Group guid="SolutionColors" id="InnerGroup" priority="0x0200">
         <Parent guid="SolutionColors" id="FlyoutMenu"/>
       </Group>
+      <Group guid="SolutionColors" id="OptionsGroup" priority="0x0300">
+        <Parent guid="SolutionColors" id="FlyoutMenu"/>
+      </Group>
+      <Group guid="SolutionColors" id="AnyCodeGroup" priority="0x0700">
+        <Parent guid="guidWorkspaceExplorerToolWindowPackageCmdSet" id="idmWSE_ContextMenu"/>
+      </Group>
     </Groups>
 
     <!--This section defines the elements the user can interact with, like a menu command or a button
@@ -35,6 +42,7 @@
         <Parent guid="SolutionColors" id="InnerGroup" />
         <Icon guid="TabColors" id="cLavender" />
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Lavender</ButtonText>
           <LocCanonicalName>.SolutionColors.Lavender</LocCanonicalName>
@@ -43,6 +51,7 @@
       <Button guid="SolutionColors" id="Gold" priority="0x0100" type="Button">
         <Parent guid="SolutionColors" id="InnerGroup" />
         <Icon guid="TabColors" id="cGold" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>Gold</ButtonText>
@@ -53,6 +62,7 @@
         <Parent guid="SolutionColors" id="InnerGroup" />
         <Icon guid="TabColors" id="cCyan" />
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Cyan</ButtonText>
           <LocCanonicalName>.SolutionColors.Cyan</LocCanonicalName>
@@ -62,6 +72,7 @@
         <Parent guid="SolutionColors" id="InnerGroup" />
         <Icon guid="TabColors" id="cBurgundy" />
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Burgundy</ButtonText>
           <LocCanonicalName>.SolutionColors.Burgundy</LocCanonicalName>
@@ -71,6 +82,7 @@
         <Parent guid="SolutionColors" id="InnerGroup" />
         <Icon guid="TabColors" id="cGreen" />
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Green</ButtonText>
           <LocCanonicalName>.SolutionColors.Green</LocCanonicalName>
@@ -80,6 +92,7 @@
         <Parent guid="SolutionColors" id="InnerGroup" />
         <Icon guid="TabColors" id="cBrown" />
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Brown</ButtonText>
           <LocCanonicalName>.SolutionColors.Brown</LocCanonicalName>
@@ -89,6 +102,7 @@
         <Parent guid="SolutionColors" id="InnerGroup" />
         <Icon guid="TabColors" id="cRoyalBlue" />
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Royal Blue</ButtonText>
           <LocCanonicalName>.SolutionColors.RoyalBlue</LocCanonicalName>
@@ -98,6 +112,7 @@
         <Parent guid="SolutionColors" id="InnerGroup" />
         <Icon guid="TabColors" id="cPumpkin" />
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Pumpkin</ButtonText>
           <LocCanonicalName>.SolutionColors.Pumpkin</LocCanonicalName>
@@ -107,6 +122,7 @@
         <Parent guid="SolutionColors" id="InnerGroup" />
         <Icon guid="TabColors" id="cGray" />
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Gray</ButtonText>
           <LocCanonicalName>.SolutionColors.Gray</LocCanonicalName>
@@ -116,6 +132,7 @@
         <Parent guid="SolutionColors" id="InnerGroup" />
         <Icon guid="TabColors" id="cVolt" />
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Volt</ButtonText>
           <LocCanonicalName>.SolutionColors.Volt</LocCanonicalName>
@@ -125,6 +142,7 @@
         <Parent guid="SolutionColors" id="InnerGroup" />
         <Icon guid="TabColors" id="cTeal" />
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Teal</ButtonText>
           <LocCanonicalName>.SolutionColors.Teal</LocCanonicalName>
@@ -134,6 +152,7 @@
         <Parent guid="SolutionColors" id="InnerGroup" />
         <Icon guid="TabColors" id="cMagenta" />
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Magenta</ButtonText>
           <LocCanonicalName>.SolutionColors.Magenta</LocCanonicalName>
@@ -143,6 +162,7 @@
         <Parent guid="SolutionColors" id="InnerGroup" />
         <Icon guid="TabColors" id="cMint" />
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Mint</ButtonText>
           <LocCanonicalName>.SolutionColors.Mint</LocCanonicalName>
@@ -152,6 +172,7 @@
         <Parent guid="SolutionColors" id="InnerGroup" />
         <Icon guid="TabColors" id="cDarkBrown" />
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Dark Brown</ButtonText>
           <LocCanonicalName>.SolutionColors.DarkBrown</LocCanonicalName>
@@ -161,6 +182,7 @@
         <Parent guid="SolutionColors" id="InnerGroup" />
         <Icon guid="TabColors" id="cBlue" />
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Blue</ButtonText>
           <LocCanonicalName>.SolutionColors.Blue</LocCanonicalName>
@@ -170,27 +192,60 @@
         <Parent guid="SolutionColors" id="InnerGroup" />
         <Icon guid="TabColors" id="cPink" />
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Pink</ButtonText>
           <LocCanonicalName>.SolutionColors.Pink</LocCanonicalName>
         </Strings>
       </Button>
-      
+
       <Button guid="SolutionColors" id="None" priority="0x0100" type="Button">
         <Parent guid="SolutionColors" id="None" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
         <Strings>
           <ButtonText>None</ButtonText>
           <LocCanonicalName>.SolutionColors.None</LocCanonicalName>
         </Strings>
       </Button>
+
+      <Button guid="SolutionColors" id="Custom" priority="0x0200" type="Button">
+        <Parent guid="SolutionColors" id="InnerGroup" />
+        <Icon guid="ImageCatalogGuid" id="ColorPalette" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Custom...</ButtonText>
+          <LocCanonicalName>.SolutionColors.Custom</LocCanonicalName>
+        </Strings>
+      </Button>
+
+      <Button guid="SolutionColors" id="Options" priority="0x0100" type="Button">
+        <Parent guid="SolutionColors" id="OptionsGroup" />
+        <Icon guid="ImageCatalogGuid" id="Settings"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Options...</ButtonText>
+          <LocCanonicalName>.SolutionColors.Options</LocCanonicalName>
+        </Strings>
+      </Button>
     </Buttons>
   </Commands>
+
+  <CommandPlacements>
+    <CommandPlacement guid="SolutionColors" id="FlyoutMenu" priority="800">
+      <Parent guid="SolutionColors" id="AnyCodeGroup" />
+    </CommandPlacement>
+  </CommandPlacements>
 
   <Symbols>
     <GuidSymbol name="SolutionColors" value="{3a113b17-c53c-45f0-baab-571abef8b325}">
       <IDSymbol name="OuterGroup" value="0x0001" />
       <IDSymbol name="InnerGroup" value="0x0002" />
       <IDSymbol name="NoneGroup" value="0x0003" />
+      <IDSymbol name="AnyCodeGroup" value="0x0004" />
+      <IDSymbol name="OptionsGroup" value="0x0005" />
       <IDSymbol name="FlyoutMenu" value="0x1000" />
       <IDSymbol name="Lavender" value="0x0100" />
       <IDSymbol name="Gold" value="0x0101" />
@@ -208,7 +263,13 @@
       <IDSymbol name="DarkBrown" value="0x0113" />
       <IDSymbol name="Blue" value="0x0114" />
       <IDSymbol name="Pink" value="0x0115" />
+      <IDSymbol name="Custom" value="0x0190" />
       <IDSymbol name="None" value="0x0200" />
+      <IDSymbol name="Options" value="0x0300" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidWorkspaceExplorerToolWindowPackageCmdSet" value="{cfb400f1-5c60-4f3c-856e-180d28def0b7}">
+      <IDSymbol name="idmWSE_ContextMenu" value="0x0002"/>
     </GuidSymbol>
 
     <GuidSymbol name="TabColors" value="{A1FA08E5-519B-4810-BDB0-89F586AF37E9}">
