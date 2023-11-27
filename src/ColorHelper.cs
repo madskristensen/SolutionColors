@@ -7,7 +7,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shell;
+using EnvDTE80;
 using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Telemetry;
 
 namespace SolutionColors
@@ -133,8 +135,21 @@ namespace SolutionColors
             }
         }
 
+        static private async void WindowEvents_WindowActivated(EnvDTE.Window GotFocus, EnvDTE.Window LostFocus)
+        {
+            WindowCollection allWindows = Application.Current.Windows;
+            int count = allWindows.Count;
+            await SetUiColorAsync();
+        }
+
         public static async Task RemoveUIAsync()
         {
+            DTE2 env = (EnvDTE80.DTE2)await ServiceProvider.GetGlobalServiceAsync(typeof(SDTE));
+            if (env != null)
+            {
+                env.Events.WindowEvents.WindowActivated -= WindowEvents_WindowActivated;
+            }
+
             if (VsShellUtilities.ShellIsShuttingDown)
             {
                 return;
@@ -175,6 +190,16 @@ namespace SolutionColors
         {
             await RemoveUIAsync();
             await SetUiColorAsync();
+
+            General options = await General.GetLiveInstanceAsync();
+            if (options.ShowTaskBarThumbnails != Options.TaskBarOptions.None || options.ShowTaskBarOverlay)
+            {
+                DTE2 env = (EnvDTE80.DTE2)await ServiceProvider.GetGlobalServiceAsync(typeof(SDTE));
+                if (env != null)
+                {
+                    env.Events.WindowEvents.WindowActivated += WindowEvents_WindowActivated;
+                }
+            }
         }
 
         public static async Task<string> GetFileNameAsync()
@@ -309,7 +334,7 @@ namespace SolutionColors
                 ShowInTitleBar(colorMaster, colorBranch, options);
             }
 
-            if (options.ShowTaskBarThumbnails || options.ShowTaskBarOverlay)
+            if (options.ShowTaskBarThumbnails != Options.TaskBarOptions.None || options.ShowTaskBarOverlay)
             {
                 ShowInTaskBar(colorMaster, colorBranch, options);
             }
@@ -335,14 +360,34 @@ namespace SolutionColors
 
             //LinearGradientBrush brush = new LinearGradientBrush(colorMaster, colorBranch, 0);
             Brush brush = GetBrushForTaskbar(colorMaster, colorBranch, options);
-            if (options.ShowTaskBarThumbnails)
+
+            switch(options.ShowTaskBarThumbnails)
             {
-                Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = brush.GetImageSource(16), IsBackgroundVisible = false, IsInteractive = false });
+                case Options.TaskBarOptions.MainWindowOnly:
+                    Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = brush.GetImageSource(16), IsBackgroundVisible = false, IsInteractive = false });
+                    break;
+                case Options.TaskBarOptions.AllWindows:
+                    foreach (System.Windows.Window window in Application.Current.Windows)
+                    {
+                        if (window.TaskbarItemInfo == null)
+                            window.TaskbarItemInfo = new TaskbarItemInfo();
+
+                        if (window.TaskbarItemInfo.ThumbButtonInfos == null)
+                            window.TaskbarItemInfo.ThumbButtonInfos = new ThumbButtonInfoCollection();
+
+                        window.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = brush.GetImageSource(16), IsBackgroundVisible = false, IsInteractive = false });
+                    }
+                    break;
+                default:
+                    break;
             }
 
             if (options.ShowTaskBarOverlay)
             {
-                Application.Current.MainWindow.TaskbarItemInfo.Overlay = brush.GetImageSource(12);
+                foreach (System.Windows.Window window in Application.Current.Windows)
+                {
+                    window.TaskbarItemInfo.Overlay = brush.GetImageSource(12);
+                }
             }
         }
 
@@ -525,10 +570,13 @@ namespace SolutionColors
 
         private static void ResetTaskbar()
         {
-            Application.Current.MainWindow.TaskbarItemInfo ??= new();
-            Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos ??= new ThumbButtonInfoCollection();
-            Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Clear();
-            Application.Current.MainWindow.TaskbarItemInfo.Overlay = null;
+            foreach (Window window in Application.Current.Windows)
+            {
+                window.TaskbarItemInfo ??= new();
+                window.TaskbarItemInfo.ThumbButtonInfos ??= new ThumbButtonInfoCollection();
+                window.TaskbarItemInfo.ThumbButtonInfos.Clear();
+                window.TaskbarItemInfo.Overlay = null;
+            }
         }
 
         private static string GetControlName(BorderLocation location) => location switch
