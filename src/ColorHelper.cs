@@ -465,7 +465,7 @@ namespace SolutionColors
 
             if (_solutionLabel == null)
             {
-                _solutionLabel = Application.Current.MainWindow.FindChild<Border>("TextBorder");
+                _solutionLabel = Application.Current.MainWindow.FindChild<Border>("PART_SolutionNameTextBlock").Parent as Border;
                 _originalLabelColor = _solutionLabel?.Background;
             }
 
