@@ -22,9 +22,9 @@ namespace SolutionColors
         
         [Category("General")]
         [DisplayName("Show on taskbar thumbnails")]
-        [Description("Determines if the color icon should be shown in the taskbar thumbnails. Default: true")]
-        [DefaultValue(true)]
-        public bool ShowTaskBarThumbnails { get; set; } = true;
+        [Description("Determines if the color icon should be shown in the taskbar thumbnails. Default: MainWindowOnly")]
+        [DefaultValue(TaskBarOptions.MainWindowOnly)]
+        public TaskBarOptions ShowTaskBarThumbnails { get; set; } = TaskBarOptions.MainWindowOnly;
 
         [Category("General")]
         [DisplayName("Show on taskbar icons")]
