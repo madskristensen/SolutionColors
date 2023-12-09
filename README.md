@@ -45,21 +45,21 @@ When Automatic colorization is enabled, the button in the submenu shows a checkm
 When automatic colorization is enabled, you can still choose your own custom color for your solution. A manually selected color always takes precedence over automatic. 
 
 ## Colorized elements
-The solution name in the title bar is visible at all times and located at the top, which makes it a prime location for colorization. 
+- The solution name in the title bar is visible at all times and located at the top, which makes it a prime location for colorization. 
 
-![Solution Label](art/solution-label.png)
+    ![Solution Label](art/solution-label.png)
 
-In addition, the 3 top-most pixels of Visual Studio span the full width of the window. This is especially visible when Visual Studio instances are floating or if you’ve chosen not to display the solution name label.
+- In addition, the 3 top-most pixels of Visual Studio span the full width of the window. This is especially visible when Visual Studio instances are floating or if you’ve chosen not to display the solution name label.
 
-![Top](art/top.png)
+    ![Top](art/top.png)
 
-The Windows Taskbar shows the colors in the thumbnails as well.
+- The Windows Taskbar shows the colors in the thumbnails as well.
 
-![Taskbar](art/taskbar.png)
+    ![Taskbar](art/taskbar.png)
 
-And if you don’t group the Taskbar items, each item will show the color as well.
+- And if you don’t group the Taskbar items, each item will show the color as well.
 
-![Taskbar Icons](art/taskbar-icons.png)
+    ![Taskbar Icons](art/taskbar-icons.png)
 
 This gives you 4 different locations to display the color and you can use all of them, or just the ones you find most helpful. You can control all that from the **Tools -> Options** page.
 
