@@ -265,7 +265,7 @@ namespace SolutionColors
             }
 
             Color colorMaster;
-            if (options.AutoMode == true)
+            if (options.AutoMode == true && !await SolutionHasCustomColorAsync())
             {
                 Solution sol = await VS.Solutions.GetCurrentSolutionAsync();
                 if (sol?.FullPath != null)
@@ -290,7 +290,7 @@ namespace SolutionColors
             }
             else
             {
-                if (options.AutoMode == true)
+                if (options.AutoMode == true && !await SolutionHasCustomColorAsync())
                 {
                     Solution sol = await VS.Solutions.GetCurrentSolutionAsync();
                     if (sol?.FullPath != null)

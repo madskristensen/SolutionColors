@@ -57,7 +57,7 @@ namespace SolutionColors
             int hash = Math.Abs(filePath.GetHashCode());
             int mod = hash % ColorMap.Count - 1;    //last one is "None" which is not a valid color
 
-            return ColorMap.Keys.ElementAt(mod);
+            return ColorMap[ColorMap.Keys.ElementAt(mod)];
         }
     }
 }
