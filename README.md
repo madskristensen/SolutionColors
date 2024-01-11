@@ -20,9 +20,11 @@ When you have multiple instances of Visual Studio open at the same time, it can 
 The result is a subtle, yet very visible colorization that doesn’t feel noisy or distracting. It puts you in control with an array of customization options.
 
 ## Getting Started
-To enable colorization, open a solution or folder and right-click it to select the Set Solution Color submenu. From here you can choose between a list of predefined colors matching the color palette used for colorizing document tabs. 
+To enable colorization, open a solution or folder in Visual Studio.  
+In the Solution Explorer window > Right click the top level solution > Set Solution Color > (Select Color)  
+From here you can choose between a list of predefined colors matching the color palette used for colorizing document tabs.  
 
-![Context Menu](art/context-menu.png)
+![Solution Context Menu](art/solution-context-menu.png)
 
 You are not limited to only choosing between the predefined colors. By selecting **Custom...** you can choose any custom color from the color dialog.
 
