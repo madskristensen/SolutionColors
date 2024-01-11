@@ -49,6 +49,10 @@
     {
       "pathOnDisk": "art/border-settings.png",
       "targetPath": "art/border-settings.png"
+    },
+    {
+      "pathOnDisk": "art/solution-context-menu.png",
+      "targetPath": "art/solution-context-menu.png"
     }
   ],
   "overview": "README.md",
