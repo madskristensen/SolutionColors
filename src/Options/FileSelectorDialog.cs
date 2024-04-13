@@ -25,6 +25,11 @@ namespace SolutionColors.Options
         public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            // Filetypes that are supported by BitmapImage
+            openFileDialog.Filter = "Image Files|*.bmp;*.jpg;*.jpeg;*.gif;*.png;*.ico;*.tif;*.tiff;*.wdp;*.raw";
+            openFileDialog.Title = "Please select an Image file";
+
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 return new FileSelectorSetting { FilePath = openFileDialog.FileName };
