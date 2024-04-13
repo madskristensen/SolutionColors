@@ -124,7 +124,7 @@
       <Version>16.0.59</Version>
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.2.2195">
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.8.2365">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
