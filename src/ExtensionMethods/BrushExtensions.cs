@@ -9,17 +9,14 @@ namespace SolutionColors
     {
         public static ImageSource GetImageSource(this Brush brush, int size, General options)
         {
-            if (options.TaskbarIconMode == IconMode.ColoredSquare)
+            switch(options.TaskbarIconMode)
             {
-                return brush.GetColoredSquareSource(size);
-            }
-            else if (options.TaskbarIconMode == IconMode.CustomIcon)
-            {
-                return brush.GetCustomLogoSource(options.CustomTaskBarIconPath);
-            }
-            else
-            {
-                return brush.GetEmptyImageSource();
+                case IconMode.ColoredSquare:
+                    return brush.GetColoredSquareSource(size);
+                case IconMode.CustomIcon:
+                    return brush.GetCustomLogoSource(options.CustomTaskBarIconPath.FilePath);
+                default:
+                    return brush.GetEmptyImageSource();
             }
         }
 
