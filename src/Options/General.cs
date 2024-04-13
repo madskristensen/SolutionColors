@@ -85,7 +85,7 @@ namespace SolutionColors
 
         [Category("General")]
         [DisplayName("Taskbar Icon Mode")]
-        [Description("Determines if taskbar icon is a colored sqaure or custom icon.")]
+        [Description("Determines if taskbar icon is a colored square or custom icon.")]
         [DefaultValue("")]
         public IconMode TaskbarIconMode { get; set; }
 
