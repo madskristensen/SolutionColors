@@ -91,9 +91,9 @@ namespace SolutionColors
 
         [Category("General")]
         [DisplayName("Custom Taskbar Icon")]
-        [Description("File path of the custom icon that should be displayed.")]
+        [Description("File path of the custom icon that should be displayed if Icon Mode is set to custom.")]
         [DefaultValue("")]
-        public string CustomTaskBarIconPath { get; set; }
+        public FileSelectorSetting CustomTaskBarIconPath { get; set; } = new FileSelectorSetting();
 
         [Browsable(false)]
         public int RatingRequests { get; set; }
