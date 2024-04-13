@@ -83,6 +83,18 @@ namespace SolutionColors
         [DefaultValue(Gradient.RadialGradient)]
         public Gradient GradientBorders { get; set; } = Gradient.RadialGradient;
 
+        [Category("General")]
+        [DisplayName("Taskbar Icon Mode")]
+        [Description("Determines if taskbar icon is a colored sqaure or custom icon.")]
+        [DefaultValue("")]
+        public IconMode TaskbarIconMode { get; set; }
+
+        [Category("General")]
+        [DisplayName("Custom Taskbar Icon")]
+        [Description("File path of the custom icon that should be displayed.")]
+        [DefaultValue("")]
+        public string CustomTaskBarIconPath { get; set; }
+
         [Browsable(false)]
         public int RatingRequests { get; set; }
 
@@ -103,6 +115,14 @@ namespace SolutionColors
         MasterColor = 1,
         [Description("Branch color")]
         BranchColor = 2
+    }
+
+    public enum IconMode
+    {
+        [Description("Colored Square")]
+        ColoredSquare = 1,
+        [Description("Custom Icon")]
+        CustomIcon = 2
     }
 
     public enum Coloration
