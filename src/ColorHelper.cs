@@ -364,7 +364,7 @@ namespace SolutionColors
             switch(options.ShowTaskBarThumbnails)
             {
                 case Options.TaskBarOptions.MainWindowOnly:
-                    Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = brush.GetImageSource(16), IsBackgroundVisible = false, IsInteractive = false });
+                    Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = brush.GetImageSource(16, options), IsBackgroundVisible = false, IsInteractive = false });
                     break;
                 case Options.TaskBarOptions.AllWindows:
                     foreach (System.Windows.Window window in Application.Current.Windows)
@@ -375,7 +375,7 @@ namespace SolutionColors
                         if (window.TaskbarItemInfo.ThumbButtonInfos == null)
                             window.TaskbarItemInfo.ThumbButtonInfos = new ThumbButtonInfoCollection();
 
-                        window.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = brush.GetImageSource(16), IsBackgroundVisible = false, IsInteractive = false });
+                        window.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = brush.GetImageSource(16, options), IsBackgroundVisible = false, IsInteractive = false });
                     }
                     break;
                 default:
@@ -386,7 +386,7 @@ namespace SolutionColors
             {
                 foreach (System.Windows.Window window in Application.Current.Windows)
                 {
-                    window.TaskbarItemInfo.Overlay = brush.GetImageSource(12);
+                    window.TaskbarItemInfo.Overlay = brush.GetImageSource(12, options);
                 }
             }
         }
