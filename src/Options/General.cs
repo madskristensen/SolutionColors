@@ -83,18 +83,6 @@ namespace SolutionColors
         [DefaultValue(Gradient.RadialGradient)]
         public Gradient GradientBorders { get; set; } = Gradient.RadialGradient;
 
-        [Category("General")]
-        [DisplayName("Taskbar Icon Mode")]
-        [Description("Determines if taskbar icon is a colored square or custom icon.")]
-        [DefaultValue("")]
-        public IconMode TaskbarIconMode { get; set; }
-
-        [Category("General")]
-        [DisplayName("Custom Taskbar Icon")]
-        [Description("File path of the custom icon that should be displayed if Icon Mode is set to custom.")]
-        [DefaultValue("")]
-        public FileSelectorSetting CustomTaskBarIconPath { get; set; } = new FileSelectorSetting();
-
         [Browsable(false)]
         public int RatingRequests { get; set; }
 

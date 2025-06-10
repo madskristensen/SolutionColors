@@ -17,6 +17,7 @@ namespace SolutionColors
     public class ColorHelper
     {
         public const string ColorFileName = "color.txt";
+        public const string IconFileName = "icon.png";
 
         private static Border _solutionLabel;
         private static Brush _originalLabelColor;
@@ -202,7 +203,7 @@ namespace SolutionColors
             }
         }
 
-        public static async Task<string> GetFileNameAsync()
+        public static async Task<string> GetFileNameAsync(bool isColor = true)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -247,7 +248,7 @@ namespace SolutionColors
                 }
             }
 
-            return Path.Combine(vsDir, ColorFileName);
+            return Path.Combine(vsDir, isColor ? ColorFileName : IconFileName);
         }
 
         private static async Task SetUiColorAsync()
@@ -364,7 +365,7 @@ namespace SolutionColors
             switch(options.ShowTaskBarThumbnails)
             {
                 case Options.TaskBarOptions.MainWindowOnly:
-                    Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = brush.GetImageSource(16, options), IsBackgroundVisible = false, IsInteractive = false });
+                    Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = brush.GetImageSource(16), IsBackgroundVisible = false, IsInteractive = false });
                     break;
                 case Options.TaskBarOptions.AllWindows:
                     foreach (System.Windows.Window window in Application.Current.Windows)
@@ -375,7 +376,7 @@ namespace SolutionColors
                         if (window.TaskbarItemInfo.ThumbButtonInfos == null)
                             window.TaskbarItemInfo.ThumbButtonInfos = new ThumbButtonInfoCollection();
 
-                        window.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = brush.GetImageSource(16, options), IsBackgroundVisible = false, IsInteractive = false });
+                        window.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = brush.GetImageSource(16), IsBackgroundVisible = false, IsInteractive = false });
                     }
                     break;
                 default:
@@ -386,7 +387,7 @@ namespace SolutionColors
             {
                 foreach (System.Windows.Window window in Application.Current.Windows)
                 {
-                    window.TaskbarItemInfo.Overlay = brush.GetImageSource(12, options);
+                    window.TaskbarItemInfo.Overlay = brush.GetImageSource(12);
                 }
             }
         }

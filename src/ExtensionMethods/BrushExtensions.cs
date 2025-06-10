@@ -1,23 +1,25 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using static SolutionColors.ColorHelper;
 
 namespace SolutionColors
 {
     public static class BrushExtensions
     {
-        public static ImageSource GetImageSource(this Brush brush, int size, General options)
+        public static ImageSource GetImageSource(this Brush brush, int size)
         {
-            switch(options.TaskbarIconMode)
-            {
-                case IconMode.ColoredSquare:
-                    return brush.GetColoredSquareSource(size);
-                case IconMode.CustomIcon:
-                    return brush.GetCustomLogoSource(options.CustomTaskBarIconPath.FilePath);
-                default:
-                    return brush.GetEmptyImageSource();
-            }
+            Task<string> iconNameTask = GetFileNameAsync(false);
+            iconNameTask.Wait();
+            string iconName = iconNameTask.Result;
+            Uri uri = new Uri(iconName);
+
+            if (File.Exists(uri.LocalPath))
+                return brush.GetCustomLogoSource(iconName);
+            else
+                return brush.GetColoredSquareSource(size);
         }
 
         private static ImageSource GetColoredSquareSource(this Brush brush, int size) 
