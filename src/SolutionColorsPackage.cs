@@ -70,6 +70,7 @@ namespace SolutionColors
                 string colorMaster = await ColorHelper.GetColorAsync("master");
 
                 General options = await General.GetLiveInstanceAsync();
+                await ColorHelper.ApplyIconAsync();
 
                 if (!string.IsNullOrEmpty(colorMaster) || options.AutoMode == true)
                 {

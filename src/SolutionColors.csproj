@@ -48,8 +48,8 @@
     <Compile Include="ColorCache.cs" />
     <Compile Include="ColorHelper.cs" />
     <Compile Include="Commands\CustomCommand.cs" />
+    <Compile Include="Commands\IconCommands.cs" />
     <Compile Include="Commands\SetColorCommandFolder.cs" />
-    <Compile Include="Commands\OptionsCommand.cs" />
     <Compile Include="ExtensionMethods\BrushExtensions.cs" />
     <Compile Include="ExtensionMethods\WpfExtensions.cs" />
     <Compile Include="GitHelper.cs" />

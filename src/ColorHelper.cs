@@ -17,7 +17,7 @@ namespace SolutionColors
     public class ColorHelper
     {
         public const string ColorFileName = "color.txt";
-        public const string IconFileName = "icon.png";
+        public const string IconFileName = "icon.img"; // This could be one of many filetypes supported by BitmapImage
 
         private static Border _solutionLabel;
         private static Brush _originalLabelColor;
@@ -108,6 +108,11 @@ namespace SolutionColors
         public static async Task ColorizeAsync()
         {
             await SetUiColorAsync();
+        }
+
+        public static async Task ApplyIconAsync()
+        {
+            await SetIconAsync();
         }
 
         public static async Task LoadColorsAsync(string branch)
@@ -203,6 +208,14 @@ namespace SolutionColors
             }
         }
 
+        public static string GetFileName(bool isColor = true)
+        {
+            // This is bad practice but doesn't introduce any noticable hitch and is much easier than reengineering everything
+            Task<string> iconNameTask = GetFileNameAsync(false);
+            iconNameTask.Wait();
+            return iconNameTask.Result;
+        }
+
         public static async Task<string> GetFileNameAsync(bool isColor = true)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -249,6 +262,16 @@ namespace SolutionColors
             }
 
             return Path.Combine(vsDir, isColor ? ColorFileName : IconFileName);
+        }
+
+        private static async Task SetIconAsync()
+        {
+            General options = await General.GetLiveInstanceAsync();
+
+            if (options.ShowTaskBarThumbnails != Options.TaskBarOptions.None || options.ShowTaskBarOverlay)
+            {
+                ShowInTaskBar(Colors.Transparent, Colors.Transparent, options);
+            }
         }
 
         private static async Task SetUiColorAsync()

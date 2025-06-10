@@ -11,9 +11,7 @@ namespace SolutionColors
     {
         public static ImageSource GetImageSource(this Brush brush, int size)
         {
-            Task<string> iconNameTask = GetFileNameAsync(false);
-            iconNameTask.Wait();
-            string iconName = iconNameTask.Result;
+            string iconName = GetFileName(false);
             Uri uri = new Uri(iconName);
 
             if (File.Exists(uri.LocalPath))
@@ -41,7 +39,11 @@ namespace SolutionColors
 
             if (File.Exists(uri.LocalPath))
             {
-                BitmapImage logo = new BitmapImage(uri);
+                // It's important to load the BitmapImage via a MemoryStream rather than giving the class the URI as BitmapImage can be slow to release the file handle
+                BitmapImage logo = new BitmapImage();
+                logo.BeginInit();
+                logo.StreamSource = new MemoryStream(File.ReadAllBytes(uri.LocalPath));
+                logo.EndInit();
 
                 DrawingVisual dVisual = new();
                 using (DrawingContext dc = dVisual.RenderOpen())
