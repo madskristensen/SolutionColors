@@ -63,7 +63,6 @@
     <Compile Include="Options\BorderSettings.cs" />
     <Compile Include="Options\BorderTypeConverter.cs" />
     <Compile Include="Options\EnumDescriptionConverter.cs" />
-    <Compile Include="Options\FileSelectorDialog.cs" />
     <Compile Include="Options\General.cs" />
     <Compile Include="Options\TaskBarOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
