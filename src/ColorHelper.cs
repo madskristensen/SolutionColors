@@ -213,7 +213,7 @@ namespace SolutionColors
             // This is bad practice but doesn't introduce any noticable hitch and is much easier than reengineering everything
             Task<string> iconNameTask = GetFileNameAsync(false);
             iconNameTask.Wait();
-            return iconNameTask.Result;
+            return (iconNameTask.Result != null) ? iconNameTask.Result : "";
         }
 
         public static async Task<string> GetFileNameAsync(bool isColor = true)

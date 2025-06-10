@@ -11,10 +11,16 @@ namespace SolutionColors
     {
         public static ImageSource GetImageSource(this Brush brush, int size)
         {
+            bool uriValid = false;
             string iconName = GetFileName(false);
-            Uri uri = new Uri(iconName);
 
-            if (File.Exists(uri.LocalPath))
+            if (iconName != "")
+            {
+                Uri uri = new Uri(iconName);
+                uriValid = File.Exists(uri.LocalPath);
+            }
+
+            if (uriValid)
                 return brush.GetCustomLogoSource(iconName);
             else
                 return brush.GetColoredSquareSource(size);
