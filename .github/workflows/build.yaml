@@ -42,7 +42,7 @@ jobs:
       run: msbuild /v:m -restore /p:OutDir=\_built
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ github.event.repository.name }}.vsix
         path: /_built/**/*.vsix
