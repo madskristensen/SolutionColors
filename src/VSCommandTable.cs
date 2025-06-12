@@ -31,6 +31,7 @@ namespace SolutionColors
         public const int NoneGroup = 0x0003;
         public const int AnyCodeGroup = 0x0004;
         public const int OptionsGroup = 0x0005;
+        public const int IconGroup = 0x0006;
         public const int FlyoutMenu = 0x1000;
         public const int Lavender = 0x0100;
         public const int Gold = 0x0101;
@@ -68,5 +69,7 @@ namespace SolutionColors
         public const int cDarkBrown = 0x000E;
         public const int cBlue = 0x000F;
         public const int cPink = 0x0010;
+        public const int cSetIcon = 0x0400;
+        public const int cRemoveIcon = 0x0401;
     }
 }

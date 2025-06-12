@@ -1,23 +1,29 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using static SolutionColors.ColorHelper;
 
 namespace SolutionColors
 {
     public static class BrushExtensions
     {
-        public static ImageSource GetImageSource(this Brush brush, int size, General options)
+        public static ImageSource GetImageSource(this Brush brush, int size)
         {
-            switch(options.TaskbarIconMode)
+            bool uriValid = false;
+            string iconName = GetFileName(false);
+
+            if (iconName != "")
             {
-                case IconMode.ColoredSquare:
-                    return brush.GetColoredSquareSource(size);
-                case IconMode.CustomIcon:
-                    return brush.GetCustomLogoSource(options.CustomTaskBarIconPath.FilePath);
-                default:
-                    return brush.GetEmptyImageSource();
+                Uri uri = new Uri(iconName);
+                uriValid = File.Exists(uri.LocalPath);
             }
+
+            if (uriValid)
+                return brush.GetCustomLogoSource(iconName);
+            else
+                return brush.GetColoredSquareSource(size);
         }
 
         private static ImageSource GetColoredSquareSource(this Brush brush, int size) 
@@ -39,7 +45,11 @@ namespace SolutionColors
 
             if (File.Exists(uri.LocalPath))
             {
-                BitmapImage logo = new BitmapImage(uri);
+                // It's important to load the BitmapImage via a MemoryStream rather than giving the class the URI as BitmapImage can be slow to release the file handle
+                BitmapImage logo = new BitmapImage();
+                logo.BeginInit();
+                logo.StreamSource = new MemoryStream(File.ReadAllBytes(uri.LocalPath));
+                logo.EndInit();
 
                 DrawingVisual dVisual = new();
                 using (DrawingContext dc = dVisual.RenderOpen())

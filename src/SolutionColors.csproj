@@ -48,8 +48,9 @@
     <Compile Include="ColorCache.cs" />
     <Compile Include="ColorHelper.cs" />
     <Compile Include="Commands\CustomCommand.cs" />
-    <Compile Include="Commands\SetColorCommandFolder.cs" />
+    <Compile Include="Commands\IconCommands.cs" />
     <Compile Include="Commands\OptionsCommand.cs" />
+    <Compile Include="Commands\SetColorCommandFolder.cs" />
     <Compile Include="ExtensionMethods\BrushExtensions.cs" />
     <Compile Include="ExtensionMethods\WpfExtensions.cs" />
     <Compile Include="GitHelper.cs" />
@@ -63,7 +64,6 @@
     <Compile Include="Options\BorderSettings.cs" />
     <Compile Include="Options\BorderTypeConverter.cs" />
     <Compile Include="Options\EnumDescriptionConverter.cs" />
-    <Compile Include="Options\FileSelectorDialog.cs" />
     <Compile Include="Options\General.cs" />
     <Compile Include="Options\TaskBarOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

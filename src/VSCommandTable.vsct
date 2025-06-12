@@ -27,6 +27,9 @@
       <Group guid="SolutionColors" id="InnerGroup" priority="0x0200">
         <Parent guid="SolutionColors" id="FlyoutMenu"/>
       </Group>
+      <Group guid="SolutionColors" id="IconGroup" priority="0x0250">
+        <Parent guid="SolutionColors" id="FlyoutMenu"/>
+      </Group>
       <Group guid="SolutionColors" id="OptionsGroup" priority="0x0300">
         <Parent guid="SolutionColors" id="FlyoutMenu"/>
       </Group>
@@ -220,6 +223,28 @@
         </Strings>
       </Button>
 
+      <Button guid="SolutionColors" id="SetIcon" priority="0x0100" type="Button">
+        <Parent guid="SolutionColors" id="IconGroup" />
+        <Icon guid="ImageCatalogGuid" id="Add"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Set Icon</ButtonText>
+          <LocCanonicalName>.SolutionColors.SetIcon</LocCanonicalName>
+        </Strings>
+      </Button>
+
+      <Button guid="SolutionColors" id="RemoveIcon" priority="0x0200" type="Button">
+        <Parent guid="SolutionColors" id="IconGroup" />
+        <Icon guid="ImageCatalogGuid" id="Remove"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Remove Icon</ButtonText>
+          <LocCanonicalName>.SolutionColors.SetIcon</LocCanonicalName>
+        </Strings>
+      </Button>
+
       <Button guid="SolutionColors" id="Options" priority="0x0100" type="Button">
         <Parent guid="SolutionColors" id="OptionsGroup" />
         <Icon guid="ImageCatalogGuid" id="Settings"/>
@@ -246,6 +271,7 @@
       <IDSymbol name="NoneGroup" value="0x0003" />
       <IDSymbol name="AnyCodeGroup" value="0x0004" />
       <IDSymbol name="OptionsGroup" value="0x0005" />
+      <IDSymbol name="IconGroup" value="0x0006" />
       <IDSymbol name="FlyoutMenu" value="0x1000" />
       <IDSymbol name="Lavender" value="0x0100" />
       <IDSymbol name="Gold" value="0x0101" />
@@ -266,6 +292,8 @@
       <IDSymbol name="Custom" value="0x0190" />
       <IDSymbol name="None" value="0x0200" />
       <IDSymbol name="Options" value="0x0300" />
+      <IDSymbol name="SetIcon" value="0x0400" />
+      <IDSymbol name="RemoveIcon" value="0x0401" />
     </GuidSymbol>
 
     <GuidSymbol name="guidWorkspaceExplorerToolWindowPackageCmdSet" value="{cfb400f1-5c60-4f3c-856e-180d28def0b7}">

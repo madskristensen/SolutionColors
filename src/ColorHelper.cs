@@ -17,6 +17,7 @@ namespace SolutionColors
     public class ColorHelper
     {
         public const string ColorFileName = "color.txt";
+        public const string IconFileName = "icon.img"; // This could be one of many filetypes supported by BitmapImage
 
         private static Border _solutionLabel;
         private static Brush _originalLabelColor;
@@ -107,6 +108,11 @@ namespace SolutionColors
         public static async Task ColorizeAsync()
         {
             await SetUiColorAsync();
+        }
+
+        public static async Task ApplyIconAsync()
+        {
+            await SetIconAsync();
         }
 
         public static async Task LoadColorsAsync(string branch)
@@ -202,7 +208,15 @@ namespace SolutionColors
             }
         }
 
-        public static async Task<string> GetFileNameAsync()
+        public static string GetFileName(bool isColor = true)
+        {
+            // This is bad practice but doesn't introduce any noticable hitch and is much easier than reengineering everything
+            Task<string> iconNameTask = GetFileNameAsync(false);
+            iconNameTask.Wait();
+            return (iconNameTask.Result != null) ? iconNameTask.Result : "";
+        }
+
+        public static async Task<string> GetFileNameAsync(bool isColor = true)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -247,7 +261,17 @@ namespace SolutionColors
                 }
             }
 
-            return Path.Combine(vsDir, ColorFileName);
+            return Path.Combine(vsDir, isColor ? ColorFileName : IconFileName);
+        }
+
+        private static async Task SetIconAsync()
+        {
+            General options = await General.GetLiveInstanceAsync();
+
+            if (options.ShowTaskBarThumbnails != Options.TaskBarOptions.None || options.ShowTaskBarOverlay)
+            {
+                ShowInTaskBar(Colors.Transparent, Colors.Transparent, options);
+            }
         }
 
         private static async Task SetUiColorAsync()
@@ -364,7 +388,7 @@ namespace SolutionColors
             switch(options.ShowTaskBarThumbnails)
             {
                 case Options.TaskBarOptions.MainWindowOnly:
-                    Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = brush.GetImageSource(16, options), IsBackgroundVisible = false, IsInteractive = false });
+                    Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = brush.GetImageSource(16), IsBackgroundVisible = false, IsInteractive = false });
                     break;
                 case Options.TaskBarOptions.AllWindows:
                     foreach (System.Windows.Window window in Application.Current.Windows)
@@ -375,7 +399,7 @@ namespace SolutionColors
                         if (window.TaskbarItemInfo.ThumbButtonInfos == null)
                             window.TaskbarItemInfo.ThumbButtonInfos = new ThumbButtonInfoCollection();
 
-                        window.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = brush.GetImageSource(16, options), IsBackgroundVisible = false, IsInteractive = false });
+                        window.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = brush.GetImageSource(16), IsBackgroundVisible = false, IsInteractive = false });
                     }
                     break;
                 default:
@@ -386,7 +410,7 @@ namespace SolutionColors
             {
                 foreach (System.Windows.Window window in Application.Current.Windows)
                 {
-                    window.TaskbarItemInfo.Overlay = brush.GetImageSource(12, options);
+                    window.TaskbarItemInfo.Overlay = brush.GetImageSource(12);
                 }
             }
         }
