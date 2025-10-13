@@ -36,6 +36,17 @@ namespace SolutionColors
                     string content = File.ReadAllText(Path.Combine(directoryInfo.FullName, ".git", "HEAD"));
                     return content.Replace("ref: refs/heads/", "").Trim();
                 }
+
+                // git worktree support
+                if (File.Exists(Path.Combine(directoryInfo.FullName, ".git")))
+                {
+                    string gitFileContent = File.ReadAllText(Path.Combine(directoryInfo.FullName, ".git"));
+                    string worktreeDir = gitFileContent.Replace("gitdir: ", "").Trim();
+
+                    string content = File.ReadAllText(Path.Combine(worktreeDir, "HEAD"));
+                    return content.Replace("ref: refs/heads/", "").Trim();
+                }
+
                 directoryInfo = System.IO.Directory.GetParent(directoryInfo.FullName);
             }
 
