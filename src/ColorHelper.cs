@@ -211,7 +211,7 @@ namespace SolutionColors
         public static string GetFileName(bool isColor = true)
         {
             // This is bad practice but doesn't introduce any noticable hitch and is much easier than reengineering everything
-            Task<string> iconNameTask = GetFileNameAsync(false);
+            Task<string> iconNameTask = GetFileNameAsync(isColor);
             iconNameTask.Wait();
             return (iconNameTask.Result != null) ? iconNameTask.Result : "";
         }
