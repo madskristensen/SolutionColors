@@ -304,7 +304,14 @@ namespace SolutionColors
             }
             else
             {
-                colorMaster = (Color)ColorConverter.ConvertFromString(ColorCache.GetColorCode(await GetColorAsync("master")));
+                try
+                {
+                    colorMaster = (Color)ColorConverter.ConvertFromString(ColorCache.GetColorCode(await GetColorAsync("master")));
+                }
+                catch(FormatException)
+                {
+                    colorMaster = Colors.Black;
+                }
             }
 
             Color colorBranch;
