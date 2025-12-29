@@ -23,6 +23,9 @@ namespace SolutionColors
         private static FileSystemWatcher _colorFileWatcher;
         private static DateTime _lastColorFileChange = DateTime.MinValue;
 
+        // Cached border controls to avoid repeated visual tree traversal
+        private static readonly Dictionary<BorderLocation, Border> _borderCache = [];
+
         //INFO:
         //colorMaster: the color of master branch
         //colorBranch: the color of branch (= master branch color when unitary coloration)
@@ -30,6 +33,7 @@ namespace SolutionColors
         public static async Task ResetInstanceAsync()
         {
             _colorEntries = null;
+            _borderCache.Clear();
             DisposeFileWatcher();
             await RemoveUIAsync();
         }
@@ -203,15 +207,24 @@ namespace SolutionColors
                 return;
             }
 
-            foreach (Enum value in Enum.GetValues(typeof(BorderLocation)))
+            // Use cached borders if available, otherwise find them
+            foreach (BorderLocation location in Enum.GetValues(typeof(BorderLocation)))
             {
-                string controlName = GetControlName((BorderLocation)value);
-                Border _border = Application.Current.MainWindow.FindChild<Border>(controlName);
-                if (_border != null)
+                Border border;
+                if (!_borderCache.TryGetValue(location, out border))
                 {
-                    _border.BorderThickness = new Thickness(0);
+                    string controlName = GetControlName(location);
+                    border = Application.Current.MainWindow?.FindChild<Border>(controlName);
+                }
+                
+                if (border != null)
+                {
+                    border.BorderThickness = new Thickness(0);
                 }
             }
+            
+            // Clear the cache since we're removing UI
+            _borderCache.Clear();
 
             if (_solutionLabel != null)
             {
@@ -305,14 +318,18 @@ namespace SolutionColors
 
             General options = await General.GetLiveInstanceAsync();
 
-            if (string.IsNullOrEmpty(await GetColorAsync(GitHelper.DefaultBranch)) && options.AutoMode == false)
+            // Cache this result to avoid multiple file system checks
+            bool hasCustomColor = await SolutionHasCustomColorAsync();
+            string masterColor = await GetColorAsync(GitHelper.DefaultBranch);
+
+            if (string.IsNullOrEmpty(masterColor) && options.AutoMode == false)
             {
                 await RemoveUIAsync();
                 return;
             }
 
             Color colorMaster;
-            if (options.AutoMode == true && !await SolutionHasCustomColorAsync())
+            if (options.AutoMode == true && !hasCustomColor)
             {
                 Solution sol = await VS.Solutions.GetCurrentSolutionAsync();
                 if (sol?.FullPath != null)
@@ -330,7 +347,7 @@ namespace SolutionColors
             }
             else
             {
-                string masterColorCode = ColorCache.GetColorCode(await GetColorAsync(GitHelper.DefaultBranch));
+                string masterColorCode = ColorCache.GetColorCode(masterColor);
                 if (!ColorCache.TryParseColor(masterColorCode, out colorMaster))
                 {
                     colorMaster = Colors.Black;
@@ -344,7 +361,7 @@ namespace SolutionColors
             }
             else
             {
-                if (options.AutoMode == true && !await SolutionHasCustomColorAsync())
+                if (options.AutoMode == true && !hasCustomColor)
                 {
                     Solution sol = await VS.Solutions.GetCurrentSolutionAsync();
                     if (sol?.FullPath != null)
@@ -507,20 +524,29 @@ namespace SolutionColors
         {
             foreach (Enum value in Enum.GetValues(options.Borders.BorderDetails.Locations.GetType()))
             {
-
                 if (options.Borders.BorderDetails.Locations.HasFlag(value))
                 {
-                    string controlName = GetControlName((BorderLocation)value);
-                    Border border = Application.Current.MainWindow.FindChild<Border>(controlName);
+                    BorderLocation location = (BorderLocation)value;
+                    
+                    // Use cached border or find and cache it
+                    if (!_borderCache.TryGetValue(location, out Border border))
+                    {
+                        string controlName = GetControlName(location);
+                        border = Application.Current.MainWindow?.FindChild<Border>(controlName);
+                        if (border != null)
+                        {
+                            _borderCache[location] = border;
+                        }
+                    }
 
                     if (border != null)
                     {
-                        border.BorderBrush = GetBrushForBorder(colorMaster, colorBranch, options, (BorderLocation)value);
+                        border.BorderBrush = GetBrushForBorder(colorMaster, colorBranch, options, location);
 
                         // Prevent borders from stealing mouse clicks (Issue #23)
                         border.IsHitTestVisible = false;
 
-                        switch ((BorderLocation)value)
+                        switch (location)
                         {
                             case BorderLocation.Bottom:
                                 border.BorderThickness = new Thickness(0, General.Instance.Borders.BorderDetails.WidthBottom, 0, 0);

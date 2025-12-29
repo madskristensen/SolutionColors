@@ -17,10 +17,16 @@ namespace SolutionColors
         };
 
         private static Dictionary<string, string> ColorMap { get; } = [];
+        
+        // Cache for key list to avoid repeated ToList() allocations
+        private static List<string> _keyListCache;
+        private static int _keyListCacheVersion;
+        private static int _colorMapVersion;
 
         public static int GetIndex(string name)
         {
-            return ColorMap.Keys.ToList().IndexOf(name);
+            EnsureKeyListCache();
+            return _keyListCache.IndexOf(name);
         }
 
         public static string GetColorCode(string name)
@@ -83,6 +89,9 @@ namespace SolutionColors
             {
                 ColorMap.Add(name, name);
             }
+            
+            // Invalidate cache when map changes
+            _colorMapVersion++;
         }
 
         public static string GetColor(string filePath)
@@ -92,10 +101,21 @@ namespace SolutionColors
                 return Colors.Gray.ToString();
             }
 
+            EnsureKeyListCache();
+            
             int hash = Math.Abs(filePath.GetHashCode());
             int mod = hash % (ColorMap.Count - 1);    //last one is "None" which is not a valid color
 
-            return ColorMap[ColorMap.Keys.ElementAt(mod)];
+            return ColorMap[_keyListCache[mod]];
+        }
+        
+        private static void EnsureKeyListCache()
+        {
+            if (_keyListCache == null || _keyListCacheVersion != _colorMapVersion)
+            {
+                _keyListCache = [.. ColorMap.Keys];
+                _keyListCacheVersion = _colorMapVersion;
+            }
         }
     }
 }

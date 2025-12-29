@@ -23,6 +23,12 @@ namespace SolutionColors
                 return DefaultBranch;
             }
 
+            // Do file I/O on background thread
+            return await Task.Run(() => GetBranchFromFileSystem(rootDir));
+        }
+
+        private static string GetBranchFromFileSystem(string rootDir)
+        {
             DirectoryInfo directoryInfo = new(rootDir);
             while (directoryInfo != null)
             {
@@ -31,8 +37,12 @@ namespace SolutionColors
                 // Standard git repository
                 if (Directory.Exists(gitPath))
                 {
-                    string content = File.ReadAllText(Path.Combine(gitPath, _headFile));
-                    return content.Replace(_branchRefPrefix, "").Trim();
+                    string headPath = Path.Combine(gitPath, _headFile);
+                    if (File.Exists(headPath))
+                    {
+                        string content = File.ReadAllText(headPath);
+                        return content.Replace(_branchRefPrefix, "").Trim();
+                    }
                 }
 
                 // Git worktree support
@@ -41,8 +51,12 @@ namespace SolutionColors
                     string gitFileContent = File.ReadAllText(gitPath);
                     string worktreeDir = gitFileContent.Replace(_gitDirPrefix, "").Trim();
 
-                    string content = File.ReadAllText(Path.Combine(worktreeDir, _headFile));
-                    return content.Replace(_branchRefPrefix, "").Trim();
+                    string headPath = Path.Combine(worktreeDir, _headFile);
+                    if (File.Exists(headPath))
+                    {
+                        string content = File.ReadAllText(headPath);
+                        return content.Replace(_branchRefPrefix, "").Trim();
+                    }
                 }
 
                 directoryInfo = Directory.GetParent(directoryInfo.FullName);
