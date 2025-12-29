@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 
@@ -16,7 +16,7 @@ namespace SolutionColors
             { "Lavender", "MediumPurple" },
         };
 
-        private static Dictionary<string, string> ColorMap { get; } = new();
+        private static Dictionary<string, string> ColorMap { get; } = [];
 
         public static int GetIndex(string name)
         {
@@ -25,14 +25,13 @@ namespace SolutionColors
 
         public static string GetColorCode(string name)
         {
-            if (ColorMap.ContainsKey(name))
+            if (ColorMap.TryGetValue(name, out string colorCode))
             {
-                return ColorMap[name];
+                return colorCode;
             }
 
-            object fromHex = ColorConverter.ConvertFromString(name);
-
-            if (fromHex is Color)
+            // Try to parse as hex color
+            if (TryParseColor(name, out _))
             {
                 return name;
             }
@@ -40,8 +39,42 @@ namespace SolutionColors
             return null;
         }
 
+        /// <summary>
+        /// Attempts to parse a color string (name or hex) to a Color.
+        /// </summary>
+        public static bool TryParseColor(string colorString, out Color color)
+        {
+            color = default;
+
+            if (string.IsNullOrWhiteSpace(colorString))
+            {
+                return false;
+            }
+
+            try
+            {
+                object result = ColorConverter.ConvertFromString(colorString);
+                if (result is Color parsedColor)
+                {
+                    color = parsedColor;
+                    return true;
+                }
+            }
+            catch (FormatException)
+            {
+                // Invalid color format
+            }
+
+            return false;
+        }
+
         public static void AddColor(string name)
         {
+            if (ColorMap.ContainsKey(name))
+            {
+                return; // Already added
+            }
+
             if (_colorTranslator.TryGetValue(name, out string code))
             {
                 ColorMap.Add(name, code);
@@ -54,6 +87,11 @@ namespace SolutionColors
 
         public static string GetColor(string filePath)
         {
+            if (ColorMap.Count <= 1)
+            {
+                return Colors.Gray.ToString();
+            }
+
             int hash = Math.Abs(filePath.GetHashCode());
             int mod = hash % (ColorMap.Count - 1);    //last one is "None" which is not a valid color
 

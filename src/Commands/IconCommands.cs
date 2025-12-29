@@ -1,8 +1,5 @@
-﻿using System.IO;
+using System.IO;
 using System.Windows.Forms;
-using EnvDTE;
-using Microsoft.Win32;
-using static SolutionColors.ColorHelper;
 using MessageBox = System.Windows.Forms.MessageBox;
 using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
 
@@ -13,7 +10,7 @@ namespace SolutionColors
     {
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
         {
-            string iconLocation = await GetFileNameAsync(false);
+            string iconLocation = await ColorHelper.GetFileNameAsync(false);
 
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
@@ -44,15 +41,26 @@ namespace SolutionColors
     {
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
         {
-            string iconLocation = GetFileName(false);
-            File.Delete(iconLocation);
+            string iconLocation = await ColorHelper.GetFileNameAsync(false);
+            
+            if (File.Exists(iconLocation))
+            {
+                File.Delete(iconLocation);
+            }
+            
             await ColorHelper.ApplyIconAsync();
         }
 
         protected override void BeforeQueryStatus(EventArgs e)
         {
-            string iconLocation = GetFileName(false);
-            Command.Enabled = File.Exists(iconLocation);
+            // Use JoinableTaskFactory for the sync callback
+            bool exists = Package.JoinableTaskFactory.Run(async () =>
+            {
+                string iconLocation = await ColorHelper.GetFileNameAsync(false);
+                return !string.IsNullOrEmpty(iconLocation) && File.Exists(iconLocation);
+            });
+            
+            Command.Enabled = exists;
         }
     }
 }

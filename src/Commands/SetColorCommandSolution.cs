@@ -1,4 +1,3 @@
-﻿using System.IO;
 using Microsoft.VisualStudio.Telemetry;
 
 namespace SolutionColors
@@ -23,12 +22,12 @@ namespace SolutionColors
 
     internal abstract class ColorBaseCommand<T> : BaseCommand<T> where T : class, new()
     {
+        private const string NoneColor = "None";
         private readonly string _color;
 
-        public ColorBaseCommand()
+        protected ColorBaseCommand()
         {
             _color = GetType().Name;
-
             ColorCache.AddColor(_color);
         }
 
@@ -39,6 +38,12 @@ namespace SolutionColors
             if (solution?.Name?.EndsWith(".wsp") == true)
             {
                 Command.Visible = Command.Enabled = SetColorCommandFolder.IsRoot;
+            }
+
+            // Only update text for the "None" command
+            if (_color != NoneColor)
+            {
+                return;
             }
 
 #pragma warning disable VSTHRD102 // Implement internal logic asynchronously
@@ -60,37 +65,9 @@ namespace SolutionColors
 
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
         {
-            if (_color == "None")
+            if (_color == NoneColor)
             {
-                General options = await General.GetLiveInstanceAsync();
-
-                if (await ColorHelper.SolutionHasCustomColorAsync())
-                {
-                    if (options.AutoMode)
-                    {
-                        bool disableAutoMode = await VS.MessageBox.ShowConfirmAsync("Automatic colorization is currently enabled. Do you wish to disable it too?");
-
-                        if (disableAutoMode)
-                        {
-                            options.AutoMode = false;
-                            await options.SaveAsync();
-                        }
-
-                        await ColorHelper.SetColorAsync((string)null);
-                        await ColorHelper.ColorizeAsync();
-                    }
-                    else
-                    {
-                        await ColorHelper.SetColorAsync((string)null);
-                        await ColorHelper.ColorizeAsync();
-                    }
-                }
-                else
-                {
-                    options.AutoMode = !options.AutoMode;
-                    await options.SaveAsync();
-                    await ColorHelper.ResetAsync();
-                }
+                await HandleNoneColorAsync();
             }
             else
             {
@@ -101,6 +78,37 @@ namespace SolutionColors
             TelemetryEvent tel = Telemetry.CreateEvent("ChangedColor");
             tel.Properties["Color"] = _color;
             Telemetry.TrackEvent(tel);
+        }
+
+        private static async Task HandleNoneColorAsync()
+        {
+            General options = await General.GetLiveInstanceAsync();
+
+            if (await ColorHelper.SolutionHasCustomColorAsync())
+            {
+                // Solution has a custom color - clear it
+                if (options.AutoMode)
+                {
+                    bool disableAutoMode = await VS.MessageBox.ShowConfirmAsync(
+                        "Automatic colorization is currently enabled. Do you wish to disable it too?");
+
+                    if (disableAutoMode)
+                    {
+                        options.AutoMode = false;
+                        await options.SaveAsync();
+                    }
+                }
+
+                await ColorHelper.SetColorAsync((string)null);
+                await ColorHelper.ColorizeAsync();
+            }
+            else
+            {
+                // No custom color - toggle automatic mode
+                options.AutoMode = !options.AutoMode;
+                await options.SaveAsync();
+                await ColorHelper.ResetAsync();
+            }
         }
     }
 }

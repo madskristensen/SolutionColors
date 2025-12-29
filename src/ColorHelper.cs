@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -16,9 +16,6 @@ namespace SolutionColors
 {
     public class ColorHelper
     {
-        public const string ColorFileName = "color.txt";
-        public const string IconFileName = "icon.img"; // This could be one of many filetypes supported by BitmapImage
-
         private static Border _solutionLabel;
         private static Brush _originalLabelColor;
         private static SolidColorBrush _originalLabelForeground;
@@ -45,34 +42,27 @@ namespace SolutionColors
                 await LoadColorsAsync(await GitHelper.GetBranchNameAsync());
             }
 
-            string fileName = await GetFileNameAsync();
-            string _branch = string.Empty;
+            string branch = options.Coloration == Coloration.Unitary
+                ? GitHelper.DefaultBranch
+                : await GitHelper.GetBranchNameAsync();
 
-            if (options.Coloration == Coloration.Unitary)   //use only master color
-            {
-                _branch = "master";
-            }
-            else
-            {
-                _branch = await GitHelper.GetBranchNameAsync();
-            }
-
-            ColorEntry colorEntry = _colorEntries.FirstOrDefault(x => x.branch == _branch);
+            ColorEntry colorEntry = _colorEntries.FirstOrDefault(x => x.Branch == branch);
             if (colorEntry != null)
             {
-                colorEntry.color = colorName;
+                colorEntry.Color = colorName;
             }
             else
             {
-                _colorEntries.Add(new() { branch = _branch, color = colorName });
+                _colorEntries.Add(new ColorEntry { Branch = branch, Color = colorName });
             }
 
-            string fileContent = string.Empty;
-            foreach (ColorEntry colorEntryToSave in _colorEntries)
+            string fileContent = string.Join(Environment.NewLine, _colorEntries.Select(e => e.ToString()));
+            string fileName = await GetFileNameAsync();
+
+            if (!string.IsNullOrEmpty(fileName))
             {
-                fileContent += (fileContent.Length == 0 ? "" : Environment.NewLine) + colorEntryToSave.branch + ":" + colorEntryToSave.color;
+                File.WriteAllText(fileName, fileContent);
             }
-            File.WriteAllText(await GetFileNameAsync(), fileContent);
         }
 
         public static async Task<bool> SolutionHasCustomColorAsync()
@@ -87,14 +77,14 @@ namespace SolutionColors
                 await LoadColorsAsync(branch);
             }
 
-            ColorEntry colorEntry = _colorEntries.FirstOrDefault(x => x.branch == branch);
+            ColorEntry colorEntry = _colorEntries.FirstOrDefault(x => x.Branch == branch);
             if (colorEntry != null)
             {
-                return colorEntry.color;
+                return colorEntry.Color;
             }
             else
             {
-                if (branch == "master")
+                if (branch == GitHelper.DefaultBranch)
                 {
                     return string.Empty;
                 }
@@ -117,39 +107,56 @@ namespace SolutionColors
 
         public static async Task LoadColorsAsync(string branch)
         {
-            _colorEntries ??= new();
+            _colorEntries ??= [];
 
             string fileName = await GetFileNameAsync();
 
             if (!string.IsNullOrEmpty(fileName) && File.Exists(fileName))
             {
-                //Compatibility to older version
-                string fileContent = File.ReadAllText(fileName);
-                string[] lines = fileContent.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-                if (lines.Count() == 1 && lines[0].Split(':').Count() == 1)
+                try
                 {
-                    _colorEntries.Add(new ColorEntry() { branch = "master", color = lines[0] });
-                }
-                else
-                {
+                    string fileContent = File.ReadAllText(fileName);
+                    string[] lines = fileContent.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+
                     foreach (string line in lines)
                     {
-                        string[] lineSegments = line.Split(':');
-                        _colorEntries.Add(new() { branch = lineSegments[0], color = lineSegments[1] });
+                        ColorEntry entry = ColorEntry.Parse(line);
+                        if (entry != null)
+                        {
+                            _colorEntries.Add(entry);
+                        }
                     }
+                }
+                catch (IOException)
+                {
+                    // File could not be read - continue with empty color entries
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // File access denied - continue with empty color entries
                 }
             }
         }
 
-        static private async void WindowEvents_WindowActivated(EnvDTE.Window GotFocus, EnvDTE.Window LostFocus)
+#pragma warning disable VSTHRD100 // Avoid async void methods
+        private static async void WindowEvents_WindowActivated(EnvDTE.Window GotFocus, EnvDTE.Window LostFocus)
+#pragma warning restore VSTHRD100 // Avoid async void methods
         {
-            WindowCollection allWindows = Application.Current.Windows;
-            int count = allWindows.Count;
-            await SetUiColorAsync();
+            try
+            {
+                await SetUiColorAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log but don't crash - this is an async void event handler
+                await ex.LogAsync();
+            }
         }
 
         public static async Task RemoveUIAsync()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             DTE2 env = (EnvDTE80.DTE2)await ServiceProvider.GetGlobalServiceAsync(typeof(SDTE));
             if (env != null)
             {
@@ -160,8 +167,6 @@ namespace SolutionColors
             {
                 return;
             }
-
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             foreach (Enum value in Enum.GetValues(typeof(BorderLocation)))
             {
@@ -200,6 +205,8 @@ namespace SolutionColors
             General options = await General.GetLiveInstanceAsync();
             if (options.ShowTaskBarThumbnails != Options.TaskBarOptions.None || options.ShowTaskBarOverlay)
             {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
                 DTE2 env = (EnvDTE80.DTE2)await ServiceProvider.GetGlobalServiceAsync(typeof(SDTE));
                 if (env != null)
                 {
@@ -208,35 +215,16 @@ namespace SolutionColors
             }
         }
 
-        public static string GetFileName(bool isColor = true)
-        {
-            // This is bad practice but doesn't introduce any noticable hitch and is much easier than reengineering everything
-            Task<string> iconNameTask = GetFileNameAsync(isColor);
-            iconNameTask.Wait();
-            return (iconNameTask.Result != null) ? iconNameTask.Result : "";
-        }
-
         public static async Task<string> GetFileNameAsync(bool isColor = true)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             Solution solution = await VS.Solutions.GetCurrentSolutionAsync();
+            string rootDir = solution?.GetRootDirectory();
 
-            if (solution?.FullPath == null)
+            if (rootDir == null)
             {
                 return null;
-            }
-
-            string rootDir;
-
-            if (solution?.Name?.EndsWith(".wsp") == true)
-            {
-                // .wsp is Open Folder and not regular .sln solutions
-                rootDir = solution.FullPath;
-            }
-            else
-            {
-                rootDir = Path.GetDirectoryName(solution.FullPath);
             }
 
             General options = await General.GetLiveInstanceAsync();
@@ -251,7 +239,7 @@ namespace SolutionColors
             {
                 vsDir = Path.Combine(
                     rootDir,
-                    ".vs",
+                    FileConstants.VsSettingsFolder,
                     Path.GetFileNameWithoutExtension(await solution.GetSolutionNameAsync()));
 
                 if (!Directory.Exists(vsDir))
@@ -261,7 +249,7 @@ namespace SolutionColors
                 }
             }
 
-            return Path.Combine(vsDir, isColor ? ColorFileName : IconFileName);
+            return Path.Combine(vsDir, isColor ? FileConstants.ColorFileName : FileConstants.IconFileName);
         }
 
         private static async Task SetIconAsync()
@@ -270,7 +258,7 @@ namespace SolutionColors
 
             if (options.ShowTaskBarThumbnails != Options.TaskBarOptions.None || options.ShowTaskBarOverlay)
             {
-                ShowInTaskBar(Colors.Transparent, Colors.Transparent, options);
+                await ShowInTaskBarAsync(Colors.Transparent, Colors.Transparent, options);
             }
         }
 
@@ -282,7 +270,7 @@ namespace SolutionColors
 
             General options = await General.GetLiveInstanceAsync();
 
-            if (string.IsNullOrEmpty(await GetColorAsync("master")) && options.AutoMode == false)
+            if (string.IsNullOrEmpty(await GetColorAsync(GitHelper.DefaultBranch)) && options.AutoMode == false)
             {
                 await RemoveUIAsync();
                 return;
@@ -295,7 +283,10 @@ namespace SolutionColors
                 if (sol?.FullPath != null)
                 {
                     string path = await sol.GetSolutionPathAsync();
-                    colorMaster = (Color)ColorConverter.ConvertFromString(ColorCache.GetColor(path));
+                    if (!ColorCache.TryParseColor(ColorCache.GetColor(path), out colorMaster))
+                    {
+                        colorMaster = Colors.Black;
+                    }
                 }
                 else
                 {
@@ -304,18 +295,15 @@ namespace SolutionColors
             }
             else
             {
-                try
-                {
-                    colorMaster = (Color)ColorConverter.ConvertFromString(ColorCache.GetColorCode(await GetColorAsync("master")));
-                }
-                catch(FormatException)
+                string masterColorCode = ColorCache.GetColorCode(await GetColorAsync(GitHelper.DefaultBranch));
+                if (!ColorCache.TryParseColor(masterColorCode, out colorMaster))
                 {
                     colorMaster = Colors.Black;
                 }
             }
 
             Color colorBranch;
-            if (currentBranch == "master")
+            if (currentBranch == GitHelper.DefaultBranch)
             {
                 colorBranch = colorMaster;
             }
@@ -327,7 +315,10 @@ namespace SolutionColors
                     if (sol?.FullPath != null)
                     {
                         string path = await sol.GetSolutionPathAsync();
-                        colorBranch = (Color)ColorConverter.ConvertFromString(ColorCache.GetColor(path + currentBranch));
+                        if (!ColorCache.TryParseColor(ColorCache.GetColor(path + currentBranch), out colorBranch))
+                        {
+                            colorBranch = Colors.Black;
+                        }
                     }
                     else
                     {
@@ -351,7 +342,11 @@ namespace SolutionColors
                     }
                     else
                     {
-                        colorBranch = (Color)ColorConverter.ConvertFromString(ColorCache.GetColorCode(await GetColorAsync(currentBranch)));
+                        string branchColorCode = ColorCache.GetColorCode(colorNameBranch);
+                        if (!ColorCache.TryParseColor(branchColorCode, out colorBranch))
+                        {
+                            colorBranch = Colors.Black;
+                        }
                     }
                 }
             }
@@ -367,7 +362,7 @@ namespace SolutionColors
 
             if (options.ShowTaskBarThumbnails != Options.TaskBarOptions.None || options.ShowTaskBarOverlay)
             {
-                ShowInTaskBar(colorMaster, colorBranch, options);
+                await ShowInTaskBarAsync(colorMaster, colorBranch, options);
             }
 
             TelemetryEvent tel = Telemetry.CreateEvent("ColorApplied");
@@ -385,28 +380,28 @@ namespace SolutionColors
             Telemetry.TrackEvent(tel);
         }
 
-        private static void ShowInTaskBar(Color colorMaster, Color colorBranch, General options)
+        private static async Task ShowInTaskBarAsync(Color colorMaster, Color colorBranch, General options)
         {
             ResetTaskbar();
 
-            //LinearGradientBrush brush = new LinearGradientBrush(colorMaster, colorBranch, 0);
             Brush brush = GetBrushForTaskbar(colorMaster, colorBranch, options);
 
-            switch(options.ShowTaskBarThumbnails)
+            switch (options.ShowTaskBarThumbnails)
             {
                 case Options.TaskBarOptions.MainWindowOnly:
-                    Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = brush.GetImageSource(16), IsBackgroundVisible = false, IsInteractive = false });
+                    ImageSource mainImage = await brush.GetImageSourceAsync(16);
+                    Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = mainImage, IsBackgroundVisible = false, IsInteractive = false });
                     break;
                 case Options.TaskBarOptions.AllWindows:
+                    ImageSource allWindowsImage = await brush.GetImageSourceAsync(16);
                     foreach (System.Windows.Window window in Application.Current.Windows)
                     {
-                        if (window.TaskbarItemInfo == null)
-                            window.TaskbarItemInfo = new TaskbarItemInfo();
+                        window.TaskbarItemInfo ??= new TaskbarItemInfo();
 
                         if (window.TaskbarItemInfo.ThumbButtonInfos == null)
-                            window.TaskbarItemInfo.ThumbButtonInfos = new ThumbButtonInfoCollection();
+                            window.TaskbarItemInfo.ThumbButtonInfos = [];
 
-                        window.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = brush.GetImageSource(16), IsBackgroundVisible = false, IsInteractive = false });
+                        window.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = allWindowsImage, IsBackgroundVisible = false, IsInteractive = false });
                     }
                     break;
                 default:
@@ -415,9 +410,10 @@ namespace SolutionColors
 
             if (options.ShowTaskBarOverlay)
             {
+                ImageSource overlayImage = await brush.GetImageSourceAsync(12);
                 foreach (System.Windows.Window window in Application.Current.Windows)
                 {
-                    window.TaskbarItemInfo.Overlay = brush.GetImageSource(12);
+                    window.TaskbarItemInfo.Overlay = overlayImage;
                 }
             }
         }
@@ -504,12 +500,12 @@ namespace SolutionColors
                 if (options.GradientBorders == Gradient.RadialGradient)
                 {
                     //brush = new RadialGradientBrush(colorBranch, colorMaster);
-                    GradientStopCollection gradientStopCollection = new()
-                    {
+                    GradientStopCollection gradientStopCollection =
+                    [
                         new GradientStop() { Color = colorBranch, Offset = 0 },
                         new GradientStop() { Color = colorBranch, Offset = 0.75 },
                         new GradientStop() { Color = colorMaster, Offset = 1 }
-                    };
+                    ];
                     brush = new RadialGradientBrush(gradientStopCollection);
                 }
                 else if (options.GradientBorders == Gradient.LinearGradient)
@@ -604,7 +600,7 @@ namespace SolutionColors
             foreach (Window window in Application.Current.Windows)
             {
                 window.TaskbarItemInfo ??= new();
-                window.TaskbarItemInfo.ThumbButtonInfos ??= new ThumbButtonInfoCollection();
+                window.TaskbarItemInfo.ThumbButtonInfos ??= [];
                 window.TaskbarItemInfo.ThumbButtonInfos.Clear();
                 window.TaskbarItemInfo.Overlay = null;
             }
@@ -618,14 +614,6 @@ namespace SolutionColors
             _ => "BottomDockBorder",
         };
 
-
-
         private static List<ColorEntry> _colorEntries = null;
-
-        public class ColorEntry
-        {
-            public string branch { get; set; }
-            public string color { get; set; }
-        }
     }
 }

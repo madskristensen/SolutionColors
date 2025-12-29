@@ -51,9 +51,11 @@
     <Compile Include="Commands\IconCommands.cs" />
     <Compile Include="Commands\OptionsCommand.cs" />
     <Compile Include="Commands\SetColorCommandFolder.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="ExtensionMethods\BrushExtensions.cs" />
     <Compile Include="ExtensionMethods\WpfExtensions.cs" />
     <Compile Include="GitHelper.cs" />
+    <Compile Include="Models\ColorEntry.cs" />
     <Compile Include="Options\BorderEditor.cs" />
     <Compile Include="Options\BorderEditorDialog.cs">
       <SubType>Form</SubType>
@@ -114,7 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Community.VisualStudio.VSCT" Version="16.0.29.6" PrivateAssets="all" />
-    <PackageReference Include="Community.VisualStudio.Toolkit.17" Version="17.0.468" ExcludeAssets="Runtime">
+    <PackageReference Include="Community.VisualStudio.Toolkit.17" Version="17.0.545" ExcludeAssets="Runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Telemetry">
@@ -124,7 +126,7 @@
       <Version>16.0.59</Version>
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.8.2365">
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.14.2120">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

@@ -1,57 +1,55 @@
-﻿using System.IO;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace SolutionColors
 {
-    public class GitHelper
+    public static class GitHelper
     {
+        private const string _gitDirectory = ".git";
+        private const string _headFile = "HEAD";
+        private const string _branchRefPrefix = "ref: refs/heads/";
+        private const string _gitDirPrefix = "gitdir: ";
+        public const string DefaultBranch = "master";
+
         public static async Task<string> GetBranchNameAsync()
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             Solution solution = await VS.Solutions.GetCurrentSolutionAsync();
+            string rootDir = solution?.GetRootDirectory();
 
-            if (solution?.FullPath == null)
+            if (rootDir == null)
             {
-                return "master";
-            }
-
-            string rootDir;
-
-            if (solution?.Name?.EndsWith(".wsp") == true)
-            {
-                // .wsp is Open Folder and not regular .sln solutions
-                rootDir = solution.FullPath;
-            }
-            else
-            {
-                rootDir = Path.GetDirectoryName(solution.FullPath);
+                return DefaultBranch;
             }
 
             DirectoryInfo directoryInfo = new(rootDir);
             while (directoryInfo != null)
             {
-                if (directoryInfo != null && Directory.Exists(Path.Combine(directoryInfo.FullName, ".git")))
+                string gitPath = Path.Combine(directoryInfo.FullName, _gitDirectory);
+
+                // Standard git repository
+                if (Directory.Exists(gitPath))
                 {
-                    string content = File.ReadAllText(Path.Combine(directoryInfo.FullName, ".git", "HEAD"));
-                    return content.Replace("ref: refs/heads/", "").Trim();
+                    string content = File.ReadAllText(Path.Combine(gitPath, _headFile));
+                    return content.Replace(_branchRefPrefix, "").Trim();
                 }
 
-                // git worktree support
-                if (File.Exists(Path.Combine(directoryInfo.FullName, ".git")))
+                // Git worktree support
+                if (File.Exists(gitPath))
                 {
-                    string gitFileContent = File.ReadAllText(Path.Combine(directoryInfo.FullName, ".git"));
-                    string worktreeDir = gitFileContent.Replace("gitdir: ", "").Trim();
+                    string gitFileContent = File.ReadAllText(gitPath);
+                    string worktreeDir = gitFileContent.Replace(_gitDirPrefix, "").Trim();
 
-                    string content = File.ReadAllText(Path.Combine(worktreeDir, "HEAD"));
-                    return content.Replace("ref: refs/heads/", "").Trim();
+                    string content = File.ReadAllText(Path.Combine(worktreeDir, _headFile));
+                    return content.Replace(_branchRefPrefix, "").Trim();
                 }
 
-                directoryInfo = System.IO.Directory.GetParent(directoryInfo.FullName);
+                directoryInfo = Directory.GetParent(directoryInfo.FullName);
             }
 
-            //if there ist no GIT repo, we always are in main branch
-            return "master";
+            // If there is no GIT repo, we always are in default branch
+            return DefaultBranch;
         }
     }
 }

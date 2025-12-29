@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SolutionColors.Options
 {
-    class EnumDescriptionConverter : EnumConverter
+    internal class EnumDescriptionConverter : EnumConverter
     {
-        private Type _enumType;
+        private readonly Type _enumType;
 
         public EnumDescriptionConverter(Type type) : base(type)
         {
@@ -29,10 +25,8 @@ namespace SolutionColors.Options
             FieldInfo fi = _enumType.GetField(Enum.GetName(_enumType, value));
             DescriptionAttribute dna = (DescriptionAttribute)Attribute.GetCustomAttribute(fi,
                                         typeof(DescriptionAttribute));
-            if (dna != null)
-                return dna.Description;
-            else
-                return value.ToString();
+            
+            return dna != null ? dna.Description : value.ToString();
         }
 
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type srcType)
@@ -47,9 +41,12 @@ namespace SolutionColors.Options
             {
                 DescriptionAttribute dna = (DescriptionAttribute)Attribute.GetCustomAttribute(fi,
                                             typeof(DescriptionAttribute));
-                if ((dna != null) && ((string)value == dna.Description))
+                if (dna != null && (string)value == dna.Description)
+                {
                     return Enum.Parse(_enumType, fi.Name);
+                }
             }
+
             return Enum.Parse(_enumType, (string)value);
         }
     }

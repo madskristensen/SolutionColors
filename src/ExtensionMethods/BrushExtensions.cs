@@ -1,29 +1,23 @@
-﻿using System.IO;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using static SolutionColors.ColorHelper;
 
 namespace SolutionColors
 {
     public static class BrushExtensions
     {
-        public static ImageSource GetImageSource(this Brush brush, int size)
+        public static async Task<ImageSource> GetImageSourceAsync(this Brush brush, int size)
         {
-            bool uriValid = false;
-            string iconName = GetFileName(false);
+            string iconName = await ColorHelper.GetFileNameAsync(isColor: false);
 
-            if (iconName != "")
+            if (!string.IsNullOrEmpty(iconName) && File.Exists(iconName))
             {
-                Uri uri = new Uri(iconName);
-                uriValid = File.Exists(uri.LocalPath);
+                return brush.GetCustomLogoSource(iconName);
             }
 
-            if (uriValid)
-                return brush.GetCustomLogoSource(iconName);
-            else
-                return brush.GetColoredSquareSource(size);
+            return brush.GetColoredSquareSource(size);
         }
 
         private static ImageSource GetColoredSquareSource(this Brush brush, int size) 
@@ -41,29 +35,32 @@ namespace SolutionColors
 
         private static ImageSource GetCustomLogoSource(this Brush brush, string filepath)
         {
-            Uri uri = new Uri(filepath);
-
-            if (File.Exists(uri.LocalPath))
+            if (!File.Exists(filepath))
             {
-                // It's important to load the BitmapImage via a MemoryStream rather than giving the class the URI as BitmapImage can be slow to release the file handle
-                BitmapImage logo = new BitmapImage();
-                logo.BeginInit();
-                logo.StreamSource = new MemoryStream(File.ReadAllBytes(uri.LocalPath));
-                logo.EndInit();
-
-                DrawingVisual dVisual = new();
-                using (DrawingContext dc = dVisual.RenderOpen())
-                {
-                    dc.DrawImage(logo, new Rect(0, 0, logo.Width, logo.Height));
-                }
-                RenderTargetBitmap targetBitmap = new((int)logo.Width, (int)logo.Height, 96, 96, PixelFormats.Default);
-                targetBitmap.Render(dVisual);
-
-                return new WriteableBitmap(targetBitmap);
+                return brush.GetEmptyImageSource();
             }
 
-            // Return empty, file does not exist
-            return brush.GetEmptyImageSource();
+            // Load the BitmapImage via a MemoryStream rather than giving the class the URI
+            // as BitmapImage can be slow to release the file handle.
+            // Read bytes first, then create stream to ensure proper disposal.
+            byte[] imageBytes = File.ReadAllBytes(filepath);
+            
+            BitmapImage logo = new();
+            logo.BeginInit();
+            logo.CacheOption = BitmapCacheOption.OnLoad;
+            logo.StreamSource = new MemoryStream(imageBytes);
+            logo.EndInit();
+            logo.Freeze(); // Freeze to make it cross-thread accessible and release resources
+
+            DrawingVisual dVisual = new();
+            using (DrawingContext dc = dVisual.RenderOpen())
+            {
+                dc.DrawImage(logo, new Rect(0, 0, logo.Width, logo.Height));
+            }
+            RenderTargetBitmap targetBitmap = new((int)logo.Width, (int)logo.Height, 96, 96, PixelFormats.Default);
+            targetBitmap.Render(dVisual);
+
+            return new WriteableBitmap(targetBitmap);
         }
 
         private static ImageSource GetEmptyImageSource(this Brush brush)

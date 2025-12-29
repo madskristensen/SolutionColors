@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+using System.IO;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -7,6 +8,26 @@ namespace SolutionColors
     internal static class SolutionExtensions
     {
         private const string _dotslnf = ".slnf";
+        private const string _workspaceExtension = ".wsp";
+
+        /// <summary>
+        /// Gets the root directory of the solution or folder workspace.
+        /// </summary>
+        public static string GetRootDirectory(this Solution solution)
+        {
+            if (solution?.FullPath == null)
+            {
+                return null;
+            }
+
+            // .wsp is Open Folder and not regular .sln solutions
+            if (solution.Name?.EndsWith(_workspaceExtension) == true)
+            {
+                return solution.FullPath;
+            }
+
+            return Path.GetDirectoryName(solution.FullPath);
+        }
 
         /// <summary>
         /// Return solution filter (slnf) name if slnf is opened, otherwise return solution (sln) name.
@@ -35,21 +56,10 @@ namespace SolutionColors
 
             if (!string.IsNullOrEmpty(optionsFile) && optionsFile.Contains(_dotslnf))
             {
-                //cut slnf file name from
+                //cut slnf file name from path
                 int right = optionsFile.LastIndexOf(_dotslnf);
                 optionsFile = optionsFile.Substring(0, right + _dotslnf.Length);
-                if (optionsFile.Contains("\\"))
-                {
-                    int left = optionsFile.LastIndexOf("\\");
-                    optionsFile = optionsFile.Substring(left + 1);
-                }
-                else if (optionsFile.Contains("/")) //visual studio is not a crossplatform app, but for additional sure check the different separator
-                {
-                    int left = optionsFile.LastIndexOf("/");
-                    optionsFile = optionsFile.Substring(left + 1);
-                }
-
-                return optionsFile;//here we use only a slnf NAME, not a slnf PATH, due to: https://developercommunity.visualstudio.com/t/no-way-to-get-path-to-solution-filter-fi/1520237
+                return Path.GetFileName(optionsFile);
             }
 
             return null;
