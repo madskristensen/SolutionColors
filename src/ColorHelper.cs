@@ -100,6 +100,35 @@ namespace SolutionColors
             await SetUiColorAsync();
         }
 
+        /// <summary>
+        /// Attempts to colorize the UI with retry logic for when UI elements aren't ready.
+        /// </summary>
+        /// <returns>True if colorization was successful, false if UI elements weren't found after retries.</returns>
+        public static async Task<bool> ColorizeWithRetryAsync(int maxRetries = 3, int delayMs = 500)
+        {
+            for (int i = 0; i < maxRetries; i++)
+            {
+                await SetUiColorAsync();
+
+                // Check if at least the main window borders were found
+                if (Application.Current?.MainWindow != null)
+                {
+                    Border bottomBorder = Application.Current.MainWindow.FindChild<Border>("BottomDockBorder");
+                    if (bottomBorder != null)
+                    {
+                        return true;
+                    }
+                }
+
+                if (i < maxRetries - 1)
+                {
+                    await Task.Delay(delayMs);
+                }
+            }
+
+            return false;
+        }
+
         public static async Task ApplyIconAsync()
         {
             await SetIconAsync();
@@ -386,36 +415,54 @@ namespace SolutionColors
 
             Brush brush = GetBrushForTaskbar(colorMaster, colorBranch, options);
 
-            switch (options.ShowTaskBarThumbnails)
+            // Only add thumbnail buttons if the option is enabled (Issue #46)
+            if (options.ShowTaskBarThumbnails != Options.TaskBarOptions.None)
             {
-                case Options.TaskBarOptions.MainWindowOnly:
-                    ImageSource mainImage = await brush.GetImageSourceAsync(16);
-                    Application.Current.MainWindow.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = mainImage, IsBackgroundVisible = false, IsInteractive = false });
-                    break;
-                case Options.TaskBarOptions.AllWindows:
-                    ImageSource allWindowsImage = await brush.GetImageSourceAsync(16);
-                    foreach (System.Windows.Window window in Application.Current.Windows)
-                    {
-                        window.TaskbarItemInfo ??= new TaskbarItemInfo();
-
-                        if (window.TaskbarItemInfo.ThumbButtonInfos == null)
-                            window.TaskbarItemInfo.ThumbButtonInfos = [];
-
-                        window.TaskbarItemInfo.ThumbButtonInfos.Add(new ThumbButtonInfo() { ImageSource = allWindowsImage, IsBackgroundVisible = false, IsInteractive = false });
-                    }
-                    break;
-                default:
-                    break;
+                ImageSource thumbImage = await brush.GetImageSourceAsync(16);
+                
+                switch (options.ShowTaskBarThumbnails)
+                {
+                    case Options.TaskBarOptions.MainWindowOnly:
+                        EnsureTaskbarItemInfo(Application.Current.MainWindow);
+                        Application.Current.MainWindow?.TaskbarItemInfo?.ThumbButtonInfos?.Add(
+                            new ThumbButtonInfo { ImageSource = thumbImage, IsBackgroundVisible = false, IsInteractive = false });
+                        break;
+                        
+                    case Options.TaskBarOptions.AllWindows:
+                        foreach (Window window in Application.Current.Windows)
+                        {
+                            EnsureTaskbarItemInfo(window);
+                            window?.TaskbarItemInfo?.ThumbButtonInfos?.Add(
+                                new ThumbButtonInfo { ImageSource = thumbImage, IsBackgroundVisible = false, IsInteractive = false });
+                        }
+                        break;
+                }
             }
 
+            // Apply overlay separately (Issue #37 - ensure TaskbarItemInfo exists)
             if (options.ShowTaskBarOverlay)
             {
                 ImageSource overlayImage = await brush.GetImageSourceAsync(12);
-                foreach (System.Windows.Window window in Application.Current.Windows)
+                foreach (Window window in Application.Current.Windows)
                 {
-                    window.TaskbarItemInfo.Overlay = overlayImage;
+                    EnsureTaskbarItemInfo(window);
+                    if (window?.TaskbarItemInfo != null)
+                    {
+                        window.TaskbarItemInfo.Overlay = overlayImage;
+                    }
                 }
             }
+        }
+
+        private static void EnsureTaskbarItemInfo(Window window)
+        {
+            if (window == null)
+            {
+                return;
+            }
+
+            window.TaskbarItemInfo ??= new TaskbarItemInfo();
+            window.TaskbarItemInfo.ThumbButtonInfos ??= new ThumbButtonInfoCollection();
         }
 
         private static Brush GetBrushForTaskbar(Color colorMaster, Color colorBranch, General options)
@@ -458,25 +505,28 @@ namespace SolutionColors
                 if (options.Borders.BorderDetails.Locations.HasFlag(value))
                 {
                     string controlName = GetControlName((BorderLocation)value);
-                    Border _border = Application.Current.MainWindow.FindChild<Border>(controlName);
+                    Border border = Application.Current.MainWindow.FindChild<Border>(controlName);
 
-                    if (_border != null)
+                    if (border != null)
                     {
-                        _border.BorderBrush = GetBrushForBorder(colorMaster, colorBranch, options, (BorderLocation)value);
+                        border.BorderBrush = GetBrushForBorder(colorMaster, colorBranch, options, (BorderLocation)value);
+                        
+                        // Prevent borders from stealing mouse clicks (Issue #23)
+                        border.IsHitTestVisible = false;
 
                         switch ((BorderLocation)value)
                         {
                             case BorderLocation.Bottom:
-                                _border.BorderThickness = new Thickness(0, General.Instance.Borders.BorderDetails.WidthBottom, 0, 0);
+                                border.BorderThickness = new Thickness(0, General.Instance.Borders.BorderDetails.WidthBottom, 0, 0);
                                 break;
                             case BorderLocation.Left:
-                                _border.BorderThickness = new Thickness(General.Instance.Borders.BorderDetails.WidthLeft, 0, 0, 0);
+                                border.BorderThickness = new Thickness(General.Instance.Borders.BorderDetails.WidthLeft, 0, 0, 0);
                                 break;
                             case BorderLocation.Right:
-                                _border.BorderThickness = new Thickness(General.Instance.Borders.BorderDetails.WidthRight, 0, 0, 0);
+                                border.BorderThickness = new Thickness(General.Instance.Borders.BorderDetails.WidthRight, 0, 0, 0);
                                 break;
                             case BorderLocation.Top:
-                                _border.BorderThickness = new Thickness(0, General.Instance.Borders.BorderDetails.WidthTop, 0, 0);
+                                border.BorderThickness = new Thickness(0, General.Instance.Borders.BorderDetails.WidthTop, 0, 0);
                                 break;
                         }
                     }
@@ -535,15 +585,17 @@ namespace SolutionColors
         {
             Brush brush = GetBrushForTitlebar(colorMaster, colorBranch, options);
 
+            // Retry finding the solution label if it wasn't found before (Issue #47)
             if (_solutionLabel == null)
             {
-                _solutionLabel = Application.Current.MainWindow.FindChild<Border>("PART_SolutionNameTextBlock").Parent as Border;
+                Border partSolutionNameTextBlock = Application.Current.MainWindow?.FindChild<Border>("PART_SolutionNameTextBlock");
+                _solutionLabel = partSolutionNameTextBlock?.Parent as Border;
                 _originalLabelColor = _solutionLabel?.Background;
             }
 
             if (_solutionLabel != null)
             {
-                _solutionLabelForegroundProperty ??= _solutionLabel.Child.GetType().GetProperty("Foreground", BindingFlags.Public | BindingFlags.Instance);
+                _solutionLabelForegroundProperty ??= _solutionLabel.Child?.GetType().GetProperty("Foreground", BindingFlags.Public | BindingFlags.Instance);
                 _originalLabelForeground ??= _solutionLabelForegroundProperty?.GetValue(_solutionLabel.Child) as SolidColorBrush;
 
                 if (_solutionLabelForegroundProperty != null)
@@ -599,10 +651,18 @@ namespace SolutionColors
         {
             foreach (Window window in Application.Current.Windows)
             {
-                window.TaskbarItemInfo ??= new();
-                window.TaskbarItemInfo.ThumbButtonInfos ??= [];
-                window.TaskbarItemInfo.ThumbButtonInfos.Clear();
-                window.TaskbarItemInfo.Overlay = null;
+                if (window == null)
+                {
+                    continue;
+                }
+
+                // Only reset if TaskbarItemInfo already exists - don't create new ones
+                // This prevents empty thumbnail space when feature is disabled (Issue #46)
+                if (window.TaskbarItemInfo != null)
+                {
+                    window.TaskbarItemInfo.ThumbButtonInfos?.Clear();
+                    window.TaskbarItemInfo.Overlay = null;
+                }
             }
         }
 

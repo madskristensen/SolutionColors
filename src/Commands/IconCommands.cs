@@ -12,7 +12,7 @@ namespace SolutionColors
         {
             string iconLocation = await ColorHelper.GetFileNameAsync(false);
 
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            using (OpenFileDialog openFileDialog = new())
             {
                 // Filetypes that are supported by BitmapImage
                 openFileDialog.Filter = "Image Files|*.bmp;*.jpg;*.jpeg;*.gif;*.png;*.ico;*.tif;*.tiff;*.wdp;*.raw";
@@ -42,12 +42,12 @@ namespace SolutionColors
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
         {
             string iconLocation = await ColorHelper.GetFileNameAsync(false);
-            
+
             if (File.Exists(iconLocation))
             {
                 File.Delete(iconLocation);
             }
-            
+
             await ColorHelper.ApplyIconAsync();
         }
 
@@ -59,7 +59,7 @@ namespace SolutionColors
                 string iconLocation = await ColorHelper.GetFileNameAsync(false);
                 return !string.IsNullOrEmpty(iconLocation) && File.Exists(iconLocation);
             });
-            
+
             Command.Enabled = exists;
         }
     }

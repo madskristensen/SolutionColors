@@ -1,4 +1,4 @@
-﻿global using System;
+global using System;
 global using Community.VisualStudio.Toolkit;
 global using Microsoft.VisualStudio.Shell;
 global using Task = System.Threading.Tasks.Task;
@@ -67,16 +67,21 @@ namespace SolutionColors
 
                 await ColorHelper.ResetInstanceAsync();
 
-                string colorMaster = await ColorHelper.GetColorAsync("master");
+                string colorMaster = await ColorHelper.GetColorAsync(GitHelper.DefaultBranch);
 
                 General options = await General.GetLiveInstanceAsync();
                 await ColorHelper.ApplyIconAsync();
 
                 if (!string.IsNullOrEmpty(colorMaster) || options.AutoMode == true)
                 {
-                    await ColorHelper.ColorizeAsync();
-                    await Task.Delay(2000);
-                    _ratingPrompt.RegisterSuccessfulUsage();
+                    // Retry colorization if UI elements aren't ready yet
+                    bool success = await ColorHelper.ColorizeWithRetryAsync();
+                    
+                    if (success)
+                    {
+                        await Task.Delay(2000);
+                        _ratingPrompt.RegisterSuccessfulUsage();
+                    }
                 }
             }).FireAndForget();
         }

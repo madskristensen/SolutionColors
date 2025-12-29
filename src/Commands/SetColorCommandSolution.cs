@@ -22,7 +22,7 @@ namespace SolutionColors
 
     internal abstract class ColorBaseCommand<T> : BaseCommand<T> where T : class, new()
     {
-        private const string NoneColor = "None";
+        private const string _noneColor = "None";
         private readonly string _color;
 
         protected ColorBaseCommand()
@@ -41,7 +41,7 @@ namespace SolutionColors
             }
 
             // Only update text for the "None" command
-            if (_color != NoneColor)
+            if (_color != _noneColor)
             {
                 return;
             }
@@ -65,7 +65,7 @@ namespace SolutionColors
 
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
         {
-            if (_color == NoneColor)
+            if (_color == _noneColor)
             {
                 await HandleNoneColorAsync();
             }
