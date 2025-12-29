@@ -20,6 +20,8 @@ namespace SolutionColors
         private static Brush _originalLabelColor;
         private static SolidColorBrush _originalLabelForeground;
         private static PropertyInfo _solutionLabelForegroundProperty;
+        private static FileSystemWatcher _colorFileWatcher;
+        private static DateTime _lastColorFileChange = DateTime.MinValue;
 
         //INFO:
         //colorMaster: the color of master branch
@@ -28,6 +30,7 @@ namespace SolutionColors
         public static async Task ResetInstanceAsync()
         {
             _colorEntries = null;
+            DisposeFileWatcher();
             await RemoveUIAsync();
         }
 
@@ -39,7 +42,7 @@ namespace SolutionColors
 
             if (_colorEntries == null)
             {
-                await LoadColorsAsync(await GitHelper.GetBranchNameAsync());
+                await LoadColorsAsync();
             }
 
             string branch = options.Coloration == Coloration.Unitary
@@ -74,7 +77,7 @@ namespace SolutionColors
         {
             if (_colorEntries == null)
             {
-                await LoadColorsAsync(branch);
+                await LoadColorsAsync();
             }
 
             ColorEntry colorEntry = _colorEntries.FirstOrDefault(x => x.Branch == branch);
@@ -134,7 +137,7 @@ namespace SolutionColors
             await SetIconAsync();
         }
 
-        public static async Task LoadColorsAsync(string branch)
+        public static async Task LoadColorsAsync()
         {
             _colorEntries ??= [];
 
@@ -145,7 +148,7 @@ namespace SolutionColors
                 try
                 {
                     string fileContent = File.ReadAllText(fileName);
-                    string[] lines = fileContent.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] lines = fileContent.Split(["\r\n", "\r", "\n"], StringSplitOptions.RemoveEmptyEntries);
 
                     foreach (string line in lines)
                     {
@@ -155,6 +158,9 @@ namespace SolutionColors
                             _colorEntries.Add(entry);
                         }
                     }
+
+                    // Set up file watcher for auto-reload (Issue #45)
+                    SetupFileWatcher(fileName);
                 }
                 catch (IOException)
                 {
@@ -419,7 +425,7 @@ namespace SolutionColors
             if (options.ShowTaskBarThumbnails != Options.TaskBarOptions.None)
             {
                 ImageSource thumbImage = await brush.GetImageSourceAsync(16);
-                
+
                 switch (options.ShowTaskBarThumbnails)
                 {
                     case Options.TaskBarOptions.MainWindowOnly:
@@ -427,7 +433,7 @@ namespace SolutionColors
                         Application.Current.MainWindow?.TaskbarItemInfo?.ThumbButtonInfos?.Add(
                             new ThumbButtonInfo { ImageSource = thumbImage, IsBackgroundVisible = false, IsInteractive = false });
                         break;
-                        
+
                     case Options.TaskBarOptions.AllWindows:
                         foreach (Window window in Application.Current.Windows)
                         {
@@ -462,7 +468,7 @@ namespace SolutionColors
             }
 
             window.TaskbarItemInfo ??= new TaskbarItemInfo();
-            window.TaskbarItemInfo.ThumbButtonInfos ??= new ThumbButtonInfoCollection();
+            window.TaskbarItemInfo.ThumbButtonInfos ??= [];
         }
 
         private static Brush GetBrushForTaskbar(Color colorMaster, Color colorBranch, General options)
@@ -510,7 +516,7 @@ namespace SolutionColors
                     if (border != null)
                     {
                         border.BorderBrush = GetBrushForBorder(colorMaster, colorBranch, options, (BorderLocation)value);
-                        
+
                         // Prevent borders from stealing mouse clicks (Issue #23)
                         border.IsHitTestVisible = false;
 
@@ -673,6 +679,75 @@ namespace SolutionColors
             BorderLocation.Top => "MainWindowTitleBar",
             _ => "BottomDockBorder",
         };
+
+        /// <summary>
+        /// Sets up a FileSystemWatcher to monitor color.txt for external changes.
+        /// </summary>
+        private static void SetupFileWatcher(string filePath)
+        {
+            DisposeFileWatcher();
+
+            try
+            {
+                string directory = Path.GetDirectoryName(filePath);
+                string fileName = Path.GetFileName(filePath);
+
+                _colorFileWatcher = new FileSystemWatcher(directory, fileName)
+                {
+                    NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size,
+                    EnableRaisingEvents = true
+                };
+
+                _colorFileWatcher.Changed += OnColorFileChanged;
+            }
+            catch (Exception ex)
+            {
+                // If we can't set up the watcher, just continue without it
+                System.Diagnostics.Debug.WriteLine($"Failed to set up color file watcher: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Disposes the FileSystemWatcher.
+        /// </summary>
+        private static void DisposeFileWatcher()
+        {
+            if (_colorFileWatcher != null)
+            {
+                _colorFileWatcher.EnableRaisingEvents = false;
+                _colorFileWatcher.Changed -= OnColorFileChanged;
+                _colorFileWatcher.Dispose();
+                _colorFileWatcher = null;
+            }
+        }
+
+#pragma warning disable VSTHRD100 // Avoid async void methods
+        private static async void OnColorFileChanged(object sender, FileSystemEventArgs e)
+#pragma warning restore VSTHRD100 // Avoid async void methods
+        {
+            try
+            {
+                // Debounce: FileSystemWatcher can fire multiple events for a single change
+                DateTime now = DateTime.Now;
+                if ((now - _lastColorFileChange).TotalMilliseconds < 500)
+                {
+                    return;
+                }
+                _lastColorFileChange = now;
+
+                // Small delay to ensure file is fully written
+                await Task.Delay(100);
+
+                // Reload colors and re-colorize
+                _colorEntries = null;
+                await ColorizeAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log but don't crash - this is an async void event handler
+                await ex.LogAsync();
+            }
+        }
 
         private static List<ColorEntry> _colorEntries = null;
     }

@@ -1,4 +1,4 @@
-﻿namespace SolutionColors
+namespace SolutionColors
 {
     partial class BorderEditorDialog
     {
@@ -46,7 +46,7 @@
             // 
             // btnTop
             // 
-            this.btnTop.Location = new System.Drawing.Point(40, 0);
+            this.btnTop.Location = new System.Drawing.Point(90, 15);
             this.btnTop.Name = "btnTop";
             this.btnTop.Size = new System.Drawing.Size(120, 40);
             this.btnTop.TabIndex = 0;
@@ -56,7 +56,7 @@
             // 
             // btnBottom
             // 
-            this.btnBottom.Location = new System.Drawing.Point(40, 160);
+            this.btnBottom.Location = new System.Drawing.Point(90, 195);
             this.btnBottom.Name = "btnBottom";
             this.btnBottom.Size = new System.Drawing.Size(120, 40);
             this.btnBottom.TabIndex = 1;
@@ -66,9 +66,9 @@
             // 
             // btnLeft
             // 
-            this.btnLeft.Location = new System.Drawing.Point(0, 40);
+            this.btnLeft.Location = new System.Drawing.Point(15, 55);
             this.btnLeft.Name = "btnLeft";
-            this.btnLeft.Size = new System.Drawing.Size(40, 120);
+            this.btnLeft.Size = new System.Drawing.Size(50, 140);
             this.btnLeft.TabIndex = 2;
             this.btnLeft.Text = "Left";
             this.btnLeft.UseVisualStyleBackColor = true;
@@ -76,9 +76,9 @@
             // 
             // btnRight
             // 
-            this.btnRight.Location = new System.Drawing.Point(160, 40);
+            this.btnRight.Location = new System.Drawing.Point(235, 55);
             this.btnRight.Name = "btnRight";
-            this.btnRight.Size = new System.Drawing.Size(40, 120);
+            this.btnRight.Size = new System.Drawing.Size(50, 140);
             this.btnRight.TabIndex = 3;
             this.btnRight.Text = "Right";
             this.btnRight.UseVisualStyleBackColor = true;
@@ -87,9 +87,9 @@
             // btnOk
             // 
             this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOk.Location = new System.Drawing.Point(113, 218);
+            this.btnOk.Location = new System.Drawing.Point(210, 255);
             this.btnOk.Name = "btnOk";
-            this.btnOk.Size = new System.Drawing.Size(75, 23);
+            this.btnOk.Size = new System.Drawing.Size(75, 28);
             this.btnOk.TabIndex = 4;
             this.btnOk.Text = "OK";
             this.btnOk.UseVisualStyleBackColor = true;
@@ -97,16 +97,16 @@
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(32, 218);
+            this.btnCancel.Location = new System.Drawing.Point(115, 255);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 23);
+            this.btnCancel.Size = new System.Drawing.Size(75, 28);
             this.btnCancel.TabIndex = 5;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             // 
             // numTop
             // 
-            this.numTop.Location = new System.Drawing.Point(80, 40);
+            this.numTop.Location = new System.Drawing.Point(130, 60);
             this.numTop.Maximum = new decimal(new int[] {
             20,
             0,
@@ -118,7 +118,7 @@
             0,
             0});
             this.numTop.Name = "numTop";
-            this.numTop.Size = new System.Drawing.Size(40, 20);
+            this.numTop.Size = new System.Drawing.Size(45, 20);
             this.numTop.TabIndex = 6;
             this.numTop.Value = new decimal(new int[] {
             1,
@@ -129,7 +129,7 @@
             // 
             // numRight
             // 
-            this.numRight.Location = new System.Drawing.Point(120, 92);
+            this.numRight.Location = new System.Drawing.Point(175, 115);
             this.numRight.Maximum = new decimal(new int[] {
             20,
             0,
@@ -141,7 +141,7 @@
             0,
             0});
             this.numRight.Name = "numRight";
-            this.numRight.Size = new System.Drawing.Size(40, 20);
+            this.numRight.Size = new System.Drawing.Size(45, 20);
             this.numRight.TabIndex = 7;
             this.numRight.Value = new decimal(new int[] {
             1,
@@ -152,7 +152,7 @@
             // 
             // numLeft
             // 
-            this.numLeft.Location = new System.Drawing.Point(40, 92);
+            this.numLeft.Location = new System.Drawing.Point(80, 115);
             this.numLeft.Maximum = new decimal(new int[] {
             20,
             0,
@@ -164,7 +164,7 @@
             0,
             0});
             this.numLeft.Name = "numLeft";
-            this.numLeft.Size = new System.Drawing.Size(40, 20);
+            this.numLeft.Size = new System.Drawing.Size(45, 20);
             this.numLeft.TabIndex = 8;
             this.numLeft.Value = new decimal(new int[] {
             1,
@@ -175,7 +175,7 @@
             // 
             // numBottom
             // 
-            this.numBottom.Location = new System.Drawing.Point(80, 140);
+            this.numBottom.Location = new System.Drawing.Point(130, 170);
             this.numBottom.Maximum = new decimal(new int[] {
             20,
             0,
@@ -187,7 +187,7 @@
             0,
             0});
             this.numBottom.Name = "numBottom";
-            this.numBottom.Size = new System.Drawing.Size(40, 20);
+            this.numBottom.Size = new System.Drawing.Size(45, 20);
             this.numBottom.TabIndex = 9;
             this.numBottom.Value = new decimal(new int[] {
             1,
@@ -198,11 +198,11 @@
             // 
             // BorderEditorDialog
             // 
+            this.AcceptButton = this.btnOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(216, 291);
-            this.ControlBox = false;
+            this.CancelButton = this.btnCancel;
+            this.ClientSize = new System.Drawing.Size(300, 300);
             this.Controls.Add(this.numBottom);
             this.Controls.Add(this.numLeft);
             this.Controls.Add(this.numRight);
@@ -213,7 +213,9 @@
             this.Controls.Add(this.btnLeft);
             this.Controls.Add(this.btnBottom);
             this.Controls.Add(this.btnTop);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "BorderEditorDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Border settings";
