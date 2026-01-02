@@ -220,6 +220,12 @@ namespace SolutionColors
                 if (border != null)
                 {
                     border.BorderThickness = new Thickness(0);
+                    // Restore hit testing when removing borders (Issue #55)
+                    // Skip Top border - we never disable hit testing on MainWindowTitleBar
+                    if (location != BorderLocation.Top)
+                    {
+                        border.IsHitTestVisible = true;
+                    }
                 }
             }
             
@@ -524,27 +530,33 @@ namespace SolutionColors
         {
             foreach (Enum value in Enum.GetValues(options.Borders.BorderDetails.Locations.GetType()))
             {
-                if (options.Borders.BorderDetails.Locations.HasFlag(value))
+                BorderLocation location = (BorderLocation)value;
+                
+                // Use cached border or find and cache it
+                if (!_borderCache.TryGetValue(location, out Border border))
                 {
-                    BorderLocation location = (BorderLocation)value;
-                    
-                    // Use cached border or find and cache it
-                    if (!_borderCache.TryGetValue(location, out Border border))
-                    {
-                        string controlName = GetControlName(location);
-                        border = Application.Current.MainWindow?.FindChild<Border>(controlName);
-                        if (border != null)
-                        {
-                            _borderCache[location] = border;
-                        }
-                    }
-
+                    string controlName = GetControlName(location);
+                    border = Application.Current.MainWindow?.FindChild<Border>(controlName);
                     if (border != null)
                     {
+                        _borderCache[location] = border;
+                    }
+                }
+
+                if (border != null)
+                {
+                    if (options.Borders.BorderDetails.Locations.HasFlag(value))
+                    {
+                        // Enable border
                         border.BorderBrush = GetBrushForBorder(colorMaster, colorBranch, options, location);
 
                         // Prevent borders from stealing mouse clicks (Issue #23)
-                        border.IsHitTestVisible = false;
+                        // But NOT for Top border - MainWindowTitleBar contains the menu bar,
+                        // and disabling hit testing would block menu interaction (Issue #55)
+                        if (location != BorderLocation.Top)
+                        {
+                            border.IsHitTestVisible = false;
+                        }
 
                         switch (location)
                         {
@@ -560,6 +572,15 @@ namespace SolutionColors
                             case BorderLocation.Top:
                                 border.BorderThickness = new Thickness(0, General.Instance.Borders.BorderDetails.WidthTop, 0, 0);
                                 break;
+                        }
+                    }
+                    else
+                    {
+                        // Disable border - reset thickness and restore hit testing (Issue #55)
+                        border.BorderThickness = new Thickness(0);
+                        if (location != BorderLocation.Top)
+                        {
+                            border.IsHitTestVisible = true;
                         }
                     }
                 }
