@@ -196,11 +196,8 @@ namespace SolutionColors
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            DTE2 env = (EnvDTE80.DTE2)await ServiceProvider.GetGlobalServiceAsync(typeof(SDTE));
-            if (env != null)
-            {
-                env.Events.WindowEvents.WindowActivated -= WindowEvents_WindowActivated;
-            }
+            DTE2 env = (DTE2)await ServiceProvider.GetGlobalServiceAsync(typeof(SDTE));
+            env?.Events.WindowEvents.WindowActivated -= WindowEvents_WindowActivated;
 
             if (VsShellUtilities.ShellIsShuttingDown)
             {
@@ -210,13 +207,12 @@ namespace SolutionColors
             // Use cached borders if available, otherwise find them
             foreach (BorderLocation location in Enum.GetValues(typeof(BorderLocation)))
             {
-                Border border;
-                if (!_borderCache.TryGetValue(location, out border))
+                if (!_borderCache.TryGetValue(location, out Border border))
                 {
                     string controlName = GetControlName(location);
                     border = Application.Current.MainWindow?.FindChild<Border>(controlName);
                 }
-                
+
                 if (border != null)
                 {
                     border.BorderThickness = new Thickness(0);
@@ -228,7 +224,7 @@ namespace SolutionColors
                     }
                 }
             }
-            
+
             // Clear the cache since we're removing UI
             _borderCache.Clear();
 
@@ -262,10 +258,7 @@ namespace SolutionColors
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
                 DTE2 env = (EnvDTE80.DTE2)await ServiceProvider.GetGlobalServiceAsync(typeof(SDTE));
-                if (env != null)
-                {
-                    env.Events.WindowEvents.WindowActivated += WindowEvents_WindowActivated;
-                }
+                env?.Events.WindowEvents.WindowActivated += WindowEvents_WindowActivated;
             }
         }
 
@@ -531,7 +524,7 @@ namespace SolutionColors
             foreach (Enum value in Enum.GetValues(options.Borders.BorderDetails.Locations.GetType()))
             {
                 BorderLocation location = (BorderLocation)value;
-                
+
                 // Use cached border or find and cache it
                 if (!_borderCache.TryGetValue(location, out Border border))
                 {
