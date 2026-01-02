@@ -197,7 +197,10 @@ namespace SolutionColors
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             DTE2 env = (DTE2)await ServiceProvider.GetGlobalServiceAsync(typeof(SDTE));
-            env?.Events.WindowEvents.WindowActivated -= WindowEvents_WindowActivated;
+            if (env != null)
+            {
+                env.Events.WindowEvents.WindowActivated -= WindowEvents_WindowActivated;
+            }
 
             if (VsShellUtilities.ShellIsShuttingDown)
             {
@@ -258,7 +261,10 @@ namespace SolutionColors
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
                 DTE2 env = (EnvDTE80.DTE2)await ServiceProvider.GetGlobalServiceAsync(typeof(SDTE));
-                env?.Events.WindowEvents.WindowActivated += WindowEvents_WindowActivated;
+                if (env != null)
+                {
+                    env.Events.WindowEvents.WindowActivated += WindowEvents_WindowActivated;
+                }
             }
         }
 
