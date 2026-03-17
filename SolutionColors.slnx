@@ -8,4 +8,5 @@
     <Platform Solution="*|arm64" Project="arm64" />
     <Platform Solution="*|x86" Project="x86" />
   </Project>
+  <Project Path="test/SolutionColors.Test/SolutionColors.Test.csproj" />
 </Solution>
