@@ -102,6 +102,40 @@ namespace SolutionColors
             }
         }
 
+        /// <summary>
+        /// Returns true if the given branch has an explicit, non-empty color assigned.
+        /// </summary>
+        public static async Task<bool> BranchHasColorAsync(string branch)
+        {
+            if (_colorEntries == null)
+            {
+                await LoadColorsAsync();
+            }
+
+            return _colorEntries.Any(x => x.Branch == branch && !string.IsNullOrEmpty(x.Color));
+        }
+
+        /// <summary>
+        /// Determines whether colorization should be removed (no color applied) based on the
+        /// current coloration mode and available colors. In "Color per branch" mode a non-master
+        /// branch is colorized based on its own color, independent of the master branch's color
+        /// (Issue #59).
+        /// </summary>
+        internal static bool ShouldRemoveColorization(Coloration coloration, string currentBranch, string masterColor, bool currentBranchHasColor, bool autoMode)
+        {
+            if (autoMode)
+            {
+                return false;
+            }
+
+            if (coloration == Coloration.Branch && currentBranch != GitHelper.DefaultBranch)
+            {
+                return !currentBranchHasColor;
+            }
+
+            return string.IsNullOrEmpty(masterColor);
+        }
+
         public static async Task ColorizeAsync()
         {
             await SetUiColorAsync();
@@ -327,7 +361,11 @@ namespace SolutionColors
             bool hasCustomColor = await SolutionHasCustomColorAsync();
             string masterColor = await GetColorAsync(GitHelper.DefaultBranch);
 
-            if (string.IsNullOrEmpty(masterColor) && options.AutoMode == false)
+            // In "Color per branch" mode the current branch's own color decides whether to
+            // colorize, independent of the master branch's color (Issue #59).
+            bool currentBranchHasColor = await BranchHasColorAsync(currentBranch);
+
+            if (ShouldRemoveColorization(options.Coloration, currentBranch, masterColor, currentBranchHasColor, options.AutoMode))
             {
                 await RemoveUIAsync();
                 return;

@@ -1,7 +1,10 @@
 ﻿using SolutionColors;
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
+[assembly: InternalsVisibleTo("SolutionColors.Test")]
 
 [assembly: AssemblyTitle(Vsix.Name)]
 [assembly: AssemblyDescription(Vsix.Description)]

@@ -68,11 +68,13 @@ namespace SolutionColors
                 await ColorHelper.ResetInstanceAsync();
 
                 string colorMaster = await ColorHelper.GetColorAsync(GitHelper.DefaultBranch);
+                string currentBranch = await GitHelper.GetBranchNameAsync();
+                bool branchHasColor = await ColorHelper.BranchHasColorAsync(currentBranch);
 
                 General options = await General.GetLiveInstanceAsync();
                 await ColorHelper.ApplyIconAsync();
 
-                if (!string.IsNullOrEmpty(colorMaster) || options.AutoMode == true)
+                if (!string.IsNullOrEmpty(colorMaster) || branchHasColor || options.AutoMode == true)
                 {
                     // Retry colorization if UI elements aren't ready yet
                     bool success = await ColorHelper.ColorizeWithRetryAsync();
