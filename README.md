@@ -1,12 +1,14 @@
-[marketplace]: https://marketplace.visualstudio.com/items?itemName=MadsKristensen.SolutionColors
-[vsixgallery]: http://vsixgallery.com/extension/SolutionColors.dfa813d0-736b-491d-921a-4a3503d41543/
-[repo]: https://github.com/madskristensen/SolutionColors
+[marketplace]: <https://marketplace.visualstudio.com/items?itemName=MadsKristensen.SolutionColors>
+[vsixgallery]: <http://vsixgallery.com/extension/SolutionColors.dfa813d0-736b-491d-921a-4a3503d41543/>
+[repo]: <https://github.com/madskristensen/SolutionColors>
 
 # Solution Colors for Visual Studio
 
 Allows you to associate a color with a solution or folder and display it in various locations within Visual Studio. Inspired by the [Peacock extension](https://marketplace.visualstudio.com/items?itemName=johnpapa.vscode-peacock) for VS Code and [this Visual Studio feature request](https://developercommunity.visualstudio.com/t/Per-SolutionFolder-Color-Theme/608136?space=8&ftype=idea).
 
 [![Build](https://github.com/madskristensen/SolutionColors/actions/workflows/build.yaml/badge.svg)](https://github.com/madskristensen/SolutionColors/actions/workflows/build.yaml)
+[![Install from VSIX Gallery](https://www.vsixgallery.com/badge/SolutionColors.dfa813d0-736b-491d-921a-4a3503d41543.png)][vsixgallery]
+![GitHub Sponsors](https://img.shields.io/github/sponsors/madskristensen)
 
 Download this extension from the [Visual Studio Marketplace][marketplace]
 or get the [CI build][vsixgallery].
@@ -20,6 +22,7 @@ When you have multiple instances of Visual Studio open at the same time, it can 
 The result is a subtle, yet very visible colorization that doesn’t feel noisy or distracting. It puts you in control with an array of customization options.
 
 ## Getting Started
+
 To enable colorization, open a solution or folder in Visual Studio.  
 In the Solution Explorer window > Right click the top level solution > Set Solution Color > (Select Color)  
 From here you can choose between a list of predefined colors matching the color palette used for colorizing document tabs.  
@@ -38,16 +41,17 @@ After selecting a color manually, the **Automatic** button changes to **None**. 
 
 ## Automatic
 
-Instead of manually assigning a color to every solution, Visual Studio can do it automatically. With this option enabled, all solutions will be assigned a color when opened. The color is calculated based on the hash of the full path of the solution, so each solution will always be assigned the same color. 
+Instead of manually assigning a color to every solution, Visual Studio can do it automatically. With this option enabled, all solutions will be assigned a color when opened. The color is calculated based on the hash of the full path of the solution, so each solution will always be assigned the same color.
 
 When Automatic colorization is enabled, the button in the submenu shows a checkmark.
 
-![Context Menu Disable](art/context-menu-disable.png) 
+![Context Menu Disable](art/context-menu-disable.png)
 
-When automatic colorization is enabled, you can still choose your own custom color for your solution. A manually selected color always takes precedence over automatic. 
+When automatic colorization is enabled, you can still choose your own custom color for your solution. A manually selected color always takes precedence over automatic.
 
 ## Colorized elements
-- The solution name in the title bar is visible at all times and located at the top, which makes it a prime location for colorization. 
+- The solution name in the title bar is visible at all times and located at the top, which makes it a prime location for colorization.
+
 
     ![Solution Label](art/solution-label.png)
 
