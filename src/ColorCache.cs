@@ -102,8 +102,10 @@ namespace SolutionColors
             }
 
             EnsureKeyListCache();
-            
-            int hash = Math.Abs(filePath.GetHashCode());
+
+            // Mask the sign bit instead of Math.Abs: Math.Abs(int.MinValue) throws OverflowException,
+            // and GetHashCode() can legitimately return int.MinValue.
+            int hash = filePath.GetHashCode() & 0x7FFFFFFF;
             int mod = hash % (ColorMap.Count - 1);    //last one is "None" which is not a valid color
 
             return ColorMap[_keyListCache[mod]];

@@ -38,24 +38,27 @@ namespace SolutionColors
                 if (Directory.Exists(gitPath))
                 {
                     string headPath = Path.Combine(gitPath, _headFile);
-                    if (File.Exists(headPath))
+                    string branch = TryReadBranch(headPath);
+                    if (branch != null)
                     {
-                        string content = File.ReadAllText(headPath);
-                        return content.Replace(_branchRefPrefix, "").Trim();
+                        return branch;
                     }
                 }
 
                 // Git worktree support
                 if (File.Exists(gitPath))
                 {
-                    string gitFileContent = File.ReadAllText(gitPath);
-                    string worktreeDir = gitFileContent.Replace(_gitDirPrefix, "").Trim();
-
-                    string headPath = Path.Combine(worktreeDir, _headFile);
-                    if (File.Exists(headPath))
+                    string gitFileContent = TryReadAllText(gitPath);
+                    if (gitFileContent != null)
                     {
-                        string content = File.ReadAllText(headPath);
-                        return content.Replace(_branchRefPrefix, "").Trim();
+                        string worktreeDir = gitFileContent.Replace(_gitDirPrefix, "").Trim();
+
+                        string headPath = Path.Combine(worktreeDir, _headFile);
+                        string branch = TryReadBranch(headPath);
+                        if (branch != null)
+                        {
+                            return branch;
+                        }
                     }
                 }
 
@@ -64,6 +67,34 @@ namespace SolutionColors
 
             // If there is no GIT repo, we always are in default branch
             return DefaultBranch;
+        }
+
+        private static string TryReadBranch(string headPath)
+        {
+            if (!File.Exists(headPath))
+            {
+                return null;
+            }
+
+            string content = TryReadAllText(headPath);
+            return content?.Replace(_branchRefPrefix, "").Trim();
+        }
+
+        private static string TryReadAllText(string path)
+        {
+            try
+            {
+                return File.ReadAllText(path);
+            }
+            catch (IOException)
+            {
+                // File locked or unavailable (e.g. concurrent git operation)
+                return null;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return null;
+            }
         }
     }
 }

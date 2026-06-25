@@ -217,7 +217,7 @@ namespace SolutionColors
         {
             try
             {
-                await SetUiColorAsync();
+                await SetUiColorAsync(trackTelemetry: false);
             }
             catch (Exception ex)
             {
@@ -349,7 +349,7 @@ namespace SolutionColors
             }
         }
 
-        private static async Task SetUiColorAsync()
+        private static async Task SetUiColorAsync(bool trackTelemetry = true)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -458,6 +458,11 @@ namespace SolutionColors
             if (options.ShowTaskBarThumbnails != Options.TaskBarOptions.None || options.ShowTaskBarOverlay)
             {
                 await ShowInTaskBarAsync(colorMaster, colorBranch, options);
+            }
+
+            if (!trackTelemetry)
+            {
+                return;
             }
 
             TelemetryEvent tel = Telemetry.CreateEvent("ColorApplied");
@@ -598,16 +603,16 @@ namespace SolutionColors
                         switch (location)
                         {
                             case BorderLocation.Bottom:
-                                border.BorderThickness = new Thickness(0, General.Instance.Borders.BorderDetails.WidthBottom, 0, 0);
+                                border.BorderThickness = new Thickness(0, options.Borders.BorderDetails.WidthBottom, 0, 0);
                                 break;
                             case BorderLocation.Left:
-                                border.BorderThickness = new Thickness(General.Instance.Borders.BorderDetails.WidthLeft, 0, 0, 0);
+                                border.BorderThickness = new Thickness(options.Borders.BorderDetails.WidthLeft, 0, 0, 0);
                                 break;
                             case BorderLocation.Right:
-                                border.BorderThickness = new Thickness(General.Instance.Borders.BorderDetails.WidthRight, 0, 0, 0);
+                                border.BorderThickness = new Thickness(options.Borders.BorderDetails.WidthRight, 0, 0, 0);
                                 break;
                             case BorderLocation.Top:
-                                border.BorderThickness = new Thickness(0, General.Instance.Borders.BorderDetails.WidthTop, 0, 0);
+                                border.BorderThickness = new Thickness(0, options.Borders.BorderDetails.WidthTop, 0, 0);
                                 break;
                         }
                     }
