@@ -317,10 +317,17 @@ namespace SolutionColors
             General options = await General.GetLiveInstanceAsync();
 
             string vsDir;
+            string settingsFileName;
 
             if (options.SaveInRoot)
             {
                 vsDir = rootDir;
+
+                string solutionFileName = Path.GetFileNameWithoutExtension(await solution.GetSolutionNameAsync());
+                string settingsFileNameSuffix = isColor ? FileConstants.ColorFileName : FileConstants.IconFileName;
+                settingsFileName = string.IsNullOrWhiteSpace(solutionFileName)
+                    ? settingsFileNameSuffix
+                    : $"{solutionFileName}.{settingsFileNameSuffix}";
             }
             else
             {
@@ -334,13 +341,9 @@ namespace SolutionColors
                     DirectoryInfo di = Directory.CreateDirectory(vsDir);
                     di.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
                 }
-            }
 
-            string solutionFileName = Path.GetFileName(await solution.GetSolutionNameAsync());
-            string settingsFileNameSuffix = isColor ? FileConstants.ColorFileName : FileConstants.IconFileName;
-            string settingsFileName = string.IsNullOrWhiteSpace(solutionFileName)
-                ? settingsFileNameSuffix
-                : $"{solutionFileName}.{settingsFileNameSuffix}";
+                settingsFileName = isColor ? FileConstants.ColorFileName : FileConstants.IconFileName;
+            }
 
             return Path.Combine(vsDir, settingsFileName);
         }
