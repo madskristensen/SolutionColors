@@ -336,7 +336,13 @@ namespace SolutionColors
                 }
             }
 
-            return Path.Combine(vsDir, isColor ? FileConstants.ColorFileName : FileConstants.IconFileName);
+            string solutionFileName = await solution.GetSolutionNameAsync();
+            string settingsFileNameSuffix = isColor ? FileConstants.ColorFileName : FileConstants.IconFileName;
+            string settingsFileName = string.IsNullOrWhiteSpace(solutionFileName)
+                ? settingsFileNameSuffix
+                : $"{solutionFileName}.{settingsFileNameSuffix}";
+
+            return Path.Combine(vsDir, settingsFileName);
         }
 
         private static async Task SetIconAsync()
