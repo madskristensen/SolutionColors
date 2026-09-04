@@ -336,7 +336,26 @@ namespace SolutionColors
                 }
             }
 
-            return Path.Combine(vsDir, isColor ? FileConstants.ColorFileName : FileConstants.IconFileName);
+            string settingsFileName;
+            string settingsFileNameBase = isColor ? FileConstants.ColorFileName : FileConstants.IconFileName;
+
+            // As soon as the user enables the "Solution file name based settings" option,
+            // we will follow selected approach even if SaveInRoot is false.
+            if (options.SolutionFileNameBasedSettings)
+            {
+                // Use the solution file name WITH extension as a prefix for the settings file
+                // That allows to have different settings for .sln, .slnf and .slnx files with the same base name.
+                string solutionFileName = Path.GetFileName(await solution.GetSolutionNameAsync());
+                settingsFileName = string.IsNullOrWhiteSpace(solutionFileName)
+                    ? settingsFileNameBase
+                    : $"{solutionFileName}.{settingsFileNameBase}";
+            }
+            else
+            {
+                settingsFileName = settingsFileNameBase;
+            }
+
+            return Path.Combine(vsDir, settingsFileName);
         }
 
         private static async Task SetIconAsync()
