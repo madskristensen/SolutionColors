@@ -336,7 +336,7 @@ namespace SolutionColors
                 }
             }
 
-            string solutionFileName = await solution.GetSolutionNameAsync();
+            string solutionFileName = Path.GetFileName(await solution.GetSolutionNameAsync());
             string settingsFileNameSuffix = isColor ? FileConstants.ColorFileName : FileConstants.IconFileName;
             string settingsFileName = string.IsNullOrWhiteSpace(solutionFileName)
                 ? settingsFileNameSuffix
