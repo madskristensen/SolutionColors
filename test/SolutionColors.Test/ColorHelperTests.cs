@@ -108,4 +108,34 @@ public class ColorHelperTests
 
         Assert.IsFalse(remove);
     }
+
+    [TestMethod]
+    public void GetSettingsFileName_WithSolutionName_ReturnsSolutionSpecificColorFileName()
+    {
+        string fileName = ColorHelper.GetSettingsFileName(
+            isColor: true,
+            solutionName: "C:\\Source\\Product.slnx");
+
+        Assert.AreEqual("Product.slnx.color.txt", fileName);
+    }
+
+    [TestMethod]
+    public void GetSettingsFileName_WithSolutionName_ReturnsSolutionSpecificIconFileName()
+    {
+        string fileName = ColorHelper.GetSettingsFileName(
+            isColor: false,
+            solutionName: "C:\\Source\\Product.sln");
+
+        Assert.AreEqual("Product.sln.icon.img", fileName);
+    }
+
+    [TestMethod]
+    public void GetSettingsFileName_WithoutSolutionName_ReturnsLegacyFileName()
+    {
+        string fileName = ColorHelper.GetSettingsFileName(
+            isColor: true,
+            solutionName: null);
+
+        Assert.AreEqual(FileConstants.ColorFileName, fileName);
+    }
 }

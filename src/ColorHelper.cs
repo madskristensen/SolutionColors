@@ -336,7 +336,22 @@ namespace SolutionColors
                 }
             }
 
-            return Path.Combine(vsDir, isColor ? FileConstants.ColorFileName : FileConstants.IconFileName);
+            string solutionName = options.UseSolutionNameInSettingsFiles
+                ? await solution.GetSolutionNameAsync()
+                : null;
+            string settingsFileName = GetSettingsFileName(isColor, solutionName);
+
+            return Path.Combine(vsDir, settingsFileName);
+        }
+
+        internal static string GetSettingsFileName(bool isColor, string solutionName)
+        {
+            string settingsFileName = isColor ? FileConstants.ColorFileName : FileConstants.IconFileName;
+            string solutionFileName = Path.GetFileName(solutionName);
+
+            return string.IsNullOrWhiteSpace(solutionFileName)
+                ? settingsFileName
+                : $"{solutionFileName}.{settingsFileName}";
         }
 
         private static async Task SetIconAsync()

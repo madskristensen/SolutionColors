@@ -13,6 +13,7 @@ public class GeneralDefaultsTests
         Assert.IsFalse(options.ShowTaskBarOverlay);
         Assert.IsTrue(options.ShowTitleBar);
         Assert.IsFalse(options.SaveInRoot);
+        Assert.IsFalse(options.UseSolutionNameInSettingsFiles);
         Assert.IsNotNull(options.Borders);
         Assert.AreEqual(Coloration.Unitary, options.Coloration);
         Assert.AreEqual(BaseColor.MasterColor, options.BaseColor);

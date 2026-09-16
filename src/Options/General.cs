@@ -45,6 +45,12 @@ namespace SolutionColors
         public bool SaveInRoot { get; set; } = false;
 
         [Category("General")]
+        [DisplayName("Include solution name in settings filenames")]
+        [Description("Prefixes color and icon settings filenames with the solution filename so solutions in the same folder can use different settings. Default: false")]
+        [DefaultValue(false)]
+        public bool UseSolutionNameInSettingsFiles { get; set; }
+
+        [Category("General")]
         [DisplayName("Border settings")]
         [Description("Sets border locations and width in pixels. Default: bottom 3")]
         [TypeConverter(typeof(BorderTypeConverter))]
