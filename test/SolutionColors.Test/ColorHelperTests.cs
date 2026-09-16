@@ -138,4 +138,41 @@ public class ColorHelperTests
 
         Assert.AreEqual(FileConstants.ColorFileName, fileName);
     }
+
+    [TestMethod]
+    public void GetCustomSettingsDirectory_WithRelativePath_ResolvesFromSolutionRoot()
+    {
+        string directory = ColorHelper.GetCustomSettingsDirectory(
+            solutionRoot: "C:\\Workspace\\Projects\\Product",
+            solutionName: "Product.sln",
+            customDirectory: "..\\..\\SolutionColors");
+
+        Assert.AreEqual("C:\\Workspace\\SolutionColors", directory);
+    }
+
+    [TestMethod]
+    public void GetCustomSettingsDirectory_WithTokens_ExpandsSolutionValues()
+    {
+        string directory = ColorHelper.GetCustomSettingsDirectory(
+            solutionRoot: "C:\\Workspace\\Product",
+            solutionName: "Product.slnx",
+            customDirectory: "$(SolutionDir)\\..\\Settings\\$(SolutionName)");
+
+        Assert.AreEqual("C:\\Workspace\\Settings\\Product", directory);
+    }
+
+    [TestMethod]
+    public void GetCustomSettingsDirectory_WithEnvironmentVariable_ExpandsVariable()
+    {
+        string customDirectory = "%TEMP%\\SolutionColors\\Product";
+
+        string directory = ColorHelper.GetCustomSettingsDirectory(
+            solutionRoot: "C:\\Workspace\\Product",
+            solutionName: "Product.sln",
+            customDirectory: customDirectory);
+
+        Assert.AreEqual(
+            Path.GetFullPath(Environment.ExpandEnvironmentVariables(customDirectory)),
+            directory);
+    }
 }

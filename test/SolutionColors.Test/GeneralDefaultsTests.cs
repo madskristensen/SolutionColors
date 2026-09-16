@@ -14,6 +14,7 @@ public class GeneralDefaultsTests
         Assert.IsTrue(options.ShowTitleBar);
         Assert.IsFalse(options.SaveInRoot);
         Assert.IsFalse(options.UseSolutionNameInSettingsFiles);
+        Assert.AreEqual(string.Empty, options.CustomSettingsDirectory);
         Assert.IsNotNull(options.Borders);
         Assert.AreEqual(Coloration.Unitary, options.Coloration);
         Assert.AreEqual(BaseColor.MasterColor, options.BaseColor);

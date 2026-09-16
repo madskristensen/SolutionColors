@@ -315,10 +315,16 @@ namespace SolutionColors
             }
 
             General options = await General.GetLiveInstanceAsync();
+            string solutionName = await solution.GetSolutionNameAsync();
 
             string vsDir;
 
-            if (options.SaveInRoot)
+            if (!string.IsNullOrWhiteSpace(options.CustomSettingsDirectory))
+            {
+                vsDir = GetCustomSettingsDirectory(rootDir, solutionName, options.CustomSettingsDirectory);
+                Directory.CreateDirectory(vsDir);
+            }
+            else if (options.SaveInRoot)
             {
                 vsDir = rootDir;
             }
@@ -327,7 +333,7 @@ namespace SolutionColors
                 vsDir = Path.Combine(
                     rootDir,
                     FileConstants.VsSettingsFolder,
-                    Path.GetFileNameWithoutExtension(await solution.GetSolutionNameAsync()));
+                    Path.GetFileNameWithoutExtension(solutionName));
 
                 if (!Directory.Exists(vsDir))
                 {
@@ -336,12 +342,26 @@ namespace SolutionColors
                 }
             }
 
-            string solutionName = options.UseSolutionNameInSettingsFiles
-                ? await solution.GetSolutionNameAsync()
-                : null;
-            string settingsFileName = GetSettingsFileName(isColor, solutionName);
+            string settingsFileName = GetSettingsFileName(
+                isColor,
+                options.UseSolutionNameInSettingsFiles ? solutionName : null);
 
             return Path.Combine(vsDir, settingsFileName);
+        }
+
+        internal static string GetCustomSettingsDirectory(string solutionRoot, string solutionName, string customDirectory)
+        {
+            string expandedDirectory = Environment.ExpandEnvironmentVariables(customDirectory.Trim());
+            string normalizedSolutionRoot = solutionRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            string solutionFileName = Path.GetFileNameWithoutExtension(solutionName) ?? string.Empty;
+
+            expandedDirectory = expandedDirectory
+                .Replace("$(SolutionDir)", normalizedSolutionRoot)
+                .Replace("$(SolutionName)", solutionFileName);
+
+            return Path.IsPathRooted(expandedDirectory)
+                ? Path.GetFullPath(expandedDirectory)
+                : Path.GetFullPath(Path.Combine(solutionRoot, expandedDirectory));
         }
 
         internal static string GetSettingsFileName(bool isColor, string solutionName)

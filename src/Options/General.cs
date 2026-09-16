@@ -51,6 +51,12 @@ namespace SolutionColors
         public bool UseSolutionNameInSettingsFiles { get; set; }
 
         [Category("General")]
+        [DisplayName("Custom settings directory")]
+        [Description("Optional directory for color and icon settings. Relative paths are based on the solution directory. Supports environment variables, $(SolutionDir), and $(SolutionName). Default: empty")]
+        [DefaultValue("")]
+        public string CustomSettingsDirectory { get; set; } = "";
+
+        [Category("General")]
         [DisplayName("Border settings")]
         [Description("Sets border locations and width in pixels. Default: bottom 3")]
         [TypeConverter(typeof(BorderTypeConverter))]
