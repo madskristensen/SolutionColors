@@ -8,7 +8,7 @@ namespace SolutionColors
         private const string _gitDirectory = ".git";
         private const string _headFile = "HEAD";
         private const string _branchRefPrefix = "ref: refs/heads/";
-        private const string _gitDirPrefix = "gitdir: ";
+        private const string _gitDirPrefix = "gitdir:";
         public const string DefaultBranch = "master";
 
         public static async Task<string> GetBranchNameAsync()
@@ -27,7 +27,7 @@ namespace SolutionColors
             return await Task.Run(() => GetBranchFromFileSystem(rootDir));
         }
 
-        private static string GetBranchFromFileSystem(string rootDir)
+        internal static string GetBranchFromFileSystem(string rootDir)
         {
             DirectoryInfo directoryInfo = new(rootDir);
             while (directoryInfo != null)
@@ -49,9 +49,13 @@ namespace SolutionColors
                 if (File.Exists(gitPath))
                 {
                     string gitFileContent = TryReadAllText(gitPath);
-                    if (gitFileContent != null)
+                    if (gitFileContent?.Trim().StartsWith(_gitDirPrefix, StringComparison.Ordinal) == true)
                     {
-                        string worktreeDir = gitFileContent.Replace(_gitDirPrefix, "").Trim();
+                        string worktreeDir = gitFileContent.Trim().Substring(_gitDirPrefix.Length).Trim();
+                        if (!Path.IsPathRooted(worktreeDir))
+                        {
+                            worktreeDir = Path.GetFullPath(Path.Combine(directoryInfo.FullName, worktreeDir));
+                        }
 
                         string headPath = Path.Combine(worktreeDir, _headFile);
                         string branch = TryReadBranch(headPath);
@@ -77,7 +81,15 @@ namespace SolutionColors
             }
 
             string content = TryReadAllText(headPath);
-            return content?.Replace(_branchRefPrefix, "").Trim();
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                return null;
+            }
+
+            string head = content.Trim();
+            return head.StartsWith(_branchRefPrefix, StringComparison.Ordinal)
+                ? head.Substring(_branchRefPrefix.Length)
+                : head;
         }
 
         private static string TryReadAllText(string path)

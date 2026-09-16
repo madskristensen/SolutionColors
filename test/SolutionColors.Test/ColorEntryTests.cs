@@ -42,12 +42,26 @@ public class ColorEntryTests
     }
 
     [TestMethod]
-    public void Parse_WithMultipleSegments_UsesFirstTwoSegments()
+    public void Parse_WithMultipleSegments_ReturnsNull()
     {
         ColorEntry entry = ColorEntry.Parse("feature:Tomato:ignored");
+
+        Assert.IsNull(entry);
+    }
+
+    [TestMethod]
+    public void Parse_WithSurroundingWhitespace_TrimsValues()
+    {
+        ColorEntry entry = ColorEntry.Parse(" feature : Tomato ");
 
         Assert.IsNotNull(entry);
         Assert.AreEqual("feature", entry.Branch);
         Assert.AreEqual("Tomato", entry.Color);
+    }
+
+    [TestMethod]
+    public void Parse_WithEmptyBranch_ReturnsNull()
+    {
+        Assert.IsNull(ColorEntry.Parse(":Tomato"));
     }
 }

@@ -53,22 +53,12 @@ namespace SolutionColors
                 ? GitHelper.DefaultBranch
                 : await GitHelper.GetBranchNameAsync();
 
-            ColorEntry colorEntry = _colorEntries.FirstOrDefault(x => x.Branch == branch);
-            if (colorEntry != null)
-            {
-                colorEntry.Color = colorName;
-            }
-            else
-            {
-                _colorEntries.Add(new ColorEntry { Branch = branch, Color = colorName });
-            }
-
-            string fileContent = string.Join(Environment.NewLine, _colorEntries.Select(e => e.ToString()));
+            SetColor(_colorEntries, branch, colorName);
             string fileName = await GetFileNameAsync();
 
             if (!string.IsNullOrEmpty(fileName))
             {
-                File.WriteAllText(fileName, fileContent);
+                WriteColorEntries(fileName, _colorEntries);
             }
         }
 
@@ -185,17 +175,7 @@ namespace SolutionColors
             {
                 try
                 {
-                    string fileContent = File.ReadAllText(fileName);
-                    string[] lines = fileContent.Split(["\r\n", "\r", "\n"], StringSplitOptions.RemoveEmptyEntries);
-
-                    foreach (string line in lines)
-                    {
-                        ColorEntry entry = ColorEntry.Parse(line);
-                        if (entry != null)
-                        {
-                            _colorEntries.Add(entry);
-                        }
-                    }
+                    _colorEntries.AddRange(ReadColorEntries(fileName));
 
                     // Set up file watcher for auto-reload (Issue #45)
                     SetupFileWatcher(fileName);
@@ -209,6 +189,43 @@ namespace SolutionColors
                     // File access denied - continue with empty color entries
                 }
             }
+        }
+
+        internal static List<ColorEntry> ReadColorEntries(string fileName)
+        {
+            string fileContent = File.ReadAllText(fileName);
+            string[] lines = fileContent.Split(["\r\n", "\r", "\n"], StringSplitOptions.RemoveEmptyEntries);
+            List<ColorEntry> entries = [];
+
+            foreach (string line in lines)
+            {
+                ColorEntry entry = ColorEntry.Parse(line);
+                if (entry != null && !entries.Any(existing => existing.Branch == entry.Branch))
+                {
+                    entries.Add(entry);
+                }
+            }
+
+            return entries;
+        }
+
+        internal static void WriteColorEntries(string fileName, IEnumerable<ColorEntry> entries)
+        {
+            string fileContent = string.Join(Environment.NewLine, entries.Select(entry => entry.ToString()));
+            File.WriteAllText(fileName, fileContent);
+        }
+
+        internal static void SetColor(List<ColorEntry> entries, string branch, string colorName)
+        {
+            ColorEntry colorEntry = entries.FirstOrDefault(entry => entry.Branch == branch);
+            if (colorEntry == null)
+            {
+                entries.Add(new ColorEntry { Branch = branch, Color = colorName });
+                return;
+            }
+
+            colorEntry.Color = colorName;
+            entries.RemoveAll(entry => entry != colorEntry && entry.Branch == branch);
         }
 
 #pragma warning disable VSTHRD100 // Avoid async void methods
@@ -317,24 +334,18 @@ namespace SolutionColors
             General options = await General.GetLiveInstanceAsync();
             string solutionName = await solution.GetSolutionNameAsync();
 
-            string vsDir;
+            string vsDir = GetSettingsDirectory(
+                rootDir,
+                solutionName,
+                options.CustomSettingsDirectory,
+                options.SaveInRoot);
 
             if (!string.IsNullOrWhiteSpace(options.CustomSettingsDirectory))
             {
-                vsDir = GetCustomSettingsDirectory(rootDir, solutionName, options.CustomSettingsDirectory);
                 Directory.CreateDirectory(vsDir);
             }
-            else if (options.SaveInRoot)
+            else if (!options.SaveInRoot)
             {
-                vsDir = rootDir;
-            }
-            else
-            {
-                vsDir = Path.Combine(
-                    rootDir,
-                    FileConstants.VsSettingsFolder,
-                    Path.GetFileNameWithoutExtension(solutionName));
-
                 if (!Directory.Exists(vsDir))
                 {
                     DirectoryInfo di = Directory.CreateDirectory(vsDir);
@@ -349,15 +360,52 @@ namespace SolutionColors
             return Path.Combine(vsDir, settingsFileName);
         }
 
+        internal static string GetSettingsDirectory(
+            string solutionRoot,
+            string solutionName,
+            string customDirectory,
+            bool saveInRoot)
+        {
+            if (!string.IsNullOrWhiteSpace(customDirectory))
+            {
+                return GetCustomSettingsDirectory(solutionRoot, solutionName, customDirectory);
+            }
+
+            if (saveInRoot)
+            {
+                return solutionRoot;
+            }
+
+            return Path.Combine(
+                solutionRoot,
+                FileConstants.VsSettingsFolder,
+                Path.GetFileNameWithoutExtension(solutionName));
+        }
+
         internal static string GetCustomSettingsDirectory(string solutionRoot, string solutionName, string customDirectory)
         {
-            string expandedDirectory = Environment.ExpandEnvironmentVariables(customDirectory.Trim());
-            string normalizedSolutionRoot = solutionRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            string trimmedDirectory = customDirectory.Trim();
+            if (trimmedDirectory.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
+            {
+                throw new ArgumentException("The custom settings directory contains invalid path characters.", nameof(customDirectory));
+            }
+
+            string expandedDirectory = Environment.ExpandEnvironmentVariables(trimmedDirectory);
+            string normalizedSolutionRoot = Path.GetFullPath(solutionRoot).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            if (normalizedSolutionRoot.EndsWith(":", StringComparison.Ordinal))
+            {
+                normalizedSolutionRoot += Path.DirectorySeparatorChar;
+            }
             string solutionFileName = Path.GetFileNameWithoutExtension(solutionName) ?? string.Empty;
 
             expandedDirectory = expandedDirectory
                 .Replace("$(SolutionDir)", normalizedSolutionRoot)
                 .Replace("$(SolutionName)", solutionFileName);
+
+            if (expandedDirectory.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
+            {
+                throw new ArgumentException("The expanded custom settings directory contains invalid path characters.", nameof(customDirectory));
+            }
 
             return Path.IsPathRooted(expandedDirectory)
                 ? Path.GetFullPath(expandedDirectory)
@@ -571,7 +619,7 @@ namespace SolutionColors
             window.TaskbarItemInfo.ThumbButtonInfos ??= [];
         }
 
-        private static Brush GetBrushForTaskbar(Color colorMaster, Color colorBranch, General options)
+        internal static Brush GetBrushForTaskbar(Color colorMaster, Color colorBranch, General options)
         {
             Brush brush = null;
             if (options.Coloration == Coloration.Unitary)
@@ -664,7 +712,7 @@ namespace SolutionColors
             }
         }
 
-        private static Brush GetBrushForBorder(Color colorMaster, Color colorBranch, General options, BorderLocation borderLocation)
+        internal static Brush GetBrushForBorder(Color colorMaster, Color colorBranch, General options, BorderLocation borderLocation)
         {
             Brush brush = null;
             if (options.Coloration == Coloration.Unitary)
@@ -745,7 +793,7 @@ namespace SolutionColors
             }
         }
 
-        private static Brush GetBrushForTitlebar(Color colorMaster, Color colorBranch, General options)
+        internal static Brush GetBrushForTitlebar(Color colorMaster, Color colorBranch, General options)
         {
             Brush brush = null;
             if (options.Coloration == Coloration.Unitary)

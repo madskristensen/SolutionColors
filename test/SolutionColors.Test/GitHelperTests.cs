@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace SolutionColors.Test;
 
 [TestClass]
@@ -8,86 +6,112 @@ public class GitHelperTests
     [TestMethod]
     public void GetBranchFromFileSystem_WithNestedStandardRepository_ReturnsBranchName()
     {
-        string tempDirectory = CreateTempDirectory();
-
-        try
+        RunInTempDirectory(tempDirectory =>
         {
             string repositoryDirectory = Path.Combine(tempDirectory, "repo");
             string nestedDirectory = Path.Combine(repositoryDirectory, "src", "project");
             string gitDirectory = Path.Combine(repositoryDirectory, ".git");
-
             Directory.CreateDirectory(gitDirectory);
             Directory.CreateDirectory(nestedDirectory);
             File.WriteAllText(Path.Combine(gitDirectory, "HEAD"), "ref: refs/heads/feature/test");
 
-            string branch = InvokeGetBranchFromFileSystem(nestedDirectory);
-
-            Assert.AreEqual("feature/test", branch);
-        }
-        finally
-        {
-            Directory.Delete(tempDirectory, recursive: true);
-        }
+            Assert.AreEqual("feature/test", GitHelper.GetBranchFromFileSystem(nestedDirectory));
+        });
     }
 
     [TestMethod]
-    public void GetBranchFromFileSystem_WithGitWorktreeFile_ReturnsBranchName()
+    public void GetBranchFromFileSystem_WithAbsoluteGitWorktreeFile_ReturnsBranchName()
     {
-        string tempDirectory = CreateTempDirectory();
-
-        try
+        RunInTempDirectory(tempDirectory =>
         {
             string repositoryDirectory = Path.Combine(tempDirectory, "repo");
             string worktreeDirectory = Path.Combine(tempDirectory, "worktrees", "repo");
-
             Directory.CreateDirectory(repositoryDirectory);
             Directory.CreateDirectory(worktreeDirectory);
             File.WriteAllText(Path.Combine(repositoryDirectory, ".git"), $"gitdir: {worktreeDirectory}");
             File.WriteAllText(Path.Combine(worktreeDirectory, "HEAD"), "ref: refs/heads/worktree-branch");
 
-            string branch = InvokeGetBranchFromFileSystem(repositoryDirectory);
+            Assert.AreEqual("worktree-branch", GitHelper.GetBranchFromFileSystem(repositoryDirectory));
+        });
+    }
 
-            Assert.AreEqual("worktree-branch", branch);
-        }
-        finally
+    [TestMethod]
+    public void GetBranchFromFileSystem_WithRelativeGitWorktreeFile_ReturnsBranchName()
+    {
+        RunInTempDirectory(tempDirectory =>
         {
-            Directory.Delete(tempDirectory, recursive: true);
-        }
+            string repositoryDirectory = Path.Combine(tempDirectory, "repo");
+            string worktreeDirectory = Path.Combine(tempDirectory, "metadata");
+            Directory.CreateDirectory(repositoryDirectory);
+            Directory.CreateDirectory(worktreeDirectory);
+            File.WriteAllText(Path.Combine(repositoryDirectory, ".git"), "gitdir:\t..\\metadata\r\n");
+            File.WriteAllText(Path.Combine(worktreeDirectory, "HEAD"), "ref: refs/heads/relative-worktree\r\n");
+
+            Assert.AreEqual("relative-worktree", GitHelper.GetBranchFromFileSystem(repositoryDirectory));
+        });
+    }
+
+    [TestMethod]
+    public void GetBranchFromFileSystem_WithDetachedHead_ReturnsCommit()
+    {
+        RunInTempDirectory(tempDirectory =>
+        {
+            string gitDirectory = Path.Combine(tempDirectory, ".git");
+            Directory.CreateDirectory(gitDirectory);
+            File.WriteAllText(Path.Combine(gitDirectory, "HEAD"), "0123456789abcdef\r\n");
+
+            Assert.AreEqual("0123456789abcdef", GitHelper.GetBranchFromFileSystem(tempDirectory));
+        });
+    }
+
+    [DataTestMethod]
+    [DataRow(false, null)]
+    [DataRow(true, "")]
+    public void GetBranchFromFileSystem_WithMissingOrEmptyHead_ReturnsDefaultBranch(bool createHead, string content)
+    {
+        RunInTempDirectory(tempDirectory =>
+        {
+            string gitDirectory = Path.Combine(tempDirectory, ".git");
+            Directory.CreateDirectory(gitDirectory);
+            if (createHead)
+            {
+                File.WriteAllText(Path.Combine(gitDirectory, "HEAD"), content);
+            }
+
+            Assert.AreEqual(GitHelper.DefaultBranch, GitHelper.GetBranchFromFileSystem(tempDirectory));
+        });
+    }
+
+    [TestMethod]
+    public void GetBranchFromFileSystem_WithMalformedGitFile_ReturnsDefaultBranch()
+    {
+        RunInTempDirectory(tempDirectory =>
+        {
+            File.WriteAllText(Path.Combine(tempDirectory, ".git"), "not a git directory");
+
+            Assert.AreEqual(GitHelper.DefaultBranch, GitHelper.GetBranchFromFileSystem(tempDirectory));
+        });
     }
 
     [TestMethod]
     public void GetBranchFromFileSystem_WithoutRepository_ReturnsDefaultBranch()
     {
-        string tempDirectory = CreateTempDirectory();
-
-        try
-        {
-            string branch = InvokeGetBranchFromFileSystem(tempDirectory);
-
-            Assert.AreEqual(GitHelper.DefaultBranch, branch);
-        }
-        finally
-        {
-            Directory.Delete(tempDirectory, recursive: true);
-        }
+        RunInTempDirectory(tempDirectory =>
+            Assert.AreEqual(GitHelper.DefaultBranch, GitHelper.GetBranchFromFileSystem(tempDirectory)));
     }
 
-    private static string InvokeGetBranchFromFileSystem(string rootDirectory)
-    {
-        MethodInfo method = typeof(GitHelper).GetMethod("GetBranchFromFileSystem", BindingFlags.NonPublic | BindingFlags.Static);
-
-        Assert.IsNotNull(method);
-
-        object branch = method.Invoke(obj: null, parameters: [rootDirectory]);
-
-        Assert.IsNotNull(branch);
-        return (string)branch;
-    }
-
-    private static string CreateTempDirectory()
+    private static void RunInTempDirectory(Action<string> test)
     {
         string path = Path.Combine(Path.GetTempPath(), "SolutionColors.Tests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(path);
-        return path;
+
+        try
+        {
+            test(path);
+        }
+        finally
+        {
+            Directory.Delete(path, recursive: true);
+        }
     }
 }

@@ -123,6 +123,13 @@ namespace SolutionColors
 
             return (int)(hash & 0x7FFFFFFF);
         }
+
+        internal static void Reset()
+        {
+            ColorMap.Clear();
+            _colorMapVersion++;
+            _keyListCache = null;
+        }
         
         private static void EnsureKeyListCache()
         {

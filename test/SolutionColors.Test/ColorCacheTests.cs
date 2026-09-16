@@ -1,12 +1,21 @@
+using System.Windows.Media;
+
 namespace SolutionColors.Test;
 
 [TestClass]
+[DoNotParallelize]
 public class ColorCacheTests
 {
+    [TestInitialize]
+    public void Initialize()
+    {
+        ColorCache.Reset();
+    }
+
     [TestMethod]
     public void TryParseColor_WithKnownColorName_ReturnsTrue()
     {
-        bool success = ColorCache.TryParseColor("Tomato", out System.Windows.Media.Color color);
+        bool success = ColorCache.TryParseColor("Tomato", out Color color);
 
         Assert.IsTrue(success);
         Assert.AreEqual("#FFFF6347", color.ToString());
@@ -35,73 +44,84 @@ public class ColorCacheTests
     {
         ColorCache.AddColor("Pumpkin");
 
-        string colorCode = ColorCache.GetColorCode("Pumpkin");
-
-        Assert.AreEqual("OrangeRed", colorCode);
+        Assert.AreEqual("OrangeRed", ColorCache.GetColorCode("Pumpkin"));
+        Assert.AreEqual(0, ColorCache.GetIndex("Pumpkin"));
     }
 
     [TestMethod]
     public void AddColor_WithCustomName_StoresNameAsValue()
     {
-        string colorName = "#FF" + Guid.NewGuid().ToString("N").Substring(0, 6);
+        const string colorName = "#FF123456";
 
         ColorCache.AddColor(colorName);
 
-        string colorCode = ColorCache.GetColorCode(colorName);
-
-        Assert.AreEqual(colorName, colorCode);
+        Assert.AreEqual(colorName, ColorCache.GetColorCode(colorName));
+        Assert.AreEqual(0, ColorCache.GetIndex(colorName));
     }
 
     [TestMethod]
     public void GetColorCode_WithUnknownName_ReturnsNull()
     {
-        string colorCode = ColorCache.GetColorCode("definitely-not-a-known-color");
-
-        Assert.IsNull(colorCode);
+        Assert.IsNull(ColorCache.GetColorCode("definitely-not-a-known-color"));
+        Assert.AreEqual(-1, ColorCache.GetIndex("missing-color-entry"));
     }
 
     [TestMethod]
-    public void GetIndex_WithExistingColor_ReturnsNonNegative()
+    public void AddColor_WhenCalledTwice_DoesNotAddDuplicate()
     {
-        string colorName = "#FF" + Guid.NewGuid().ToString("N").Substring(0, 6);
-        ColorCache.AddColor(colorName);
+        ColorCache.AddColor("Lavender");
+        ColorCache.AddColor("Lavender");
 
-        int index = ColorCache.GetIndex(colorName);
-
-        Assert.IsTrue(index >= 0);
+        Assert.AreEqual("MediumPurple", ColorCache.GetColorCode("Lavender"));
+        Assert.AreEqual(0, ColorCache.GetIndex("Lavender"));
+        Assert.AreEqual(Colors.Gray.ToString(), ColorCache.GetColor("C:\\temp\\solution.sln"));
     }
 
     [TestMethod]
-    public void GetIndex_WithMissingColor_ReturnsNegativeOne()
+    public void GetColor_WithKnownPalette_ReturnsDeterministicPaletteColor()
     {
-        int index = ColorCache.GetIndex("missing-color-entry");
+        ConfigureKnownPalette();
 
-        Assert.AreEqual(-1, index);
+        string resolvedColor = ColorCache.GetColor("C:\\Source\\Solution.sln");
+
+        Assert.AreEqual("MediumAquamarine", resolvedColor);
     }
 
     [TestMethod]
-    public void AddColor_WhenCalledTwice_KeepsSameMappedValue()
+    public void GetColor_WithEquivalentWindowsPaths_ReturnsSameColor()
     {
-        string colorName = "Lavender";
-        ColorCache.AddColor(colorName);
-        string firstValue = ColorCache.GetColorCode(colorName);
+        ConfigureKnownPalette();
 
-        ColorCache.AddColor(colorName);
-        string secondValue = ColorCache.GetColorCode(colorName);
+        string firstColor = ColorCache.GetColor("C:\\Source\\Solution.sln");
+        string secondColor = ColorCache.GetColor("c:/source/solution.sln");
 
-        Assert.AreEqual(firstValue, secondValue);
+        Assert.AreEqual(firstColor, secondColor);
     }
 
     [TestMethod]
-    public void GetColor_WithConfiguredMap_ReturnsParsableColor()
+    public void GetColor_WithRepresentativePaths_UsesAvailablePalette()
     {
-        ColorCache.AddColor("Pumpkin");
-        ColorCache.AddColor("Mint");
+        ConfigureKnownPalette();
+        string[] paths =
+        [
+            "C:\\Source\\One.sln",
+            "C:\\Source\\Two.sln",
+            "C:\\Source\\Three.sln",
+            "D:\\Projects\\Four.sln",
+            "C:\\B.sln"
+        ];
 
-        string resolvedColor = ColorCache.GetColor("C:\\temp\\solution.sln");
-        bool success = ColorCache.TryParseColor(resolvedColor, out System.Windows.Media.Color _);
+        string[] colors = paths.Select(ColorCache.GetColor).Distinct().ToArray();
 
-        Assert.IsTrue(success);
+        CollectionAssert.AreEquivalent(
+            new[] { "OrangeRed", "MediumAquamarine" },
+            colors);
+    }
+
+    [TestMethod]
+    public void GetStableHash_WithKnownPath_ReturnsExpectedHash()
+    {
+        Assert.AreEqual(51422297, ColorCache.GetStableHash("C:\\Source\\Solution.sln"));
     }
 
     [TestMethod]
@@ -113,12 +133,10 @@ public class ColorCacheTests
         Assert.AreEqual(firstHash, secondHash);
     }
 
-    [TestMethod]
-    public void GetStableHash_WithDifferentSolutionPaths_ReturnsDifferentHashes()
+    private static void ConfigureKnownPalette()
     {
-        int firstHash = ColorCache.GetStableHash("C:\\Source\\First\\Solution.sln");
-        int secondHash = ColorCache.GetStableHash("C:\\Source\\Second\\Solution.sln");
-
-        Assert.AreNotEqual(firstHash, secondHash);
+        ColorCache.AddColor("Pumpkin");
+        ColorCache.AddColor("Mint");
+        ColorCache.AddColor("None");
     }
 }

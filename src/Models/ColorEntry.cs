@@ -24,11 +24,11 @@ namespace SolutionColors
             if (segments.Length == 1)
             {
                 // Legacy format: just a color (assumed to be master branch)
-                return new ColorEntry { Branch = GitHelper.DefaultBranch, Color = segments[0] };
+                return new ColorEntry { Branch = GitHelper.DefaultBranch, Color = segments[0].Trim() };
             }
-            else if (segments.Length >= 2)
+            else if (segments.Length == 2 && !string.IsNullOrWhiteSpace(segments[0]))
             {
-                return new ColorEntry { Branch = segments[0], Color = segments[1] };
+                return new ColorEntry { Branch = segments[0].Trim(), Color = segments[1].Trim() };
             }
 
             return null;
