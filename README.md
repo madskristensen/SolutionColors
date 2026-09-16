@@ -33,7 +33,17 @@ You are not limited to only choosing between the predefined colors. By selecting
 
 ![custom colors](art/custom-colors.png)
 
-Visual Studio stores the color in the *.vs* folder next to the solution file or in the root of the workspace folder. That ensures that the same solution will always receive the same color.
+By default, the extension stores the color and custom icon in the solution's *.vs* folder. You can instead store them in the solution root or configure a custom directory.
+
+### Settings file storage
+
+The **Tools -> Options** page provides the following storage options:
+
+- **Save settings file in root folder** stores `color.txt` and `icon.img` in the solution or workspace root instead of the *.vs* folder.
+- **Include solution name in settings filenames** prefixes both filenames with the full solution filename. For example, `Product.sln` uses `Product.sln.color.txt` and `Product.sln.icon.img`. This allows multiple solutions in the same directory to keep separate settings.
+- **Custom settings directory** overrides the default *.vs* or root location. Absolute paths and paths relative to the solution directory are supported, along with environment variables and the `$(SolutionDir)` and `$(SolutionName)` tokens.
+
+For example, `$(SolutionDir)\..\Settings\$(SolutionName)` stores each solution's settings in its own directory under a shared *Settings* folder.
 
 After selecting a color manually, the **Automatic** button changes to **None**. That allows you to remove the color if you no longer want it.
 
@@ -41,7 +51,7 @@ After selecting a color manually, the **Automatic** button changes to **None**. 
 
 ## Automatic
 
-Instead of manually assigning a color to every solution, Visual Studio can do it automatically. With this option enabled, all solutions will be assigned a color when opened. The color is calculated based on the hash of the full path of the solution, so each solution will always be assigned the same color.
+Instead of manually assigning a color to every solution, Visual Studio can do it automatically. With this option enabled, all solutions will be assigned a color when opened. The color is calculated using a stable, case-insensitive hash of the full solution path, so each solution receives a deterministic color across Visual Studio sessions.
 
 When Automatic colorization is enabled, the button in the submenu shows a checkmark.
 
