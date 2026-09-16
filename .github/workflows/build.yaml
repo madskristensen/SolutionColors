@@ -53,7 +53,7 @@ jobs:
       run: msbuild ${{ env.Solution }} /v:m /m /p:Configuration=${{ env.Configuration }} /p:DeployExtension=${{ env.DeployExtension }}
 
     - name: Run tests
-      run: dotnet test ${{ env.TestProject }} --configuration ${{ env.Configuration }} --no-build --no-restore --verbosity normal --logger:"trx;LogFileName=test-results.trx"
+      run: dotnet test ${{ env.TestProject }} --configuration ${{ env.Configuration }} --no-build --no-restore --settings test\coverage.runsettings --collect:"Code Coverage" --verbosity normal --logger:"trx;LogFileName=test-results.trx"
 
     - name: Report test results
       uses: dorny/test-reporter@v3
@@ -62,6 +62,44 @@ jobs:
         name: Test Results
         path: '**/test-results.trx'
         reporter: dotnet-trx
+
+    - name: Publish code coverage summary
+      shell: pwsh
+      run: |
+        $coverageFile = Get-ChildItem -Path test -Recurse -Filter *.cobertura.xml |
+          Sort-Object LastWriteTime -Descending |
+          Select-Object -First 1
+
+        if ($null -eq $coverageFile) {
+          throw "The test run did not produce a Cobertura coverage report."
+        }
+
+        [xml]$coverage = Get-Content -Path $coverageFile.FullName
+        $report = $coverage.coverage
+
+        function Format-Percentage([int]$covered, [int]$total) {
+          if ($total -eq 0) {
+            return "N/A"
+          }
+
+          return "$([Math]::Round(($covered / $total) * 100, 2))%"
+        }
+
+        $linesCovered = [int]$report.GetAttribute("lines-covered")
+        $linesTotal = [int]$report.GetAttribute("lines-valid")
+        $branchesCovered = [int]$report.GetAttribute("branches-covered")
+        $branchesTotal = [int]$report.GetAttribute("branches-valid")
+        $linePercentage = Format-Percentage $linesCovered $linesTotal
+        $branchPercentage = Format-Percentage $branchesCovered $branchesTotal
+
+        @"
+        ## Code coverage
+
+        | Metric | Covered | Total | Coverage |
+        | --- | ---: | ---: | ---: |
+        | Lines | $linesCovered | $linesTotal | $linePercentage |
+        | Branches | $branchesCovered | $branchesTotal | $branchPercentage |
+        "@ | Add-Content -Path $env:GITHUB_STEP_SUMMARY
 
     - name: Upload artifact
       uses: actions/upload-artifact@v7
