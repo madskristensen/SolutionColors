@@ -103,12 +103,25 @@ namespace SolutionColors
 
             EnsureKeyListCache();
 
-            // Mask the sign bit instead of Math.Abs: Math.Abs(int.MinValue) throws OverflowException,
-            // and GetHashCode() can legitimately return int.MinValue.
-            int hash = filePath.GetHashCode() & 0x7FFFFFFF;
+            int hash = GetStableHash(filePath);
             int mod = hash % (ColorMap.Count - 1);    //last one is "None" which is not a valid color
 
             return ColorMap[_keyListCache[mod]];
+        }
+
+        internal static int GetStableHash(string value)
+        {
+            const uint offsetBasis = 2166136261;
+            const uint prime = 16777619;
+            uint hash = offsetBasis;
+
+            foreach (char character in value)
+            {
+                char normalizedCharacter = character == '/' ? '\\' : char.ToUpperInvariant(character);
+                hash = (hash ^ normalizedCharacter) * prime;
+            }
+
+            return (int)(hash & 0x7FFFFFFF);
         }
         
         private static void EnsureKeyListCache()

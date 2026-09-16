@@ -103,4 +103,22 @@ public class ColorCacheTests
 
         Assert.IsTrue(success);
     }
+
+    [TestMethod]
+    public void GetStableHash_WithEquivalentWindowsPaths_ReturnsSameHash()
+    {
+        int firstHash = ColorCache.GetStableHash("C:\\Source\\Solution.sln");
+        int secondHash = ColorCache.GetStableHash("c:/source/solution.sln");
+
+        Assert.AreEqual(firstHash, secondHash);
+    }
+
+    [TestMethod]
+    public void GetStableHash_WithDifferentSolutionPaths_ReturnsDifferentHashes()
+    {
+        int firstHash = ColorCache.GetStableHash("C:\\Source\\First\\Solution.sln");
+        int secondHash = ColorCache.GetStableHash("C:\\Source\\Second\\Solution.sln");
+
+        Assert.AreNotEqual(firstHash, secondHash);
+    }
 }
