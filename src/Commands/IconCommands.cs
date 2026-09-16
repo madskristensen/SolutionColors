@@ -5,7 +5,7 @@ using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
 
 namespace SolutionColors
 {
-    [Command(PackageIds.cSetIcon)]
+    [Command(PackageIds.SetIcon)]
     internal class SetIconCommand : BaseCommand<SetIconCommand>
     {
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
@@ -36,7 +36,7 @@ namespace SolutionColors
         }
     }
 
-    [Command(PackageIds.cRemoveIcon)]
+    [Command(PackageIds.RemoveIcon)]
     internal class RemoveIconCommand : BaseCommand<RemoveIconCommand>
     {
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)
